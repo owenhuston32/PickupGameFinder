@@ -5,6 +5,7 @@ import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Bundle;
+import android.widget.TextView;
 
 import com.example.pickupgamefinder.ui.main.MainFragment;
 import com.example.pickupgamefinder.ui.main.MainViewModel;
