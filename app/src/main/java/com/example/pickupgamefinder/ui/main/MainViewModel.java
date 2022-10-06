@@ -1,17 +1,20 @@
 package com.example.pickupgamefinder.ui.main;
 
+import java.util.List;
+
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 public class MainViewModel extends ViewModel {
     // TODO: Implement the ViewModel
-    private MutableLiveData<List<User>> users;
+    private MutableLiveData<List<String>> userNames;
 
-    public MutableLiveData<List<User>> getUsers() {
-        if (users == null) {
-            users = new MutableLiveData<List<User>>();
+    public MutableLiveData<List<String>> getUsers() {
+        if (userNames == null) {
+            userNames = new MutableLiveData<List<String>>();
             loadUsers();
         }
-        return this.users;
+        return this.userNames;
     }
 
     private void loadUsers() {

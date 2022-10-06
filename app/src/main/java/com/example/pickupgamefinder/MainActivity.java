@@ -22,9 +22,9 @@ public class MainActivity extends AppCompatActivity implements LifecycleObserver
         }
 
         MainViewModel model  = new ViewModelProvider(this).get(MainViewModel.class);
-       // model.getUsers().observe(this, users -> {
+        model.getUsers().observe(this, users -> {
             // Update  UI here
-       // });
+        });
 
     }
     public void onStart() {
