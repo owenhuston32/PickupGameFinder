@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.pickupgamefinder.R;
 
@@ -30,10 +31,39 @@ public class MainFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        mViewModel = new ViewModelProvider(this).get(MainViewModel.class);
-        // TODO: Use the ViewModel
+    public void onStart()
+    {
+        super.onStart();
+
+        SetDebugMessage("onStart");
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        SetDebugMessage("onResume");
+    }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        SetDebugMessage("onPause");
+    }
+
+    @Override
+    public void onStop()
+    {
+        super.onStop();
+        SetDebugMessage("onStop");
+    }
+
+    private void SetDebugMessage(String message)
+    {
+        TextView textView = (TextView) getView().findViewById(R.id.debug_text);
+
+        textView.setText("Debug: " + message);
     }
 
 }
