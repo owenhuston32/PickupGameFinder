@@ -1,14 +1,16 @@
 package com.example.pickupgamefinder;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Bundle;
-import android.widget.TextView;
 
-import com.example.pickupgamefinder.ui.main.MainFragment;
+import com.example.pickupgamefinder.ui.main.LoginFragment;
 import com.example.pickupgamefinder.ui.main.MainViewModel;
+import com.example.pickupgamefinder.ui.main.WelcomeScreenFragment;
 
 public class MainActivity extends AppCompatActivity implements LifecycleObserver {
 
@@ -18,7 +20,7 @@ public class MainActivity extends AppCompatActivity implements LifecycleObserver
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, MainFragment.newInstance())
+                    .replace(R.id.container, WelcomeScreenFragment.newInstance())
                     .commitNow();
         }
 
@@ -28,6 +30,15 @@ public class MainActivity extends AppCompatActivity implements LifecycleObserver
         });
 
     }
+
+    public void addFragment(Fragment fragment)
+    {
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.container, fragment);
+        fragmentTransaction.addToBackStack(fragment.toString());
+        fragmentTransaction.commit();
+    }
+
     public void onStart() {
         super.onStart();
     }
