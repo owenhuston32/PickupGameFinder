@@ -5,6 +5,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,13 +15,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
+
+import java.util.Map;
 
 public class LoginFragment extends Fragment implements  View.OnClickListener {
 
     private MainViewModel mViewModel;
-
-    private TextView mDebugText;
+    private TextView mUsersText;
+    private TextView mErrorMessage;
     private EditText mUsernameField;
     private EditText mPasswordField;
     private Button mLoginButton;
@@ -36,11 +41,12 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
 
         View v = inflater.inflate(R.layout.fragment_login, container, false);
 
+        mErrorMessage = (TextView) v.findViewById(R.id.signin_errorMessage);
+        mUsernameField = (EditText) v.findViewById(R.id.signin_username);
+        mPasswordField = (EditText) v.findViewById(R.id.signin_password);
+        mLoginButton = (Button) v.findViewById(R.id.signin_login_button);
 
-        mDebugText = (TextView) v.findViewById(R.id.debug_text);
-        mUsernameField = (EditText) v.findViewById(R.id.username_input);
-        mPasswordField = (EditText) v.findViewById(R.id.password_input);
-        mLoginButton = (Button) v.findViewById(R.id.login_button);
+        mViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
 
         mLoginButton.setOnClickListener(this);
 
@@ -52,9 +58,20 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
     {
         int viewId = view.getId();
 
-        if(viewId == R.id.login_button)
+        if(viewId == mLoginButton.getId())
         {
-            mLoginButton.setText("LoginClicked");
+            String username = mUsernameField.getText().toString();
+            String password = mPasswordField.getText().toString();
+            Map<String, String> users = mViewModel.getUsers().getValue();
+            if(users.containsKey(username) && users.get(username).equals(password))
+            {
+                mLoginButton.setText("Logged In");
+                ((MainActivity)getActivity()).addFragment(((LoggedInFragment) new LoggedInFragment()).newInstance(username), "LoggedInFragment");
+            }
+            else
+            {
+                mErrorMessage.setText("Invalid Username or Password");
+            }
         }
         else {
 
@@ -92,9 +109,7 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
 
     private void SetDebugMessage(String message)
     {
-        TextView textView = (TextView) getView().findViewById(R.id.debug_text);
-
-        textView.setText("Debug: " + message);
+        //mErrorMessage.setText("Debug: " + message);
     }
 
 }

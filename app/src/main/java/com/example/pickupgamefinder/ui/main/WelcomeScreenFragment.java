@@ -58,11 +58,11 @@ public class WelcomeScreenFragment extends Fragment implements View.OnClickListe
 
         if(viewId == R.id.welcome_login_button)
         {
-            ((MainActivity)getActivity()).addFragment(new LoginFragment());
+            ((MainActivity)getActivity()).addFragment(new LoginFragment(), "LoginFragment");
         }
         else if(viewId == R.id.welcome_signup_button)
         {
-            
+            ((MainActivity)getActivity()).addFragment(new SignupFragment(), "SignupFragment");
         }
         else {
 
