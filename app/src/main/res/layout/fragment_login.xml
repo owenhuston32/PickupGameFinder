@@ -10,37 +10,46 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="8sp"
+        android:layout_marginVertical="8sp"
         android:orientation="vertical">
-    <TextView
-        android:id="@+id/debug_text"
-        android:layout_width="match_parent"
-        android:layout_height="50sp"
-        android:textSize="45sp"
-        android:text="debugText"/>
 
+        <TextView
+            android:id="@+id/signin_errorMessage"
+            android:textSize="25sp"
+            android:layout_width="match_parent"
+            android:scrollHorizontally="false"
+            android:layout_height="80sp"
+            android:layout_marginVertical="4sp"
+            android:text=""
+            android:textColor="@color/design_default_color_error">
+
+        </TextView>
     <EditText
-        android:id="@+id/username_input"
+        android:id="@+id/signin_username"
         android:layout_width="match_parent"
-        android:layout_height="100sp"
+        android:layout_height="60sp"
         android:hint="username"
+        android:layout_marginVertical="8sp"
         android:inputType="text"
-        android:textSize="50sp"/>
+        android:textSize="30sp"/>
 
     <EditText
-        android:id="@+id/password_input"
+        android:id="@+id/signin_password"
         android:layout_width="match_parent"
-        android:layout_height="100sp"
+        android:layout_height="60sp"
         android:hint="password"
+        android:layout_marginVertical="8sp"
         android:inputType="textPassword"
-        android:textSize="50sp"/>
+        android:textSize="30sp"/>
 
-    <Button
-        android:id="@+id/login_button"
-        android:layout_width="match_parent"
-        android:layout_height="98dp"
-        android:rotationY="0"
-        android:text="Login"
-        android:textSize="50sp"/>
+        <Button
+            android:id="@+id/signin_login_button"
+            android:layout_width="match_parent"
+            android:layout_height="70sp"
+            android:layout_marginVertical="8sp"
+            android:text="Login"
+            android:textSize="40sp" />
     </LinearLayout>
 </ScrollView>

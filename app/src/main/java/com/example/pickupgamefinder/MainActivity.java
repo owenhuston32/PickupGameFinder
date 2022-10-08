@@ -25,17 +25,14 @@ public class MainActivity extends AppCompatActivity implements LifecycleObserver
         }
 
         MainViewModel model  = new ViewModelProvider(this).get(MainViewModel.class);
-        model.getUsers().observe(this, users -> {
-            // Update  UI here
-        });
 
     }
 
-    public void addFragment(Fragment fragment)
+    public void addFragment(Fragment fragment, String fragmentTag)
     {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.container, fragment);
-        fragmentTransaction.addToBackStack(fragment.toString());
+        fragmentTransaction.addToBackStack(fragmentTag);
         fragmentTransaction.commit();
     }
 
