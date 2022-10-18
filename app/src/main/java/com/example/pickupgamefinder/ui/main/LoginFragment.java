@@ -5,7 +5,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.view.LayoutInflater;
@@ -65,8 +64,9 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
             Map<String, String> users = mViewModel.getUsers().getValue();
             if(users.containsKey(username) && users.get(username).equals(password))
             {
+                mViewModel.username = mUsernameField.getText().toString();
                 mLoginButton.setText("Logged In");
-                ((MainActivity)getActivity()).addFragment(((LoggedInFragment) new LoggedInFragment()).newInstance(username), "LoggedInFragment");
+                ((MainActivity)getActivity()).addFragment(((MapFragment) new MapFragment()).newInstance(username), "MapFragment");
             }
             else
             {
