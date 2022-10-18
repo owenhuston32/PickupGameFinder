@@ -11,20 +11,20 @@ import android.widget.TextView;
 
 import com.example.pickupgamefinder.R;
 
-public class LoggedInFragment extends Fragment {
+public class MapFragment extends Fragment {
 
     private static final String USERNAME = "username";
 
     private String username;
     private TextView welcomeMessage;
 
-    public LoggedInFragment() {
+    public MapFragment() {
         // Required empty public constructor
     }
 
     // TODO: Rename and change types and number of parameters
-    public static LoggedInFragment newInstance(String username) {
-        LoggedInFragment fragment = new LoggedInFragment();
+    public static MapFragment newInstance(String username) {
+        MapFragment fragment = new MapFragment();
         Bundle args = new Bundle();
         args.putString(USERNAME, username);
         fragment.setArguments(args);

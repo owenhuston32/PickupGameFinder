@@ -3,7 +3,6 @@ package com.example.pickupgamefinder.ui.main;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.text.Editable;
@@ -18,7 +17,6 @@ import android.widget.TextView;
 import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
 
-import java.util.List;
 import java.util.Map;
 
 public class SignupFragment extends Fragment implements View.OnClickListener{
@@ -96,10 +94,10 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
             if(isUserNameAvailable() && isPasswordValid(mPasswordField.getText().toString(), mConfirmPasswordField.getText().toString()))
             {
                 mViewModel.addUser(mUsernameField.getText().toString(), mPasswordField.getText().toString());
-
+                mViewModel.username = mUsernameField.getText().toString();
                 mSignUpButton.setText("Signed up");
 
-                ((MainActivity)getActivity()).addFragment(((LoggedInFragment) new LoggedInFragment()).newInstance(mUsernameField.getText().toString()), "LoggedInFragment");
+                ((MainActivity)getActivity()).addFragment(((MapFragment) new MapFragment()).newInstance(mUsernameField.getText().toString()), "MapFragment");
             }
         }
         else {

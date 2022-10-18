@@ -9,6 +9,9 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 public class MainViewModel extends ViewModel {
+
+    public String username = "";
+
     // TODO: Implement the ViewModel
     private MutableLiveData<Map<String,String>> users;
 
