@@ -17,6 +17,9 @@ import android.widget.TextView;
 
 import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -58,11 +61,6 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
     @Override
     public void onClick(View view)
     {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("message1");
-
-        myRef.setValue("Hello, World!");
-
 
         int viewId = view.getId();
 
@@ -71,19 +69,46 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
             String username = mUsernameField.getText().toString();
             String password = mPasswordField.getText().toString();
             Map<String, String> users = mViewModel.getUsers().getValue();
-            if(users.containsKey(username) && users.get(username).equals(password))
-            {
-                mViewModel.username = mUsernameField.getText().toString();
-                mLoginButton.setText("Logged In");
-                ((MainActivity)getActivity()).addFragment(((MapFragment) new MapFragment()).newInstance(username), "MapFragment");
-            }
-            else
-            {
-                mErrorMessage.setText("Invalid Username or Password");
-            }
-        }
-        else {
 
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference firebaseDB = database.getReference("Users");
+
+            firebaseDB.child(username).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DataSnapshot> task) {
+                    if (!task.isSuccessful()) {
+                        Log.e("firebase", "Error getting data", task.getException());
+                    }
+                    else {
+                    //    Log.d("firebase", String.valueOf(task.getResult().getValue()));
+                        Log.d("firebase", String.valueOf(task.getResult().child("password").getValue()));
+
+
+                        if  (password.equals(String.valueOf(task.getResult().child("password").getValue())))  {
+                            mViewModel.username = mUsernameField.getText().toString();
+                            mLoginButton.setText("Logged In");
+                            ((MainActivity)getActivity()).addFragment(((MapFragment) new MapFragment()).newInstance(username), "MapFragment");
+
+                        }
+                    }
+                }
+            });
+
+
+
+
+
+//
+//            if(users.containsKey(username) && users.get(username).equals(password))
+//            {
+//                mViewModel.username = mUsernameField.getText().toString();
+//                mLoginButton.setText("Logged In");
+//                ((MainActivity)getActivity()).addFragment(((MapFragment) new MapFragment()).newInstance(username), "MapFragment");
+//            }
+//            else
+//            {
+//                mErrorMessage.setText("Invalid Username or Password");
+//            }
         }
     }
 

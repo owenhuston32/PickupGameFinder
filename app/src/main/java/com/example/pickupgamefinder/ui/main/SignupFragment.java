@@ -16,6 +16,8 @@ import android.widget.TextView;
 
 import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Map;
 
@@ -87,13 +89,20 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onClick(View view)
     {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("Users");
+
         int viewId = view.getId();
 
         if(viewId == mSignUpButton.getId())
         {
             if(isUserNameAvailable() && isPasswordValid(mPasswordField.getText().toString(), mConfirmPasswordField.getText().toString())) // makes sure your password matches in both fields
             {
-                mViewModel.addUser(mUsernameField.getText().toString(), mPasswordField.getText().toString());
+
+                User user = new User(mUsernameField.getText().toString(),mPasswordField.getText().toString()); // Create user class for firebase DB
+                myRef.child(mUsernameField.getText().toString()).setValue(user);  // database
+
+                mViewModel.addUser(mUsernameField.getText().toString(), mPasswordField.getText().toString()); // TODO change to have user class
                 mViewModel.username = mUsernameField.getText().toString();
                 mSignUpButton.setText("Signed up");
 
