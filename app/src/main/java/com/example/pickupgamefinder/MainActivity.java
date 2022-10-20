@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 
+
 import com.example.pickupgamefinder.ui.main.AccountFragment;
 import com.example.pickupgamefinder.ui.main.CreateEventFragment;
 import com.example.pickupgamefinder.ui.main.EventListFragment;
@@ -25,6 +26,8 @@ import com.example.pickupgamefinder.ui.main.MapFragment;
 import com.example.pickupgamefinder.ui.main.SignupFragment;
 import com.example.pickupgamefinder.ui.main.WelcomeScreenFragment;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity implements LifecycleObserver, NavigationView.OnNavigationItemSelectedListener{
 
@@ -33,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements LifecycleObserver
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
@@ -60,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements LifecycleObserver
     @Override
     public void onBackPressed()
     {
-        if(drawerLayout.isDrawerOpen(GravityCompat.START))
+        if(drawerLayout.isDrawerOpen(GravityCompat.START)) // DrawerLayout is where  items are // navigation buttons
         {
             drawerLayout.closeDrawer(GravityCompat.START);
         }
@@ -70,12 +74,12 @@ public class MainActivity extends AppCompatActivity implements LifecycleObserver
         }
     }
 
-    public void addFragment(Fragment fragment, String fragmentTag)
+    public void addFragment(Fragment fragment, String fragmentTag) // new fragment added here
     {
         if(fragmentTag.equals("MapFragment") || fragmentTag.equals("AccountFragment")
     || fragmentTag.equals("CreateEventFragment") || fragmentTag.equals("EventListFragment"))
         {
-            getSupportActionBar().show();
+            getSupportActionBar().show(); // Shows toolbar
         }
         else
         {
@@ -93,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements LifecycleObserver
     }
 
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) { // this is for menu icon
         int id = item.getItemId();
         if(id == R.id.menu_account)
         {

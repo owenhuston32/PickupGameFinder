@@ -91,7 +91,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
 
         if(viewId == mSignUpButton.getId())
         {
-            if(isUserNameAvailable() && isPasswordValid(mPasswordField.getText().toString(), mConfirmPasswordField.getText().toString()))
+            if(isUserNameAvailable() && isPasswordValid(mPasswordField.getText().toString(), mConfirmPasswordField.getText().toString())) // makes sure your password matches in both fields
             {
                 mViewModel.addUser(mUsernameField.getText().toString(), mPasswordField.getText().toString());
                 mViewModel.username = mUsernameField.getText().toString();
@@ -125,6 +125,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
         //check if username is already taken
         Map<String,String> users = mViewModel.getUsers().getValue();
 
+        // add to firebase db here rather than map
         if(users.containsKey(username))
         {
             available = false;

@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,8 @@ import android.widget.TextView;
 
 import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Map;
 
@@ -55,6 +58,12 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
     @Override
     public void onClick(View view)
     {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("message1");
+
+        myRef.setValue("Hello, World!");
+
+
         int viewId = view.getId();
 
         if(viewId == mLoginButton.getId())
