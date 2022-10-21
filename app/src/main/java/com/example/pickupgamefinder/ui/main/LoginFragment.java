@@ -1,10 +1,12 @@
 package com.example.pickupgamefinder.ui.main;
 
+import android.app.Activity;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.util.Log;
@@ -68,42 +70,30 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
         {
             String username = mUsernameField.getText().toString();
             String password = mPasswordField.getText().toString();
-            Map<String, String> users = mViewModel.getUsers().getValue();
+           // mViewModel.getUser(username);
 
-            FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference firebaseDB = database.getReference("Users");
+           // User tempUser = mViewModel.liveUser.getValue();
+           // User tempUser = mViewModel.getUser(username);
+            Activity activity = requireActivity();
+            mViewModel.getUser(username).observe((LifecycleOwner) activity, user -> {
+                if  (!user.username.equals("") && user.password.equals(password)) {
+                    mLoginButton.setText("Logged In");
+                    mViewModel.user = user;
+                    ((MainActivity)getActivity()).addFragment(((MapFragment) new MapFragment()).newInstance(), "MapFragment");
 
-            firebaseDB.child(username).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DataSnapshot> task) {
-                    if (!task.isSuccessful()) {
-                        Log.e("firebase", "Error getting data", task.getException());
-                    }
-                    else {
-                    //    Log.d("firebase", String.valueOf(task.getResult().getValue()));
-                        Log.d("firebase", String.valueOf(task.getResult().child("password").getValue()));
-
-
-                        if  (password.equals(String.valueOf(task.getResult().child("password").getValue())))  {
-                            mViewModel.username = mUsernameField.getText().toString();
-                            mLoginButton.setText("Logged In");
-                            ((MainActivity)getActivity()).addFragment(((MapFragment) new MapFragment()).newInstance(username), "MapFragment");
-
-                        }
-                    }
                 }
+                else
+                {
+                    mErrorMessage.setText("Invalid Username or Password");
+                }
+
             });
 
-
-
-
-
-//
-//            if(users.containsKey(username) && users.get(username).equals(password))
-//            {
-//                mViewModel.username = mUsernameField.getText().toString();
+//            if  (tempUser.username != "" && tempUser.password == password) {
 //                mLoginButton.setText("Logged In");
-//                ((MainActivity)getActivity()).addFragment(((MapFragment) new MapFragment()).newInstance(username), "MapFragment");
+//                mViewModel.user = tempUser;
+//                ((MainActivity)getActivity()).addFragment(((MapFragment) new MapFragment()).newInstance(), "MapFragment");
+//
 //            }
 //            else
 //            {

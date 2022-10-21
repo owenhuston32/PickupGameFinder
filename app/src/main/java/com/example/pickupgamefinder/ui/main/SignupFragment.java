@@ -21,7 +21,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Map;
 
-public class SignupFragment extends Fragment implements View.OnClickListener{
+public class SignupFragment extends Fragment implements View.OnClickListener/*, ICallback*/{
 
     private MainViewModel mViewModel;
     private TextView mErrorMessage;
@@ -98,15 +98,10 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
         {
             if(isUserNameAvailable() && isPasswordValid(mPasswordField.getText().toString(), mConfirmPasswordField.getText().toString())) // makes sure your password matches in both fields
             {
+                mViewModel.addUser(mUsernameField.getText().toString(),mPasswordField.getText().toString());
+               // mSignUpButton.setText("Signed up");
 
-                User user = new User(mUsernameField.getText().toString(),mPasswordField.getText().toString()); // Create user class for firebase DB
-                myRef.child(mUsernameField.getText().toString()).setValue(user);  // database
-
-                mViewModel.addUser(mUsernameField.getText().toString(), mPasswordField.getText().toString()); // TODO change to have user class
-                mViewModel.username = mUsernameField.getText().toString();
-                mSignUpButton.setText("Signed up");
-
-                ((MainActivity)getActivity()).addFragment(((MapFragment) new MapFragment()).newInstance(mUsernameField.getText().toString()), "MapFragment");
+                ((MainActivity)getActivity()).addFragment(((MapFragment) new MapFragment()).newInstance(), "MapFragment");
             }
         }
         else {
@@ -131,12 +126,8 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
     {
         boolean available = true;
         String username = mUsernameField.getText().toString();
-        //check if username is already taken
-        Map<String,String> users = mViewModel.getUsers().getValue();
 
-        // add to firebase db here rather than map
-        if(users.containsKey(username))
-        {
+        if  (mViewModel.getUser(username).getValue().username != "") {
             available = false;
             mErrorMessage.setText(username + " is not available");
         }
@@ -146,4 +137,13 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
         }
         return available;
     }
+/*
+    @Override
+    public void OnResponse(Object data)
+    {
+
+    }
+
+
+ */
 }

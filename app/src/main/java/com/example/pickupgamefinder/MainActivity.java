@@ -24,6 +24,7 @@ import com.example.pickupgamefinder.ui.main.LoginFragment;
 import com.example.pickupgamefinder.ui.main.MainViewModel;
 import com.example.pickupgamefinder.ui.main.MapFragment;
 import com.example.pickupgamefinder.ui.main.SignupFragment;
+import com.example.pickupgamefinder.ui.main.User;
 import com.example.pickupgamefinder.ui.main.WelcomeScreenFragment;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.DatabaseReference;
@@ -46,6 +47,11 @@ public class MainActivity extends AppCompatActivity implements LifecycleObserver
         }
 
         model  = new ViewModelProvider(this).get(MainViewModel.class);
+
+        // Initializes the Firebase db in the view model
+        model.database = FirebaseDatabase.getInstance();
+        model.dbUserRef = model.database.getReference("Users");
+
         NavigationView navigationView = findViewById(R.id.navigation_view);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -107,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements LifecycleObserver
         }
         else if(id == R.id.menu_map)
         {
-            addFragment(new MapFragment().newInstance(model.username), "MapFragment");
+            addFragment(new MapFragment().newInstance(), "MapFragment");
             drawerLayout.closeDrawer(GravityCompat.START);
             return true;
         }
@@ -133,6 +139,8 @@ public class MainActivity extends AppCompatActivity implements LifecycleObserver
             }
 
             addFragment(new WelcomeScreenFragment().newInstance(), "WelcomeScreenFragment");
+           // model.liveUser = null;
+            model.liveUser.setValue(new User("", ""));
             drawerLayout.closeDrawer(GravityCompat.START);
             return true;
         }
