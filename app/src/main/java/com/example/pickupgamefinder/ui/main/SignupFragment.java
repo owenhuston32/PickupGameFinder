@@ -137,13 +137,5 @@ public class SignupFragment extends Fragment implements View.OnClickListener/*, 
         }
         return available;
     }
-/*
-    @Override
-    public void OnResponse(Object data)
-    {
 
-    }
-
-
- */
 }

@@ -146,21 +146,6 @@ public class MainActivity extends AppCompatActivity implements LifecycleObserver
         }
         return false;
     }
-/*
-    public void onResume() {
-        super.onResume();
-    }
-    public void onPause() {
-        super.onPause();
-    }
 
-    public void onStop() {
-        super.onStop();
-    }
-
-    public void onDestory() {
-        super.onDestory();
-    }
-*/
 
 }

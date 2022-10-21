@@ -70,10 +70,7 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
         {
             String username = mUsernameField.getText().toString();
             String password = mPasswordField.getText().toString();
-           // mViewModel.getUser(username);
 
-           // User tempUser = mViewModel.liveUser.getValue();
-           // User tempUser = mViewModel.getUser(username);
             Activity activity = requireActivity();
             mViewModel.getUser(username).observe((LifecycleOwner) activity, user -> {
                 if  (!user.username.equals("") && user.password.equals(password)) {
@@ -89,16 +86,6 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
 
             });
 
-//            if  (tempUser.username != "" && tempUser.password == password) {
-//                mLoginButton.setText("Logged In");
-//                mViewModel.user = tempUser;
-//                ((MainActivity)getActivity()).addFragment(((MapFragment) new MapFragment()).newInstance(), "MapFragment");
-//
-//            }
-//            else
-//            {
-//                mErrorMessage.setText("Invalid Username or Password");
-//            }
         }
     }
 
@@ -133,7 +120,7 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
 
     private void SetDebugMessage(String message)
     {
-        //mErrorMessage.setText("Debug: " + message);
+
     }
 
 }

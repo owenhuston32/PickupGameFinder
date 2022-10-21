@@ -31,18 +31,6 @@ public class MainViewModel extends ViewModel {
     // TODO: Implement the ViewModel
     private MutableLiveData<Map<String,String>> users;
 
-    /*
-    public MutableLiveData<Map<String,String>> getUsers() {
-
-
-
-        if (users == null) {
-            users = new MutableLiveData<Map<String,String>>();
-            users.setValue(new HashMap<String,String>());
-            loadUsers();
-        }
-        return this.users;
-    }*/
 
     private void loadUsers() {
         // Do an asynchronous operation to fetch users.
@@ -56,9 +44,8 @@ public class MainViewModel extends ViewModel {
 
     }
 
-    public LiveData<User> getUser(String username/*, ICallback callback */) {
+    public LiveData<User> getUser(String username) {
         User tempUser = new User("", "");
-       // tUser = new  User("", "");
         if (liveUser == null) {
             liveUser = new MutableLiveData<User>();
         }
@@ -70,19 +57,14 @@ public class MainViewModel extends ViewModel {
                     Log.e("firebase", "Error getting data", task.getException());
                 }
                 else {
-                    //    Log.d("firebase", String.valueOf(task.getResult().getValue()));
                     tempUser.username = username;
                     tempUser.password =  String.valueOf(task.getResult().child("password").getValue());
                     liveUser.setValue(tempUser);
-
-
-                  //  callback.OnResponse(tempUser);
 
                     Log.d("firebase", tempUser.password);
                     }
                 }
             });
-         //   return tempUser;
             return liveUser;
         }
 
