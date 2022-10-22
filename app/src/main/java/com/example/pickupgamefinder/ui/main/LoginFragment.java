@@ -35,6 +35,7 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
     private EditText mUsernameField;
     private EditText mPasswordField;
     private Button mLoginButton;
+    private Activity activity;
 
 
     public static LoginFragment newInstance() {
@@ -47,6 +48,8 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
                              @Nullable Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_login, container, false);
+
+        activity = requireActivity();
 
         mErrorMessage = (TextView) v.findViewById(R.id.signin_errorMessage);
         mUsernameField = (EditText) v.findViewById(R.id.signin_username);
@@ -71,13 +74,11 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
             String username = mUsernameField.getText().toString();
             String password = mPasswordField.getText().toString();
 
-            Activity activity = requireActivity();
-            mViewModel.getUser(username).observe((LifecycleOwner) activity, user -> {
+            mViewModel.tempUser.observe((LifecycleOwner) activity, user -> {
                 if  (!user.username.equals("") && user.password.equals(password)) {
                     mLoginButton.setText("Logged In");
-                    mViewModel.user = user;
-                    ((MainActivity)getActivity()).addFragment(((MapFragment) new MapFragment()).newInstance(), "MapFragment");
-
+                    mViewModel.liveUser.setValue(user);
+                    ((MainActivity)activity).addFragment(((MapFragment) new MapFragment()).newInstance(), "MapFragment");
                 }
                 else
                 {
@@ -85,6 +86,8 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
                 }
 
             });
+
+            mViewModel.getUser(username);
 
         }
     }

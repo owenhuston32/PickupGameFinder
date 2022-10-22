@@ -1,12 +1,15 @@
 package com.example.pickupgamefinder.ui.main;
 
+import android.app.Activity;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +32,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener/*, 
     private EditText mPasswordField;
     private EditText mConfirmPasswordField;
     private Button mSignUpButton;
+    private Activity activity;
 
     public static SignupFragment newInstance() {
         return new SignupFragment();
@@ -43,6 +47,8 @@ public class SignupFragment extends Fragment implements View.OnClickListener/*, 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_signup, container, false);
+
+        activity = requireActivity();
 
         mErrorMessage = (TextView) v.findViewById(R.id.signup_errorMessage);
         mUsernameField = (EditText) v.findViewById(R.id.signup_username);
@@ -89,19 +95,18 @@ public class SignupFragment extends Fragment implements View.OnClickListener/*, 
     @Override
     public void onClick(View view)
     {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("Users");
-
         int viewId = view.getId();
 
         if(viewId == mSignUpButton.getId())
         {
-            if(isUserNameAvailable() && isPasswordValid(mPasswordField.getText().toString(), mConfirmPasswordField.getText().toString())) // makes sure your password matches in both fields
-            {
-                mViewModel.addUser(mUsernameField.getText().toString(),mPasswordField.getText().toString());
-               // mSignUpButton.setText("Signed up");
 
-                ((MainActivity)getActivity()).addFragment(((MapFragment) new MapFragment()).newInstance(), "MapFragment");
+            String username = mUsernameField.getText().toString();
+            String password = mPasswordField.getText().toString();
+            String passwordConfirm = mConfirmPasswordField.getText().toString();
+
+            if(isPasswordValid(password, passwordConfirm))
+            {
+                SignUp(username, password);
             }
         }
         else {
@@ -122,20 +127,24 @@ public class SignupFragment extends Fragment implements View.OnClickListener/*, 
         }
         return valid;
     }
-    private boolean isUserNameAvailable()
+    private void SignUp(String username, String password)
     {
-        boolean available = true;
-        String username = mUsernameField.getText().toString();
+        mViewModel.tempUser.observe((LifecycleOwner) activity, user -> {
+            Log.d("signupfragment", "observer call: " + user);
+            if  (user.username.equals("")) {
+                Log.d("signupfragment", "ADD USER NOW: " + username + password);
+                mViewModel.addUser(username,password);
+                ((MainActivity)activity).addFragment(((MapFragment) new MapFragment()).newInstance(), "MapFragment");
+            }
+            else
+            {
+                mErrorMessage.setText("Username Not Available");
+            }
 
-        if  (mViewModel.getUser(username).getValue().username != "") {
-            available = false;
-            mErrorMessage.setText(username + " is not available");
-        }
-        else
-        {
-            mErrorMessage.setText("");
-        }
-        return available;
+        });
+
+        mViewModel.getUser(username);
+
     }
 
 }

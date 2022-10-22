@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +26,7 @@ public class MapFragment extends Fragment implements View.OnClickListener {
     private EditText mUpdateField;
     private Button bUpdateButton;
     private Button bDelAccountButton;
-
+    private Activity activity;
 
     public MapFragment() {
         // Required empty public constructor
@@ -48,12 +49,21 @@ public class MapFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-
         View v = inflater.inflate(R.layout.fragment_logged_in, container, false);
+
+        activity = requireActivity();
+
         mViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
         welcomeMessage = (TextView)  v.findViewById(R.id.loggedin_welcome_message);
 
-        welcomeMessage.setText("user " + mViewModel.user.username + "password:" + mViewModel.user.password);
+        Log.d("MapFrag", "map frag live user: " + mViewModel.liveUser);
+        Log.d("MapFrag", "map frag live user value: " + mViewModel.liveUser.getValue());
+
+        welcomeMessage.setText("user " + mViewModel.liveUser.getValue().username + "password:" + mViewModel.liveUser.getValue().password);
+
+        mViewModel.liveUser.observe((LifecycleOwner) activity, user -> {
+            welcomeMessage.setText("user " + mViewModel.liveUser.getValue().username + "password:" + mViewModel.liveUser.getValue().password);
+        });
 
         mUpdateField = (EditText) v.findViewById(R.id.update_password_confirm);
         bUpdateButton = (Button) v.findViewById(R.id.submit_new_password);
@@ -71,21 +81,11 @@ public class MapFragment extends Fragment implements View.OnClickListener {
 
         if (viewId == bUpdateButton.getId()) {
             String newPassword = mUpdateField.getText().toString();
-            Activity activity = requireActivity();
-            mViewModel.UpdatePassword(mViewModel.user.username, newPassword).observe((LifecycleOwner) activity, user -> {
-                mViewModel.user = user;
-                welcomeMessage.setText("user " + mViewModel.user.username + "password:" + mViewModel.user.password);
-            });
+
+            mViewModel.UpdatePassword(mViewModel.liveUser.getValue().username, newPassword);
+
         }  else if (viewId == bDelAccountButton.getId()) {
-            mViewModel.DeleteUser(mViewModel.user.username);
+            mViewModel.DeleteUser(mViewModel.liveUser.getValue().username);
         }
-
-
     }
-
-
-
-
-
-
 }

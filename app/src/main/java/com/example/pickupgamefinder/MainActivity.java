@@ -139,7 +139,6 @@ public class MainActivity extends AppCompatActivity implements LifecycleObserver
             }
 
             addFragment(new WelcomeScreenFragment().newInstance(), "WelcomeScreenFragment");
-           // model.liveUser = null;
             model.liveUser.setValue(new User("", ""));
             drawerLayout.closeDrawer(GravityCompat.START);
             return true;

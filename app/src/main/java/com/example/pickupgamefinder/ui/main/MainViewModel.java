@@ -22,15 +22,11 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class MainViewModel extends ViewModel {
 
-    public User user;
-    public MutableLiveData<User> liveUser;
+    public MutableLiveData<User> tempUser = new MutableLiveData<User>();
+    public MutableLiveData<User> liveUser = new MutableLiveData<User>();
 
     public FirebaseDatabase database;
     public DatabaseReference dbUserRef;
-
-    // TODO: Implement the ViewModel
-    private MutableLiveData<Map<String,String>> users;
-
 
     private void loadUsers() {
         // Do an asynchronous operation to fetch users.
@@ -40,41 +36,44 @@ public class MainViewModel extends ViewModel {
     {
         User user = new User(username,password); // Create user class for firebase DB
         dbUserRef.child(username).setValue(user);  // database
-        this.user = user;
+        liveUser.setValue(user);
 
     }
 
-    public LiveData<User> getUser(String username) {
-        User tempUser = new User("", "");
-        if (liveUser == null) {
-            liveUser = new MutableLiveData<User>();
-        }
-        liveUser.setValue(tempUser);
+    public void getUser(String username) {
+
         dbUserRef.child(username).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (!task.isSuccessful()) {
+                    tempUser.setValue(new User("", ""));
                     Log.e("firebase", "Error getting data", task.getException());
                 }
                 else {
-                    tempUser.username = username;
-                    tempUser.password =  String.valueOf(task.getResult().child("password").getValue());
-                    liveUser.setValue(tempUser);
-
-                    Log.d("firebase", tempUser.password);
+                    if(task.getResult().getValue() == null)
+                    {
+                        tempUser.setValue(new User("", ""));
+                        Log.d("firebase", "user not found in database");
+                    }
+                    else
+                    {
+                        tempUser.setValue(new User(username, String.valueOf(task.getResult().child("password").getValue())));
+                        Log.d("firebase", "successfully found user");
                     }
                 }
-            });
-            return liveUser;
+            }
+        });
         }
 
-        public LiveData<User> UpdatePassword(String username, String newPassword)
+        public void UpdatePassword(String username, String newPassword)
         {
-            dbUserRef.child(username).child("password").setValue(newPassword);  // database
-            return getUser(username);
+            dbUserRef.child(username).child("password").setValue(newPassword);
+            liveUser.setValue(new User(username, newPassword));
         }
 
         public void DeleteUser(String username) {
+            liveUser.setValue(new User("", ""));
             dbUserRef.child(username).removeValue();
         }
     }
