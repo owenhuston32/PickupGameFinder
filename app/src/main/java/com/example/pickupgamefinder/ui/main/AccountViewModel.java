@@ -1,27 +1,20 @@
 package com.example.pickupgamefinder.ui.main;
 
-import android.os.SystemClock;
-import android.text.PrecomputedText;
 import android.util.Log;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.pickupgamefinder.IFirebaseCallback;
+import com.example.pickupgamefinder.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-public class MainViewModel extends ViewModel {
+public class AccountViewModel extends ViewModel {
 
     public MutableLiveData<User> liveUser = new MutableLiveData<User>();
 

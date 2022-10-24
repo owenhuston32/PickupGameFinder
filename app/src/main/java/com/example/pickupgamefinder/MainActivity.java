@@ -22,20 +22,18 @@ import android.view.MenuItem;
 import com.example.pickupgamefinder.ui.main.AccountFragment;
 import com.example.pickupgamefinder.ui.main.CreateEventFragment;
 import com.example.pickupgamefinder.ui.main.EventListFragment;
-import com.example.pickupgamefinder.ui.main.LoginFragment;
-import com.example.pickupgamefinder.ui.main.MainViewModel;
+import com.example.pickupgamefinder.ui.main.AccountViewModel;
+import com.example.pickupgamefinder.ui.main.EventsViewModel;
 import com.example.pickupgamefinder.ui.main.MapFragment;
-import com.example.pickupgamefinder.ui.main.SignupFragment;
-import com.example.pickupgamefinder.ui.main.User;
 import com.example.pickupgamefinder.ui.main.WelcomeScreenFragment;
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity implements LifecycleObserver, NavigationView.OnNavigationItemSelectedListener{
 
     DrawerLayout drawerLayout;
-    MainViewModel model;
+    AccountViewModel accountViewModel;
+    EventsViewModel eventsViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,11 +46,15 @@ public class MainActivity extends AppCompatActivity implements LifecycleObserver
                     .commitNow();
         }
 
-        model  = new ViewModelProvider(this).get(MainViewModel.class);
+        accountViewModel  = new ViewModelProvider(this).get(AccountViewModel.class);
+        eventsViewModel = new ViewModelProvider(this).get(EventsViewModel.class);
 
         // Initializes the Firebase db in the view model
-        model.database = FirebaseDatabase.getInstance();
-        model.dbUserRef = model.database.getReference("Users");
+        accountViewModel.database = FirebaseDatabase.getInstance();
+        accountViewModel.dbUserRef = accountViewModel.database.getReference("Users");
+
+        eventsViewModel.database = FirebaseDatabase.getInstance();
+        eventsViewModel.eventsRef = eventsViewModel.database.getReference("Events");
 
         NavigationView navigationView = findViewById(R.id.navigation_view);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -163,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements LifecycleObserver
             }
 
             addFragment(new WelcomeScreenFragment().newInstance(), "WelcomeScreenFragment");
-            model.liveUser.setValue(new User("", ""));
+            accountViewModel.liveUser.setValue(new User("", ""));
             drawerLayout.closeDrawer(GravityCompat.START);
             return true;
         }
