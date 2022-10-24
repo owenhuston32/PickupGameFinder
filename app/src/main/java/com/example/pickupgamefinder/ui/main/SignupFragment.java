@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.pickupgamefinder.IFirebaseCallback;
 import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
 import com.google.firebase.database.DatabaseReference;
@@ -24,7 +25,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Map;
 
-public class SignupFragment extends Fragment implements View.OnClickListener/*, ICallback*/{
+public class SignupFragment extends Fragment implements View.OnClickListener{
 
     private MainViewModel mViewModel;
     private TextView mErrorMessage;
@@ -106,7 +107,15 @@ public class SignupFragment extends Fragment implements View.OnClickListener/*, 
 
             if(isPasswordValid(password, passwordConfirm))
             {
-                SignUp(username, password);
+                mViewModel.getUser(username, new IFirebaseCallback()
+                {
+                    @Override
+                    public void onCallback(User user) {
+
+                        SignUp(user, username, password);
+
+                    }
+                });
             }
         }
         else {
@@ -127,24 +136,17 @@ public class SignupFragment extends Fragment implements View.OnClickListener/*, 
         }
         return valid;
     }
-    private void SignUp(String username, String password)
+    private void SignUp(User user, String username, String password)
     {
-        mViewModel.tempUser.observe((LifecycleOwner) activity, user -> {
-            Log.d("signupfragment", "observer call: " + user);
-            if  (user.username.equals("")) {
-                Log.d("signupfragment", "ADD USER NOW: " + username + password);
-                mViewModel.addUser(username,password);
-                ((MainActivity)activity).addFragment(((MapFragment) new MapFragment()).newInstance(), "MapFragment");
-            }
-            else
-            {
-                mErrorMessage.setText("Username Not Available");
-            }
-
-        });
-
-        mViewModel.getUser(username);
-
+        Log.d("signupfragment", "observer call: " + user);
+        if  (user.username.equals("")) {
+            Log.d("signupfragment", "ADD USER NOW: " + username + password);
+            mViewModel.addUser(username,password);
+            ((MainActivity)activity).addFragment(((MapFragment) new MapFragment()).newInstance(), "MapFragment");
+        }
+        else
+        {
+            mErrorMessage.setText("Username Not Available");
+        }
     }
-
 }

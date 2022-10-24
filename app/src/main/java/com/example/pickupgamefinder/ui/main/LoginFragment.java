@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.pickupgamefinder.IFirebaseCallback;
 import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -74,21 +75,27 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
             String username = mUsernameField.getText().toString();
             String password = mPasswordField.getText().toString();
 
-            mViewModel.tempUser.observe((LifecycleOwner) activity, user -> {
-                if  (!user.username.equals("") && user.password.equals(password)) {
-                    mLoginButton.setText("Logged In");
-                    mViewModel.liveUser.setValue(user);
-                    ((MainActivity)activity).addFragment(((MapFragment) new MapFragment()).newInstance(), "MapFragment");
-                }
-                else
-                {
-                    mErrorMessage.setText("Invalid Username or Password");
-                }
+            mViewModel.getUser(username, new IFirebaseCallback()
+            {
+                @Override
+                public void onCallback(User user) {
 
+                    Login(user, username, password);
+                }
             });
 
-            mViewModel.getUser(username);
-
+        }
+    }
+    private void Login(User user, String username, String password)
+    {
+        if  (!user.username.equals("") && user.password.equals(password)) {
+            mLoginButton.setText("Logged In");
+            mViewModel.liveUser.setValue(user);
+            ((MainActivity)activity).addFragment(((MapFragment) new MapFragment()).newInstance(), "MapFragment");
+        }
+        else
+        {
+            mErrorMessage.setText("Invalid Username or Password");
         }
     }
 

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.util.Log;
@@ -15,7 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.example.pickupgamefinder.MainActivity;
+import com.example.pickupgamefinder.IFirebaseCallback;
 import com.example.pickupgamefinder.R;
 
 public class MapFragment extends Fragment implements View.OnClickListener {
@@ -49,21 +48,18 @@ public class MapFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View v = inflater.inflate(R.layout.fragment_logged_in, container, false);
+        View v = inflater.inflate(R.layout.fragment_map, container, false);
 
         activity = requireActivity();
 
         mViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
-        welcomeMessage = (TextView)  v.findViewById(R.id.loggedin_welcome_message);
+        welcomeMessage = (TextView)  v.findViewById(R.id.map_welcome_message);
 
         Log.d("MapFrag", "map frag live user: " + mViewModel.liveUser);
         Log.d("MapFrag", "map frag live user value: " + mViewModel.liveUser.getValue());
 
-        welcomeMessage.setText("user " + mViewModel.liveUser.getValue().username + "password:" + mViewModel.liveUser.getValue().password);
+        welcomeMessage.setText("user " + mViewModel.liveUser.getValue().username + "\npassword:" + mViewModel.liveUser.getValue().password);
 
-        mViewModel.liveUser.observe((LifecycleOwner) activity, user -> {
-            welcomeMessage.setText("user " + mViewModel.liveUser.getValue().username + "password:" + mViewModel.liveUser.getValue().password);
-        });
 
         mUpdateField = (EditText) v.findViewById(R.id.update_password_confirm);
         bUpdateButton = (Button) v.findViewById(R.id.submit_new_password);
@@ -84,8 +80,28 @@ public class MapFragment extends Fragment implements View.OnClickListener {
 
             mViewModel.UpdatePassword(mViewModel.liveUser.getValue().username, newPassword);
 
+            mViewModel.getUser(mViewModel.liveUser.getValue().username, new IFirebaseCallback()
+            {
+                @Override
+                public void onCallback(User user) {
+                    UpdateWelcomeMessage(user);
+                }
+            });
+
         }  else if (viewId == bDelAccountButton.getId()) {
             mViewModel.DeleteUser(mViewModel.liveUser.getValue().username);
+            UpdateWelcomeMessage(null);
+        }
+    }
+    private void UpdateWelcomeMessage(User user)
+    {
+        if(user == null)
+        {
+            welcomeMessage.setText("user deleted");
+        }
+        else
+        {
+            welcomeMessage.setText("user " + user.username + "\npassword:" + user.password);
         }
     }
 }

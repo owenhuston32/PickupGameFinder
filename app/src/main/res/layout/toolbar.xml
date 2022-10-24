@@ -7,7 +7,7 @@
     android:background="@color/design_default_color_primary"
     android:theme="@style/ThemeOverlay.AppCompat.Dark"
     app:navigationIcon="@drawable/ic_baseline_menu_24"
-    app:title="toolbar"
+    app:title=""
     app:titleTextColor="#FFF">
 
 </androidx.appcompat.widget.Toolbar>

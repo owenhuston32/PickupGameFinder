@@ -12,7 +12,9 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 
 
@@ -79,11 +81,33 @@ public class MainActivity extends AppCompatActivity implements LifecycleObserver
             super.onBackPressed();
         }
     }
+    @Override
+    public void onConfigurationChanged(Configuration newConfig)
+    {
+        super.onConfigurationChanged(newConfig);
+
+        int orientation = newConfig.orientation;
+
+        if(orientation == Configuration.ORIENTATION_PORTRAIT)
+        {
+            Log.d("tag", "portrait");
+        }
+        else if(orientation == Configuration.ORIENTATION_LANDSCAPE)
+        {
+            Log.d("tag", "landscape");
+        }
+        else
+        {
+            Log.d("tag", "other orientation " + orientation);
+        }
+
+    }
 
     public void addFragment(Fragment fragment, String fragmentTag) // new fragment added here
     {
-        if(fragmentTag.equals("MapFragment") || fragmentTag.equals("AccountFragment")
-    || fragmentTag.equals("CreateEventFragment") || fragmentTag.equals("EventListFragment"))
+
+        if(!fragmentTag.equals("WelcomeScreenFragment")
+            && !fragmentTag.equals("LoginFragment") && !fragmentTag.equals("SignupFragment"))
         {
             getSupportActionBar().show(); // Shows toolbar
         }

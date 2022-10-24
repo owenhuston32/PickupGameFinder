@@ -14,6 +14,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.pickupgamefinder.IFirebaseCallback;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -22,7 +23,6 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class MainViewModel extends ViewModel {
 
-    public MutableLiveData<User> tempUser = new MutableLiveData<User>();
     public MutableLiveData<User> liveUser = new MutableLiveData<User>();
 
     public FirebaseDatabase database;
@@ -40,25 +40,25 @@ public class MainViewModel extends ViewModel {
 
     }
 
-    public void getUser(String username) {
+    public void getUser(String username, IFirebaseCallback callback) {
 
         dbUserRef.child(username).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
 
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (!task.isSuccessful()) {
-                    tempUser.setValue(new User("", ""));
+                    callback.onCallback(new User("", ""));
                     Log.e("firebase", "Error getting data", task.getException());
                 }
                 else {
                     if(task.getResult().getValue() == null)
                     {
-                        tempUser.setValue(new User("", ""));
+                        callback.onCallback(new User("", ""));
                         Log.d("firebase", "user not found in database");
                     }
                     else
                     {
-                        tempUser.setValue(new User(username, String.valueOf(task.getResult().child("password").getValue())));
+                        callback.onCallback(new User(username, String.valueOf(task.getResult().child("password").getValue())));
                         Log.d("firebase", "successfully found user");
                     }
                 }
