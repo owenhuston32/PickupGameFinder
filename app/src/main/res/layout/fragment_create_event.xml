@@ -6,17 +6,66 @@
     tools:context=".ui.main.CreateEventFragment">
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_gravity="center">
+        android:layout_gravity="top"
+        android:paddingTop="40dp">
+
+        <EditText
+            android:id="@+id/event_name_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Event Name"
+            android:textSize="25dp"
+            android:paddingBottom="16sp">
+
+        </EditText>
+        <EditText
+            android:id="@+id/caption_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Event Caption"
+            android:textSize="25dp"
+            android:paddingBottom="16sp">
+
+        </EditText>
+
+        <EditText
+            android:id="@+id/skill_level_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Skill Level"
+            android:textSize="25dp">
+
+        </EditText>
+
+        <EditText
+            android:id="@+id/max_players"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Max Players"
+            android:textSize="25dp"
+            android:paddingBottom="16sp">
+
+        </EditText>
+
+        <Button
+            android:id="@+id/create_event_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="CREATE EVENT"
+            android:textSize="50dp"
+            android:background="@color/design_default_color_primary"/>
 
         <TextView
+            android:id="@+id/temp_event_text_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Create Event Fragment"
-            android:textSize="40sp"/>
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="20dp"/>
+
 
     </LinearLayout>
-
 </ScrollView>

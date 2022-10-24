@@ -16,11 +16,12 @@ import android.widget.TextView;
 
 import com.example.pickupgamefinder.IFirebaseCallback;
 import com.example.pickupgamefinder.R;
+import com.example.pickupgamefinder.User;
 
 public class MapFragment extends Fragment implements View.OnClickListener {
 
     private TextView welcomeMessage;
-    private MainViewModel mViewModel;
+    private AccountViewModel mViewModel;
 
     private EditText mUpdateField;
     private Button bUpdateButton;
@@ -52,7 +53,7 @@ public class MapFragment extends Fragment implements View.OnClickListener {
 
         activity = requireActivity();
 
-        mViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
+        mViewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
         welcomeMessage = (TextView)  v.findViewById(R.id.map_welcome_message);
 
         Log.d("MapFrag", "map frag live user: " + mViewModel.liveUser);
@@ -83,8 +84,8 @@ public class MapFragment extends Fragment implements View.OnClickListener {
             mViewModel.getUser(mViewModel.liveUser.getValue().username, new IFirebaseCallback()
             {
                 @Override
-                public void onCallback(User user) {
-                    UpdateWelcomeMessage(user);
+                public void onCallback(Object user) {
+                    UpdateWelcomeMessage((User)user);
                 }
             });
 

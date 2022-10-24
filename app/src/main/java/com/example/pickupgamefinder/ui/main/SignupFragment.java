@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.text.Editable;
@@ -20,14 +19,11 @@ import android.widget.TextView;
 import com.example.pickupgamefinder.IFirebaseCallback;
 import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
-import java.util.Map;
+import com.example.pickupgamefinder.User;
 
 public class SignupFragment extends Fragment implements View.OnClickListener{
 
-    private MainViewModel mViewModel;
+    private AccountViewModel mViewModel;
     private TextView mErrorMessage;
     private EditText mUsernameField;
     private EditText mPasswordField;
@@ -57,7 +53,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
         mConfirmPasswordField = (EditText) v.findViewById(R.id.signup_password_confirm);
         mSignUpButton = (Button) v.findViewById(R.id.signup_create_account);
 
-        mViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
+        mViewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
 
         setTextChangedListener(mUsernameField);
         setTextChangedListener(mPasswordField);
@@ -110,9 +106,9 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
                 mViewModel.getUser(username, new IFirebaseCallback()
                 {
                     @Override
-                    public void onCallback(User user) {
+                    public void onCallback(Object user) {
 
-                        SignUp(user, username, password);
+                        SignUp((User)user, username, password);
 
                     }
                 });
