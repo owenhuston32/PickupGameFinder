@@ -1,29 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".ui.main.EventListFragment">
 
-    <LinearLayout
+    <Button
+        android:id="@+id/event_list_refresh_button"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:text="REFRESH"
+        android:textSize="40dp"
+        android:background="@color/purple_200"/>
 
-        <TextView
-            android:id="@+id/event_list_text_view"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/events_list_recyclerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Event List"
-            android:textSize="30sp"/>
+            android:layout_height="wrap_content">
 
-        <Button
-            android:id="@+id/event_list_refresh_button"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="refresh"
-            android:textSize="40sp"/>
+        </androidx.recyclerview.widget.RecyclerView>
 
-    </LinearLayout>
+    </ScrollView>
 
-</ScrollView>
+</LinearLayout>

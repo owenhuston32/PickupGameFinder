@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginVertical="16dp">
+
+    <TextView
+        android:id="@+id/list_event_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="5dp"
+        android:text="Event Name:"
+        android:textSize="30dp"/>
+
+    <TextView
+        android:id="@+id/list_event_caption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="5dp"
+        android:text="Caption:"
+        android:textSize="25dp"/>
+
+    <TextView
+        android:id="@+id/list_event_skill_level"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="5dp"
+        android:text="Skill Level:"
+        android:textSize="25dp"/>
+
+    <TextView
+        android:id="@+id/list_event_players"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="5dp"
+        android:text="0 / 10 players"
+        android:textSize="25dp"/>
+
+</LinearLayout>
