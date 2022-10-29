@@ -13,17 +13,22 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.pickupgamefinder.Event;
-import com.example.pickupgamefinder.IFirebaseCallback;
 import com.example.pickupgamefinder.R;
-import com.example.pickupgamefinder.User;
 
 public class CreateEventFragment extends Fragment implements View.OnClickListener {
 
     EventsViewModel mEventViewModel;
     EditText eventNameET;
     EditText captionET;
-    EditText skillLevelET;
-    EditText maxPlayersET;
+
+    Button skillLevelLeftArrow;
+    Button skillLevelRightArrow;
+    TextView skillLevelText;
+
+    Button maxPlayersLeftArrow;
+    Button maxPlayersRightArrow;
+    TextView maxPlayersText;
+
     Button createEventButton;
     TextView tempText;
 
@@ -51,12 +56,23 @@ public class CreateEventFragment extends Fragment implements View.OnClickListene
 
         eventNameET = v.findViewById(R.id.event_name_et);
         captionET = v.findViewById(R.id.caption_et);
-        skillLevelET = v.findViewById(R.id.skill_level_et);
-        maxPlayersET = v.findViewById(R.id.max_players);
+
+        skillLevelLeftArrow = v.findViewById(R.id.skill_level_left_arrow);
+        skillLevelRightArrow = v.findViewById(R.id.skill_level_right_arrow);
+        skillLevelText = v.findViewById(R.id.skill_level_number);
+
+        maxPlayersLeftArrow = v.findViewById(R.id.max_players_left_arrow);
+        maxPlayersRightArrow = v.findViewById(R.id.max_players_right_arrow);
+        maxPlayersText = v.findViewById(R.id.max_players_number);
+
         tempText = v.findViewById(R.id.temp_event_text_view);
         createEventButton = v.findViewById(R.id.create_event_button);
 
 
+        skillLevelLeftArrow.setOnClickListener(this);
+        skillLevelRightArrow.setOnClickListener(this);
+        maxPlayersLeftArrow.setOnClickListener(this);
+        maxPlayersRightArrow.setOnClickListener(this);
         createEventButton.setOnClickListener(this);
 
 
@@ -68,24 +84,64 @@ public class CreateEventFragment extends Fragment implements View.OnClickListene
     public void onClick(View view) {
 
         int id = view.getId();
-        if(id == R.id.create_event_button)
+        if(id == createEventButton.getId())
         {
+            UpdateDebugText();
+        }
+        else if(id == skillLevelLeftArrow.getId())
+        {
+            DecrementTextView(skillLevelText);
+        }
+        else if(id == skillLevelRightArrow.getId())
+        {
+            IncrementTextView(skillLevelText);
+        }
+        else if(id == maxPlayersLeftArrow.getId())
+        {
+            DecrementTextView(maxPlayersText);
+        }
+        else if(id == maxPlayersRightArrow.getId())
+        {
+            IncrementTextView(maxPlayersText);
+        }
+    }
 
-            String eventName = eventNameET.getText().toString();
-            String caption = captionET.getText().toString();
-            int skillLevel = Integer.parseInt(skillLevelET.getText().toString());
-            int maxPlayers = Integer.parseInt(maxPlayersET.getText().toString());
+    private void DecrementTextView(TextView textView)
+    {
+        int num = Integer.parseInt(textView.getText().toString());
 
-            Event event = new Event(eventName, caption, skillLevel, 0, maxPlayers);
+        if(num > 0)
+        {
+            num -= 1;
+            textView.setText("" + num);
+        }
+    }
+    private void IncrementTextView(TextView textView)
+    {
+        int num = Integer.parseInt(textView.getText().toString());
 
 
-            mEventViewModel.addEvent(event);
-
-            tempText.setText(eventName + "\n" + caption + "\n" + skillLevel + "\n" + maxPlayers);
-
-
+        // make 10 the max skill level
+        if(!textView.equals(skillLevelText) || num < 10) {
+            num += 1;
+            textView.setText("" + num);
         }
 
+    }
+
+    // used to show the values are correct when the database values are created
+    private void UpdateDebugText()
+    {
+        String eventName = eventNameET.getText().toString();
+        String caption = captionET.getText().toString();
+        int skillLevel = Integer.parseInt(skillLevelText.getText().toString());
+        int maxPlayers = Integer.parseInt(maxPlayersText.getText().toString());
+
+        Event event = new Event(eventName, caption, skillLevel, 0, maxPlayers);
+
+        mEventViewModel.addEvent(event);
+
+        tempText.setText(eventName + "\n" + caption + "\n" + skillLevel + "\n" + maxPlayers);
 
     }
 }
