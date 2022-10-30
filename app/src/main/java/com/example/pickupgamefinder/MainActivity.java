@@ -26,6 +26,11 @@ import com.example.pickupgamefinder.ui.main.AccountViewModel;
 import com.example.pickupgamefinder.ui.main.EventsViewModel;
 import com.example.pickupgamefinder.ui.main.MapFragment;
 import com.example.pickupgamefinder.ui.main.WelcomeScreenFragment;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -40,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements LifecycleObserver
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container, WelcomeScreenFragment.newInstance())
@@ -171,6 +177,4 @@ public class MainActivity extends AppCompatActivity implements LifecycleObserver
         }
         return false;
     }
-
-
 }

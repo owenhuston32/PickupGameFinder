@@ -3,6 +3,7 @@ package com.example.pickupgamefinder.ui.main;
 import android.app.Activity;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -15,17 +16,22 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.pickupgamefinder.IFirebaseCallback;
+import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
 import com.example.pickupgamefinder.User;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapFragment extends Fragment implements View.OnClickListener {
+public class MapFragment extends Fragment implements OnMapReadyCallback {
 
-    private TextView welcomeMessage;
+    private MapView mapView;
+    private GoogleMap googleMap;
     private AccountViewModel mViewModel;
 
-    private EditText mUpdateField;
-    private Button bUpdateButton;
-    private Button bDelAccountButton;
     private Activity activity;
 
     public MapFragment() {
@@ -51,58 +57,28 @@ public class MapFragment extends Fragment implements View.OnClickListener {
 
         View v = inflater.inflate(R.layout.fragment_map, container, false);
 
+
         activity = requireActivity();
 
         mViewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
-        welcomeMessage = (TextView)  v.findViewById(R.id.map_welcome_message);
 
-        Log.d("MapFrag", "map frag live user: " + mViewModel.liveUser);
-        Log.d("MapFrag", "map frag live user value: " + mViewModel.liveUser.getValue());
-
-        welcomeMessage.setText("user " + mViewModel.liveUser.getValue().username + "\npassword:" + mViewModel.liveUser.getValue().password);
-
-
-        mUpdateField = (EditText) v.findViewById(R.id.update_password_confirm);
-        bUpdateButton = (Button) v.findViewById(R.id.submit_new_password);
-        bDelAccountButton = (Button) v.findViewById(R.id.delete_account);
-        bUpdateButton.setOnClickListener(this);
-        bDelAccountButton.setOnClickListener(this);
         return v;
     }
-
-
     @Override
-    public void onClick(View view) {
-
-        int viewId = view.getId();
-
-        if (viewId == bUpdateButton.getId()) {
-            String newPassword = mUpdateField.getText().toString();
-
-            mViewModel.UpdatePassword(mViewModel.liveUser.getValue().username, newPassword);
-
-            mViewModel.getUser(mViewModel.liveUser.getValue().username, new IFirebaseCallback()
-            {
-                @Override
-                public void onCallback(Object user) {
-                    UpdateWelcomeMessage((User)user);
-                }
-            });
-
-        }  else if (viewId == bDelAccountButton.getId()) {
-            mViewModel.DeleteUser(mViewModel.liveUser.getValue().username);
-            UpdateWelcomeMessage(null);
-        }
-    }
-    private void UpdateWelcomeMessage(User user)
+    public void onViewCreated(View view, Bundle savedInstanceState)
     {
-        if(user == null)
-        {
-            welcomeMessage.setText("user deleted");
-        }
-        else
-        {
-            welcomeMessage.setText("user " + user.username + "\npassword:" + user.password);
-        }
+        mapView = (MapView) view.findViewById(R.id.map);
+        mapView.onCreate(savedInstanceState);
+        mapView.onResume();
+        mapView.getMapAsync(this);
+    }
+    @Override
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+
+        this.googleMap = googleMap;
+
+        this.googleMap.addMarker(new MarkerOptions()
+                .position(new LatLng(0, 0))
+                .title("Marker"));
     }
 }
