@@ -1,6 +1,5 @@
 package com.example.pickupgamefinder.ui.main;
 
-import android.provider.ContactsContract;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -8,8 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.pickupgamefinder.Event;
-import com.example.pickupgamefinder.IFirebaseCallback;
-import com.example.pickupgamefinder.User;
+import com.example.pickupgamefinder.ICallback;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -38,7 +36,7 @@ public class EventsViewModel extends ViewModel {
         eventsRef.child(event.eventName).setValue(event);  // database
     }
 
-    public void getEvent(Event event, IFirebaseCallback callback) {
+    public void getEvent(Event event, ICallback callback) {
 
         eventsRef.child(event.eventName).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
 
@@ -65,7 +63,7 @@ public class EventsViewModel extends ViewModel {
         });
     }
 
-    public void loadEvents(IFirebaseCallback callback)
+    public void loadEvents(ICallback callback)
     {
         eventsRef.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
 

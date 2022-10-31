@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.pickupgamefinder.IFirebaseCallback;
+import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -33,7 +33,7 @@ public class AccountViewModel extends ViewModel {
 
     }
 
-    public void getUser(String username, IFirebaseCallback callback) {
+    public void getUser(String username, ICallback callback) {
 
         dbUserRef.child(username).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
 
