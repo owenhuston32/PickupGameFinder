@@ -3,6 +3,8 @@ package com.example.pickupgamefinder.ui.main;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.view.LayoutInflater;
@@ -51,7 +53,6 @@ public class CreateEventFragment extends Fragment implements View.OnClickListene
                              Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_create_event, container, false);
-
         mEventViewModel = new ViewModelProvider(requireActivity()).get(EventsViewModel.class);
 
         eventNameET = v.findViewById(R.id.event_name_et);
@@ -64,8 +65,7 @@ public class CreateEventFragment extends Fragment implements View.OnClickListene
         maxPlayersLeftArrow = v.findViewById(R.id.max_players_left_arrow);
         maxPlayersRightArrow = v.findViewById(R.id.max_players_right_arrow);
         maxPlayersText = v.findViewById(R.id.max_players_number);
-
-        tempText = v.findViewById(R.id.temp_event_text_view);
+        
         createEventButton = v.findViewById(R.id.create_event_button);
 
 

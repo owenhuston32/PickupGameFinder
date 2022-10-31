@@ -1,37 +1,42 @@
 package com.example.pickupgamefinder.ui.main;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 
-import com.example.pickupgamefinder.IFirebaseCallback;
-import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
-import com.example.pickupgamefinder.User;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private MapView mapView;
     private GoogleMap googleMap;
     private AccountViewModel mViewModel;
-
+    private FusedLocationProviderClient fusedLocationProviderClient;
     private Activity activity;
 
     public MapFragment() {
@@ -62,6 +67,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         mViewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
 
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity);
+
+        if(ActivityCompat.checkSelfPermission(activity,
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+        {
+
+            getCurrentLocation();
+        }
+        else
+        {
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+
         return v;
     }
     @Override
@@ -81,4 +99,51 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 .position(new LatLng(0, 0))
                 .title("Marker"));
     }
+
+    private void getCurrentLocation()
+    {
+        @SuppressLint("MissingPermission") Task<Location> task = fusedLocationProviderClient.getLastLocation();
+
+        task.addOnSuccessListener(new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+
+                if(location != null)
+                {
+                    mapView.getMapAsync(new OnMapReadyCallback() {
+                        @Override
+                        public void onMapReady(@NonNull GoogleMap googleMap) {
+                            LatLng latLng = new LatLng(location.getLatitude(),
+                                    location.getLongitude());
+
+                            MarkerOptions options = new MarkerOptions().position(latLng)
+                                    .title("YOU ARE HERE");
+
+                            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
+
+                            googleMap.addMarker(options);
+
+                        }
+                    });
+                }
+            }
+        });
+    }
+    ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                new ActivityResultCallback<Boolean>()
+                {
+                    @Override
+                    public void onActivityResult(Boolean result)
+                    {
+                        if(result)
+                        {
+                            getCurrentLocation();
+                        }
+                        else
+                        {
+                            // permission denied
+                        }
+                    }
+                });
 }

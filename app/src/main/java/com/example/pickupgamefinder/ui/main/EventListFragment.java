@@ -15,9 +15,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.pickupgamefinder.Event;
 import com.example.pickupgamefinder.EventRecyclerAdapter;
-import com.example.pickupgamefinder.IFirebaseCallback;
+import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.R;
 
 public class EventListFragment extends Fragment implements View.OnClickListener {
@@ -76,7 +75,7 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
 
     private void refreshEvents()
     {
-        eventsViewModel.loadEvents(new IFirebaseCallback() {
+        eventsViewModel.loadEvents(new ICallback() {
             @Override
             public void onCallback(Object data) {
 

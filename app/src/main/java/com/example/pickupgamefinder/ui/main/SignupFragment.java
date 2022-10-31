@@ -16,7 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.example.pickupgamefinder.IFirebaseCallback;
+import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
 import com.example.pickupgamefinder.User;
@@ -103,7 +103,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
 
             if(isPasswordValid(password, passwordConfirm))
             {
-                mViewModel.getUser(username, new IFirebaseCallback()
+                mViewModel.getUser(username, new ICallback()
                 {
                     @Override
                     public void onCallback(Object user) {
