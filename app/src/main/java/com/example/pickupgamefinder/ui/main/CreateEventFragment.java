@@ -1,5 +1,6 @@
 package com.example.pickupgamefinder.ui.main;
 
+import android.app.Activity;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -15,6 +16,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.pickupgamefinder.Event;
+import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
 
 public class CreateEventFragment extends Fragment implements View.OnClickListener {
@@ -31,9 +33,9 @@ public class CreateEventFragment extends Fragment implements View.OnClickListene
     Button maxPlayersRightArrow;
     TextView maxPlayersText;
 
-    Button createEventButton;
-    TextView tempText;
+    Activity activity;
 
+    Button nextPageButton;
 
     public CreateEventFragment() {
         // Required empty public constructor
@@ -65,16 +67,17 @@ public class CreateEventFragment extends Fragment implements View.OnClickListene
         maxPlayersLeftArrow = v.findViewById(R.id.max_players_left_arrow);
         maxPlayersRightArrow = v.findViewById(R.id.max_players_right_arrow);
         maxPlayersText = v.findViewById(R.id.max_players_number);
-        
-        createEventButton = v.findViewById(R.id.create_event_button);
+
+        nextPageButton = v.findViewById(R.id.create_event_next_page);
 
 
         skillLevelLeftArrow.setOnClickListener(this);
         skillLevelRightArrow.setOnClickListener(this);
         maxPlayersLeftArrow.setOnClickListener(this);
         maxPlayersRightArrow.setOnClickListener(this);
-        createEventButton.setOnClickListener(this);
+        nextPageButton.setOnClickListener(this);
 
+        activity = requireActivity();
 
         return v;
     }
@@ -84,9 +87,11 @@ public class CreateEventFragment extends Fragment implements View.OnClickListene
     public void onClick(View view) {
 
         int id = view.getId();
-        if(id == createEventButton.getId())
+        if(id == nextPageButton.getId())
         {
-            UpdateDebugText();
+            ((MainActivity)activity).addFragment(new CreateEventMapFragment(CreateEvent()), "MapFragment");
+        // todo: add this after selectin location on create event map fragment
+        //    mEventViewModel.addEvent(event);
         }
         else if(id == skillLevelLeftArrow.getId())
         {
@@ -128,9 +133,7 @@ public class CreateEventFragment extends Fragment implements View.OnClickListene
         }
 
     }
-
-    // used to show the values are correct when the database values are created
-    private void UpdateDebugText()
+    private Event CreateEvent()
     {
         String eventName = eventNameET.getText().toString();
         String caption = captionET.getText().toString();
@@ -139,9 +142,6 @@ public class CreateEventFragment extends Fragment implements View.OnClickListene
 
         Event event = new Event(eventName, caption, skillLevel, 0, maxPlayers);
 
-        mEventViewModel.addEvent(event);
-
-        tempText.setText(eventName + "\n" + caption + "\n" + skillLevel + "\n" + maxPlayers);
-
+        return event;
     }
 }

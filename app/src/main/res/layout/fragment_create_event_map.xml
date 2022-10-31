@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.gms.maps.MapView
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <TextView
+        android:id="@+id/drag_marker_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="DRAG MARKER TO EVENT LOCATION"
+        android:textSize="40dp"
+        android:textAlignment="center"/>
+
+    <Button
+        android:id="@+id/create_event_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_above="@id/drag_marker_text"
+        android:text="CREATE EVENT"
+        android:textSize="40dp"
+        android:textAlignment="center"/>
+
+</RelativeLayout>
