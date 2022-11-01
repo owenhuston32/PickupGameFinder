@@ -19,6 +19,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.pickupgamefinder.Event;
+import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -31,11 +33,13 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
+import java.util.List;
+
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
+    private EventsViewModel mEventsViewModel;
     private MapView mapView;
     private GoogleMap googleMap;
-    private AccountViewModel mViewModel;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private Activity activity;
 
@@ -65,7 +69,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         activity = requireActivity();
 
-        mViewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
+        mEventsViewModel = new ViewModelProvider(requireActivity()).get(EventsViewModel.class);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity);
 
@@ -95,10 +99,29 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         this.googleMap = googleMap;
 
-        this.googleMap.addMarker(new MarkerOptions()
-                .position(new LatLng(0, 0))
-                .title("Marker"));
+        //add markers
+        mEventsViewModel.loadEvents(new ICallback() {
+            @Override
+            public void onCallback(Object data) {
+                if(data != null)
+                    AddMarkers((List<Event>) data);
+            }
+        });
+
     }
+
+    private void AddMarkers(List<Event> eventList)
+    {
+        for(Event e : eventList)
+        {
+            googleMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(e.latitude, e.longitude))
+                    .title(e.eventName + "\n" + e.caption + "\n"
+                            + "skill: " + e.skillLevel + "\n"
+                            + "players: " + e.currentPlayerCount + "/" + e.maxPlayers));
+        }
+    }
+
 
     private void getCurrentLocation()
     {

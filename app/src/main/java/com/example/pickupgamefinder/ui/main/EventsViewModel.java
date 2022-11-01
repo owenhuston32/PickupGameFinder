@@ -43,13 +43,13 @@ public class EventsViewModel extends ViewModel {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (!task.isSuccessful()) {
-                    callback.onCallback(new Event("","",0,0,0));
+                    callback.onCallback(new Event("","",0,0,0, 0, 0));
                     Log.e("firebase", "Error getting data", task.getException());
                 }
                 else {
                     if(task.getResult().getValue() == null)
                     {
-                        callback.onCallback(new Event("", "", 0, 0, 0));
+                        callback.onCallback(new Event("", "", 0, 0, 0, 0, 0));
                         Log.d("firebase", "user not found in database");
                     }
                     else
@@ -108,7 +108,9 @@ public class EventsViewModel extends ViewModel {
                 String.valueOf(snapshot.child("caption").getValue()),
                 Integer.parseInt(String.valueOf(snapshot.child("skillLevel").getValue())),
                 Integer.parseInt(String.valueOf(snapshot.child("currentPlayerCount").getValue())),
-                Integer.parseInt(String.valueOf(snapshot.child("maxPlayers").getValue())));
+                Integer.parseInt(String.valueOf(snapshot.child("maxPlayers").getValue())),
+                Double.parseDouble(String.valueOf(snapshot.child("latitude").getValue())),
+                Double.parseDouble(String.valueOf(snapshot.child("longitude").getValue())));
 
     }
 

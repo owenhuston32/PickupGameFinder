@@ -15,7 +15,8 @@
         android:layout_height="wrap_content"
         android:text="DRAG MARKER TO EVENT LOCATION"
         android:textSize="40dp"
-        android:textAlignment="center"/>
+        android:gravity="center"
+        android:textColor="@color/black"/>
 
     <Button
         android:id="@+id/create_event_button"
