@@ -46,6 +46,7 @@ public class CreateEventMapFragment extends Fragment implements View.OnClickList
     private LatLng eventLocation;
     private View view;
     private Bundle savedInstanceState;
+    private AccountViewModel mAccountViewModel;
 
     public CreateEventMapFragment(Event event) {
         this.event = event;
@@ -66,6 +67,7 @@ public class CreateEventMapFragment extends Fragment implements View.OnClickList
 
         activity = requireActivity();
         mEventViewModel = new ViewModelProvider(requireActivity()).get(EventsViewModel.class);
+        mAccountViewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity);
 
@@ -193,6 +195,7 @@ public class CreateEventMapFragment extends Fragment implements View.OnClickList
             event.latitude = eventLocation.latitude;
             event.longitude = eventLocation.longitude;
             mEventViewModel.addEvent(event);
+            mAccountViewModel.AddToUserEventList(event.eventName);
         }
     }
 }

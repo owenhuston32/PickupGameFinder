@@ -22,7 +22,7 @@ import com.example.pickupgamefinder.User;
 
 public class LoginFragment extends Fragment implements  View.OnClickListener {
 
-    private AccountViewModel mViewModel;
+    private AccountViewModel mAccountViewModel;
     private TextView mUsersText;
     private TextView mErrorMessage;
     private EditText mUsernameField;
@@ -49,7 +49,7 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
         mPasswordField = (EditText) v.findViewById(R.id.signin_password);
         mLoginButton = (Button) v.findViewById(R.id.signin_login_button);
 
-        mViewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
+        mAccountViewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
 
         mLoginButton.setOnClickListener(this);
 
@@ -67,7 +67,7 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
             String username = mUsernameField.getText().toString();
             String password = mPasswordField.getText().toString();
 
-            mViewModel.getUser(username, new ICallback()
+            mAccountViewModel.getUser(username, new ICallback()
             {
                 @Override
                 public void onCallback(Object user) {
@@ -82,7 +82,7 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
     {
         if  (!user.username.equals("") && user.password.equals(password)) {
             mLoginButton.setText("Logged In");
-            mViewModel.liveUser.setValue(user);
+            mAccountViewModel.liveUser.setValue(user);
             ((MainActivity)activity).addFragment(((MapFragment) new MapFragment()).newInstance(), "MapFragment");
         }
         else

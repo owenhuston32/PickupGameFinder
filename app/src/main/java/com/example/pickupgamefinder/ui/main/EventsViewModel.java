@@ -36,9 +36,9 @@ public class EventsViewModel extends ViewModel {
         eventsRef.child(event.eventName).setValue(event);  // database
     }
 
-    public void getEvent(Event event, ICallback callback) {
+    public void getEvent(String eventName, ICallback callback) {
 
-        eventsRef.child(event.eventName).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+        eventsRef.child(eventName).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
 
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
@@ -91,16 +91,29 @@ public class EventsViewModel extends ViewModel {
 
                         callback.onCallback(liveEventList.getValue());
                     }
-
-
                 }
-
             }
         });
-
-
     }
 
+    public void SetCurrentPlayerCount(int newCurrentPlayerCount, String eventName, ICallback callback) {
+        eventsRef.child(eventName).child("currentPlayercount")
+                .setValue(newCurrentPlayerCount).addOnCompleteListener(new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull Task task) {
+
+                        if(task.isSuccessful())
+                        {
+                            callback.onCallback("success");
+                        }
+                        else
+                        {
+                            callback.onCallback("fail");
+                        }
+
+                    }
+                });
+    }
     private Event CreateEventFromSnapshot(DataSnapshot snapshot)
     {
 
@@ -114,7 +127,19 @@ public class EventsViewModel extends ViewModel {
 
     }
 
-    public void DeleteEvent(Event event) {
-        eventsRef.child(event.eventName).removeValue();
+    public void DeleteEvent(Event event, ICallback callback) {
+        eventsRef.child(event.eventName).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful())
+                {
+                    callback.onCallback("success");
+                }
+                else
+                {
+                    callback.onCallback("fail");
+                }
+            }
+        });
     }
 }
