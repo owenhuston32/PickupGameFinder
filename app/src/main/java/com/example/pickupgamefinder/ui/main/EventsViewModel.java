@@ -36,20 +36,20 @@ public class EventsViewModel extends ViewModel {
         eventsRef.child(event.eventName).setValue(event);  // database
     }
 
-    public void getEvent(Event event, ICallback callback) {
+    public void getEvent(String eventName, ICallback callback) {
 
-        eventsRef.child(event.eventName).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+        eventsRef.child(eventName).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
 
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (!task.isSuccessful()) {
-                    callback.onCallback(new Event("","",0,0,0));
+                    callback.onCallback(new Event("","",0,0,0, 0, 0));
                     Log.e("firebase", "Error getting data", task.getException());
                 }
                 else {
                     if(task.getResult().getValue() == null)
                     {
-                        callback.onCallback(new Event("", "", 0, 0, 0));
+                        callback.onCallback(new Event("", "", 0, 0, 0, 0, 0));
                         Log.d("firebase", "user not found in database");
                     }
                     else
@@ -91,16 +91,29 @@ public class EventsViewModel extends ViewModel {
 
                         callback.onCallback(liveEventList.getValue());
                     }
-
-
                 }
-
             }
         });
-
-
     }
 
+    public void SetCurrentPlayerCount(int newCurrentPlayerCount, String eventName, ICallback callback) {
+        eventsRef.child(eventName).child("currentPlayercount")
+                .setValue(newCurrentPlayerCount).addOnCompleteListener(new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull Task task) {
+
+                        if(task.isSuccessful())
+                        {
+                            callback.onCallback("success");
+                        }
+                        else
+                        {
+                            callback.onCallback("fail");
+                        }
+
+                    }
+                });
+    }
     private Event CreateEventFromSnapshot(DataSnapshot snapshot)
     {
 
@@ -108,11 +121,25 @@ public class EventsViewModel extends ViewModel {
                 String.valueOf(snapshot.child("caption").getValue()),
                 Integer.parseInt(String.valueOf(snapshot.child("skillLevel").getValue())),
                 Integer.parseInt(String.valueOf(snapshot.child("currentPlayerCount").getValue())),
-                Integer.parseInt(String.valueOf(snapshot.child("maxPlayers").getValue())));
+                Integer.parseInt(String.valueOf(snapshot.child("maxPlayers").getValue())),
+                Double.parseDouble(String.valueOf(snapshot.child("latitude").getValue())),
+                Double.parseDouble(String.valueOf(snapshot.child("longitude").getValue())));
 
     }
 
-    public void DeleteEvent(Event event) {
-        eventsRef.child(event.eventName).removeValue();
+    public void DeleteEvent(Event event, ICallback callback) {
+        eventsRef.child(event.eventName).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful())
+                {
+                    callback.onCallback("success");
+                }
+                else
+                {
+                    callback.onCallback("fail");
+                }
+            }
+        });
     }
 }

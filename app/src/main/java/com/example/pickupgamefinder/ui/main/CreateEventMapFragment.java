@@ -29,11 +29,12 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
-public class CreateEventMapFragment extends Fragment implements View.OnClickListener, OnMapReadyCallback {
+public class CreateEventMapFragment extends Fragment implements View.OnClickListener {
 
     private EventsViewModel mEventViewModel;
     private MapView mapView;
@@ -42,6 +43,10 @@ public class CreateEventMapFragment extends Fragment implements View.OnClickList
     private Activity activity;
     private Button createEventButton;
     private Event event;
+    private LatLng eventLocation;
+    private View view;
+    private Bundle savedInstanceState;
+    private AccountViewModel mAccountViewModel;
 
     public CreateEventMapFragment(Event event) {
         this.event = event;
@@ -62,11 +67,15 @@ public class CreateEventMapFragment extends Fragment implements View.OnClickList
 
         activity = requireActivity();
         mEventViewModel = new ViewModelProvider(requireActivity()).get(EventsViewModel.class);
+        mAccountViewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity);
 
         createEventButton = (Button)v.findViewById(R.id.create_event_button);
         createEventButton.setOnClickListener(this);
+
+        this.view = v;
+        this.savedInstanceState = savedInstanceState;
 
         if(ActivityCompat.checkSelfPermission(activity,
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
@@ -83,19 +92,33 @@ public class CreateEventMapFragment extends Fragment implements View.OnClickList
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState)
     {
+
+    }
+    private void InitializeMapView()
+    {
         mapView = (MapView) view.findViewById(R.id.map);
         mapView.onCreate(savedInstanceState);
-        mapView.onResume();
-        mapView.getMapAsync(this);
     }
-    @Override
-    public void onMapReady(@NonNull GoogleMap googleMap) {
+    private void InitializeMarkerDrag()
+    {
+        googleMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+            @Override
+            public void onMarkerDrag(@NonNull Marker marker) {
 
-        this.googleMap = googleMap;
+            }
 
+            @Override
+            public void onMarkerDragEnd(@NonNull Marker marker) {
+                eventLocation = marker.getPosition();
+                googleMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
+            }
 
+            @Override
+            public void onMarkerDragStart(@NonNull Marker marker) {
+
+            }
+        });
     }
-
     private void getCurrentLocation()
     {
         @SuppressLint("MissingPermission") Task<Location> task = fusedLocationProviderClient.getLastLocation();
@@ -106,18 +129,29 @@ public class CreateEventMapFragment extends Fragment implements View.OnClickList
 
                 if(location != null)
                 {
+                    if(mapView == null)
+                    {
+                        InitializeMapView();
+                    }
+
                     mapView.getMapAsync(new OnMapReadyCallback() {
                         @Override
-                        public void onMapReady(@NonNull GoogleMap googleMap) {
-                            LatLng latLng = new LatLng(location.getLatitude(),
+                        public void onMapReady(@NonNull GoogleMap map) {
+                            eventLocation = new LatLng(location.getLatitude(),
                                     location.getLongitude());
 
-                            MarkerOptions options = new MarkerOptions().position(latLng)
-                                    .title("YOU ARE HERE");
 
-                            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
+                            MarkerOptions options = new MarkerOptions().position(eventLocation)
+                                    .title("DRAG THIS MARKER TO EVENT LOCATION")
+                                    .draggable(true);
+
+                            googleMap = map;
+
+                            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(eventLocation, 10));
 
                             googleMap.addMarker(options);
+
+                            InitializeMarkerDrag();
 
                         }
                     });
@@ -144,14 +178,24 @@ public class CreateEventMapFragment extends Fragment implements View.OnClickList
             });
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if(mapView == null)
+            InitializeMapView();
+        mapView.onResume();
+    }
+
+    @Override
     public void onClick(View view) {
 
         int id = view.getId();
 
         if(id == createEventButton.getId())
         {
+            event.latitude = eventLocation.latitude;
+            event.longitude = eventLocation.longitude;
             mEventViewModel.addEvent(event);
+            mAccountViewModel.AddToUserEventList(event.eventName);
         }
-
     }
 }

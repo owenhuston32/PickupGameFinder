@@ -15,10 +15,14 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.pickupgamefinder.Event;
+import com.example.pickupgamefinder.ICallback;
+import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -27,15 +31,18 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
-public class MapFragment extends Fragment implements OnMapReadyCallback {
+import java.util.List;
 
+public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
+
+    private EventsViewModel mEventsViewModel;
     private MapView mapView;
     private GoogleMap googleMap;
-    private AccountViewModel mViewModel;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private Activity activity;
 
@@ -65,7 +72,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         activity = requireActivity();
 
-        mViewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
+        mEventsViewModel = new ViewModelProvider(requireActivity()).get(EventsViewModel.class);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity);
 
@@ -95,10 +102,31 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         this.googleMap = googleMap;
 
-        this.googleMap.addMarker(new MarkerOptions()
-                .position(new LatLng(0, 0))
-                .title("Marker"));
+        //add markers
+        mEventsViewModel.loadEvents(new ICallback() {
+            @Override
+            public void onCallback(Object data) {
+                if(data != null)
+                    AddMarkers((List<Event>) data);
+            }
+        });
+
+        this.googleMap.setOnInfoWindowClickListener(this);
     }
+
+    private void AddMarkers(List<Event> eventList)
+    {
+        for(Event e : eventList)
+        {
+            googleMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(e.latitude, e.longitude))
+                    .title(e.eventName)
+                    .snippet(e.caption + "\n"
+                            + "skill: " + e.skillLevel + "\n"
+                            + "players: " + e.currentPlayerCount + "/" + e.maxPlayers));
+        }
+    }
+
 
     private void getCurrentLocation()
     {
@@ -146,4 +174,28 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         }
                     }
                 });
+
+    @Override
+    public void onInfoWindowClick(@NonNull Marker marker) {
+
+        Log.d("TAG", "INFO WINDOW CLICK, marker title: " + marker.getTitle());
+        mEventsViewModel.getEvent(marker.getTitle(), new ICallback() {
+            @Override
+            public void onCallback(Object data) {
+
+                Event event = (Event)data;
+                if (!event.eventName.equals(""))
+                {
+                    Log.d("TAG", "add fragment event page");
+                    ((MainActivity)activity).addFragment( new EventPageFragment(event), "EventPageFragment");
+                }
+                else
+                {
+                    Log.e("TAG", "error finding event by name");
+                    //error finding event by event name
+                }
+            }
+        });
+
+    }
 }

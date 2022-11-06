@@ -140,7 +140,7 @@ public class CreateEventFragment extends Fragment implements View.OnClickListene
         int skillLevel = Integer.parseInt(skillLevelText.getText().toString());
         int maxPlayers = Integer.parseInt(maxPlayersText.getText().toString());
 
-        Event event = new Event(eventName, caption, skillLevel, 0, maxPlayers);
+        Event event = new Event(eventName, caption, skillLevel, 0, maxPlayers, 0, 0);
 
         return event;
     }

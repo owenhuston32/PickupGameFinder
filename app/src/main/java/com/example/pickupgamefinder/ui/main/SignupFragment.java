@@ -21,6 +21,9 @@ import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
 import com.example.pickupgamefinder.User;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SignupFragment extends Fragment implements View.OnClickListener{
 
     private AccountViewModel mViewModel;
@@ -137,7 +140,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
         Log.d("signupfragment", "observer call: " + user);
         if  (user.username.equals("")) {
             Log.d("signupfragment", "ADD USER NOW: " + username + password);
-            mViewModel.addUser(username,password);
+            mViewModel.addUser(username, password, new ArrayList<String>());
             ((MainActivity)activity).addFragment(((MapFragment) new MapFragment()).newInstance(), "MapFragment");
         }
         else

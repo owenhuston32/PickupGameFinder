@@ -40,6 +40,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity implements  LifecycleObserver, NavigationView.OnNavigationItemSelectedListener{
 
     DrawerLayout drawerLayout;
@@ -177,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
             }
 
             addFragment(new WelcomeScreenFragment().newInstance(), "WelcomeScreenFragment");
-            accountViewModel.liveUser.setValue(new User("", ""));
+            accountViewModel.liveUser.setValue(new User("", "", new ArrayList<String>()));
             drawerLayout.closeDrawer(GravityCompat.START);
             return true;
         }
