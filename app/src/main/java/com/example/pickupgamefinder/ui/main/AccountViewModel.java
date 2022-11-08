@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.pickupgamefinder.Event;
 import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.User;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -96,7 +97,7 @@ public class AccountViewModel extends ViewModel {
 
     public void LoadUserEvents(ICallback callback) {
         Log.d("AccountViewModel", "loading users");
-        dbUserRef.child("events").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+        dbUserRef.child(liveUser.getValue().username).child("events").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (!task.isSuccessful()) {
@@ -124,4 +125,41 @@ public class AccountViewModel extends ViewModel {
             }
         });
     }
+
+    public void DeleteEvent(Event event, ICallback callback) {
+        dbUserRef.child(liveUser.getValue().username).child("events").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                if (!task.isSuccessful()) {
+                    callback.onCallback(liveEventNameList.getValue());
+                    Log.e("firebase", "Error getting data", task.getException());
+                } else {
+                    Log.d("AccountViewModel", "load user complete & successful");
+                    if (liveEventNameList.getValue() != null)
+                    {
+                        liveEventNameList.getValue().clear();
+                    }
+
+                    if (task.getResult() != null) {
+                        Log.d("AccountViewModel", "load user event list not null");
+                        List<String> list = new ArrayList<String>();
+                        for (String s : (List<String>) task.getResult().getValue()) {
+                            Log.d("AccountViewModel", "loading event: " + s);
+                            if (!s.equals(event.eventName)) {
+                                list.add(s);
+                            }
+                        }
+                        liveEventNameList.setValue(list);
+                     //   liveUser.getValue().eventNames = liveEventNameList.getValue();
+
+                        dbUserRef.child(liveUser.getValue().username).child("events").setValue(liveEventNameList.getValue());
+
+                        callback.onCallback(liveEventNameList.getValue());
+                    }
+                }
+            }
+        });
+    }
+
 }

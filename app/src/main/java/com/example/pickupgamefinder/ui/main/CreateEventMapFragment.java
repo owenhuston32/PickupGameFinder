@@ -15,6 +15,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -122,13 +123,14 @@ public class CreateEventMapFragment extends Fragment implements View.OnClickList
     private void getCurrentLocation()
     {
         @SuppressLint("MissingPermission") Task<Location> task = fusedLocationProviderClient.getLastLocation();
-
+        Log.e("GoogleMaps", "Get current location called");
         task.addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
-
+                Log.e("GoogleMaps", "onSuccess good");
                 if(location != null)
                 {
+                    Log.e("GoogleMaps", "location not null");
                     if(mapView == null)
                     {
                         InitializeMapView();
@@ -150,7 +152,7 @@ public class CreateEventMapFragment extends Fragment implements View.OnClickList
                             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(eventLocation, 10));
 
                             googleMap.addMarker(options);
-
+                            Log.e("GoogleMaps", "Drag should be initialized");
                             InitializeMarkerDrag();
 
                         }

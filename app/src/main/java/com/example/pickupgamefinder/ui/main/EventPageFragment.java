@@ -111,6 +111,7 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
         else if(id == deleteEvent.getId())
         {
             DeleteEvent();
+
         }
     }
     private void SetCurrentPlayerCount(int newPlayercount)
@@ -158,5 +159,22 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
                         }
                     }
                 });
+        accountViewModel.DeleteEvent(event,
+                new ICallback() {
+                    @Override
+                    public void onCallback(Object data) {
+                        if(!data.toString().equals("success"))
+                        {
+                            Log.e("Event page frag", "failed to delete event from account");
+                        }
+                        else {
+                           // accountViewModel.liveUser.getValue()
+                        }
+                    }
+                });
+        // do same but with accounts VM
     }
 }
+
+
+
