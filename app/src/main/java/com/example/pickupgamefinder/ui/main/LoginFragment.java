@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,16 +71,33 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
             mAccountViewModel.getUser(username, new ICallback()
             {
                 @Override
-                public void onCallback(Object user) {
+                public void onCallback(Object data) {
 
-                    Login((User)user, username, password);
+                    if(data.toString().equals("success"))
+                    {
+                        User user = mAccountViewModel.liveUser.getValue();
+
+                        if(!username.equals("") && user.password.equals(password))
+                        {
+                            Login(username, password);
+                        }
+                        else
+                        {
+                            mErrorMessage.setText("Invalid Username or Password");
+                        }
+                    }
+                    else
+                    {
+                        Log.e("Login Fragment", "failed to get user from database");
+                    }
                 }
             });
 
         }
     }
-    private void Login(User user, String username, String password)
+    private void Login(String username, String password)
     {
+<<<<<<< Updated upstream
         if  (!user.username.equals("") && user.password.equals(password)) {
             mLoginButton.setText("Logged In");
             mAccountViewModel.liveUser.setValue(user);
@@ -89,6 +107,24 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
         {
             mErrorMessage.setText("Invalid Username or Password");
         }
+=======
+        mLoginButton.setText("Logged In");
+        mAccountViewModel.loadUserEvents(new ICallback() {
+            @Override
+            public void onCallback(Object data) {
+
+                if(data.toString().equals("success"))
+                {
+                    mLoginButton.setText("Logged In");
+                    ((MainActivity)activity).addFragment(((MapFragment) new MapFragment()).newInstance(), "MapFragment");
+                }
+                else
+                {
+                    mLoginButton.setText("Failed to load user events");
+                }
+            }
+        });
+>>>>>>> Stashed changes
     }
 
     @Override

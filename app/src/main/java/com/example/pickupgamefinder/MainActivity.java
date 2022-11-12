@@ -1,13 +1,9 @@
 package com.example.pickupgamefinder;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -16,8 +12,6 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,11 +26,6 @@ import com.example.pickupgamefinder.ui.main.AccountViewModel;
 import com.example.pickupgamefinder.ui.main.EventsViewModel;
 import com.example.pickupgamefinder.ui.main.MapFragment;
 import com.example.pickupgamefinder.ui.main.WelcomeScreenFragment;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -70,12 +59,19 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
         accountViewModel  = new ViewModelProvider(this).get(AccountViewModel.class);
         eventsViewModel = new ViewModelProvider(this).get(EventsViewModel.class);
 
-        // Initializes the Firebase db in the view model
-        accountViewModel.database = FirebaseDatabase.getInstance();
-        accountViewModel.dbUserRef = accountViewModel.database.getReference("Users");
+        EventRepository eventRepository = new EventRepository( eventsViewModel, accountViewModel, FirebaseDatabase.getInstance(),
+                FirebaseDatabase.getInstance().getReference());
 
-        eventsViewModel.database = FirebaseDatabase.getInstance();
-        eventsViewModel.eventsRef = eventsViewModel.database.getReference("Events");
+        AccountRepository accountRepository = new AccountRepository(eventsViewModel, accountViewModel, FirebaseDatabase.getInstance(),
+                FirebaseDatabase.getInstance().getReference());
+
+        accountViewModel.eventRepository = eventRepository;
+        accountViewModel.accountRepository = accountRepository;
+
+        eventsViewModel.eventRepository = eventRepository;
+        eventsViewModel.accountRepository = accountRepository;
+        eventsViewModel.initializeObservers(this);
+
     }
 
     private void InitializeActionbar()
@@ -179,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
             }
 
             addFragment(new WelcomeScreenFragment().newInstance(), "WelcomeScreenFragment");
-            accountViewModel.liveUser.setValue(new User("", "", new ArrayList<String>()));
+            accountViewModel.liveUser.setValue(new User("", "", new ArrayList<String>(), new ArrayList<String>()));
             drawerLayout.closeDrawer(GravityCompat.START);
             return true;
         }

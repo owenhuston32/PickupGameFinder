@@ -55,7 +55,7 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
 
         eventDetailsTV = v.findViewById(R.id.event_page_event_details);
         eventDetailsTV.setText(event.eventName + "\n" + event.caption
-         + "\n" + event.skillLevel + "/10\n");
+         + "\nSkill Level: " + event.skillLevel + "/10\n");
 
         currentPlayerTV = v.findViewById(R.id.event_page_player_count);
         currentPlayerTV.setText(event.currentPlayerCount + "\\" + event.maxPlayers);
@@ -66,10 +66,10 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
 
         activity = requireActivity();
 
-        accountViewModel.LoadUserEvents(new ICallback() {
+        accountViewModel.loadUserEvents(new ICallback() {
             @Override
             public void onCallback(Object data) {
-                InitializeUI((List<Event>) data);
+                InitializeUI();
             }
         });
 
@@ -80,17 +80,31 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
         return v;
     }
 
-    public void InitializeUI(List<Event> eventList)
+    public void InitializeUI()
     {
-        if(eventList.contains(event.eventName))
+        List<String> createdEventNames = accountViewModel.liveUser.getValue().createdEventNames;
+
+        if(createdEventNames != null) {
+
+            // check if the user created this event
+            if(createdEventNames.contains(event.eventName))
+            {
+                leaveEvent.setVisibility(View.GONE);
+                joinEvent.setVisibility(View.GONE);
+                deleteEvent.setVisibility(View.VISIBLE);
+            }
+        }
+        // check if this user has already joined this event
+        else if(accountViewModel.liveUser.getValue().joinedEventNames != null &&
+                accountViewModel.liveUser.getValue().joinedEventNames.contains(event.eventName))
         {
-            leaveEvent.setVisibility(View.GONE);
+            leaveEvent.setVisibility(View.VISIBLE);
             joinEvent.setVisibility(View.GONE);
-            deleteEvent.setVisibility(View.VISIBLE);
+            deleteEvent.setVisibility(View.GONE);
         }
         else
         {
-            leaveEvent.setVisibility(View.VISIBLE);
+            leaveEvent.setVisibility(View.GONE);
             joinEvent.setVisibility(View.VISIBLE);
             deleteEvent.setVisibility(View.GONE);
         }
@@ -103,35 +117,40 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
 
         if(id == joinEvent.getId())
         {
-            SetCurrentPlayerCount(event.currentPlayerCount + 1);
+            SetCurrentPlayerCount(event.currentPlayerCount, event.currentPlayerCount + 1);
         }
         else if(id == leaveEvent.getId()) {
-            SetCurrentPlayerCount(event.currentPlayerCount - 1);
+            SetCurrentPlayerCount(event.currentPlayerCount, event.currentPlayerCount - 1);
         }
         else if(id == deleteEvent.getId())
         {
+<<<<<<< Updated upstream
             DeleteEvent();
+=======
+            deleteEvent();
+
+>>>>>>> Stashed changes
         }
     }
-    private void SetCurrentPlayerCount(int newPlayercount)
+    private void SetCurrentPlayerCount(int oldPlayercount, int newPlayercount)
     {
-        eventsViewModel.SetCurrentPlayerCount(newPlayercount, event.eventName,
+        eventsViewModel.setCurrentPlayerCount(oldPlayercount, newPlayercount, event,
                 new ICallback() {
                     @Override
                     public void onCallback(Object data) {
                         if(data.toString().equals("success"))
                         {
-                            if(newPlayercount > event.currentPlayerCount)
-                            {
-                                leaveEvent.setVisibility(View.VISIBLE);
-                                joinEvent.setVisibility(View.GONE);
-                            }
-                            else
+                            if(oldPlayercount > newPlayercount)
                             {
                                 leaveEvent.setVisibility(View.GONE);
                                 joinEvent.setVisibility(View.VISIBLE);
                             }
-                            currentPlayerTV.setText(newPlayercount + "\\" + event.maxPlayers);
+                            else
+                            {
+                                leaveEvent.setVisibility(View.VISIBLE);
+                                joinEvent.setVisibility(View.GONE);
+                            }
+                            currentPlayerTV.setText("players: "+ newPlayercount + "\\" + event.maxPlayers);
                             event.currentPlayerCount = newPlayercount;
                         }
                         else
@@ -141,9 +160,9 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
                     }
                 });
     }
-    private void DeleteEvent()
+    private void deleteEvent()
     {
-        eventsViewModel.DeleteEvent(event,
+        eventsViewModel.deleteEvent(event,
                 new ICallback() {
                     @Override
                     public void onCallback(Object data) {
@@ -151,6 +170,7 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
                         {
                             deleteEvent.setVisibility(View.GONE);
                             eventDetailsTV.setText("EVENT HAS BEEN DELETED");
+                            currentPlayerTV.setText("");
                         }
                         else
                         {

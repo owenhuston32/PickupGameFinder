@@ -2,144 +2,69 @@ package com.example.pickupgamefinder.ui.main;
 
 import android.util.Log;
 
-import androidx.annotation.NonNull;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
+import com.example.pickupgamefinder.AccountRepository;
 import com.example.pickupgamefinder.Event;
 import com.example.pickupgamefinder.ICallback;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.example.pickupgamefinder.EventRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class EventsViewModel extends ViewModel {
 
+    public MutableLiveData<Event> liveEvent = new MutableLiveData<Event>();
     public MutableLiveData<List<Event>> liveEventList = new MutableLiveData<List<Event>>();
-    public FirebaseDatabase database;
-    public DatabaseReference eventsRef;
+    public EventRepository eventRepository = null;
+    public AccountRepository accountRepository = null;
 
-    public void addEvent(Event event)
-    {
-        List list = liveEventList.getValue();
-        if(list == null)
-        {
-            list = new ArrayList();
-        }
-        list.add(event);
 
-        liveEventList.setValue(list); // Create user class for firebase DB
-        eventsRef.child(event.eventName).setValue(event);  // database
+    public void initializeObservers(LifecycleOwner lifecycleOwner) {
+        Observer<Event> observer = new Observer<Event>() {
+            @Override
+            public void onChanged(Event event) {
+                loadEvents(new ICallback() {
+                    @Override
+                    public void onCallback(Object data) {
+                        if(data.toString().equals("success"))
+                        {
+
+                        }
+                        else
+                        {
+                            Log.e("EventsViewModel", "load Events failed (onChanged observer)");
+                        }
+                    }
+                });
+            }
+        };
+        liveEvent.observe(lifecycleOwner, observer);
     }
 
-    public void getEvent(String eventName, ICallback callback) {
-
-        eventsRef.child(eventName).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-
-            @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                if (!task.isSuccessful()) {
-                    callback.onCallback(new Event("","",0,0,0, 0, 0));
-                    Log.e("firebase", "Error getting data", task.getException());
-                }
-                else {
-                    if(task.getResult().getValue() == null)
-                    {
-                        callback.onCallback(new Event("", "", 0, 0, 0, 0, 0));
-                        Log.d("firebase", "user not found in database");
-                    }
-                    else
-                    {
-                        DataSnapshot snapshot = task.getResult();
-                        callback.onCallback(CreateEventFromSnapshot(snapshot));
-                        Log.d("firebase", "successfully found user");
-                    }
-                }
-            }
-        });
+    public void addEvent(Event event, ICallback callback)
+    {
+        eventRepository.addEvent(event, callback);
+    }
+    public void getEvent(String eventName, ICallback callback)
+    {
+        eventRepository.getEvent(eventName, callback);
     }
 
     public void loadEvents(ICallback callback)
     {
-        eventsRef.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-
-            @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-
-                if (!task.isSuccessful()) {
-                    callback.onCallback(liveEventList.getValue());
-                    Log.e("firebase", "Error getting data", task.getException());
-                }
-                else
-                {
-                    if(liveEventList.getValue() != null)
-                        liveEventList.getValue().clear();
-
-                    if(task.getResult() != null)
-                    {
-                        List<Event> list = new ArrayList<Event>();
-                        for(DataSnapshot childrenSnapshot : task.getResult().getChildren())
-                        {
-                            list.add(CreateEventFromSnapshot(childrenSnapshot));
-                            Log.d("tag", childrenSnapshot.toString());
-                        }
-                        liveEventList.setValue(list);
-
-                        callback.onCallback(liveEventList.getValue());
-                    }
-                }
-            }
-        });
+        eventRepository.loadEvents(callback);
     }
 
-    public void SetCurrentPlayerCount(int newCurrentPlayerCount, String eventName, ICallback callback) {
-        eventsRef.child(eventName).child("currentPlayercount")
-                .setValue(newCurrentPlayerCount).addOnCompleteListener(new OnCompleteListener() {
-                    @Override
-                    public void onComplete(@NonNull Task task) {
-
-                        if(task.isSuccessful())
-                        {
-                            callback.onCallback("success");
-                        }
-                        else
-                        {
-                            callback.onCallback("fail");
-                        }
-
-                    }
-                });
-    }
-    private Event CreateEventFromSnapshot(DataSnapshot snapshot)
+    public void setCurrentPlayerCount(int oldPlayerCount, int newCurrentPlayerCount, Event event, ICallback callback)
     {
-
-        return new Event(String.valueOf(snapshot.child("eventName").getValue()),
-                String.valueOf(snapshot.child("caption").getValue()),
-                Integer.parseInt(String.valueOf(snapshot.child("skillLevel").getValue())),
-                Integer.parseInt(String.valueOf(snapshot.child("currentPlayerCount").getValue())),
-                Integer.parseInt(String.valueOf(snapshot.child("maxPlayers").getValue())),
-                Double.parseDouble(String.valueOf(snapshot.child("latitude").getValue())),
-                Double.parseDouble(String.valueOf(snapshot.child("longitude").getValue())));
-
+        eventRepository.setCurrentPlayerCount(oldPlayerCount, newCurrentPlayerCount, event, callback);
     }
 
-    public void DeleteEvent(Event event, ICallback callback) {
-        eventsRef.child(event.eventName).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if(task.isSuccessful())
-                {
-                    callback.onCallback("success");
-                }
-                else
-                {
-                    callback.onCallback("fail");
-                }
-            }
-        });
+    public void deleteEvent(Event event, ICallback callback) {
+        eventRepository.deleteEvent(event, callback);
     }
 }

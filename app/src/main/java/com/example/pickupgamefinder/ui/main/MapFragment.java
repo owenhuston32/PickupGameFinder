@@ -106,8 +106,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         mEventsViewModel.loadEvents(new ICallback() {
             @Override
             public void onCallback(Object data) {
-                if(data != null)
-                    AddMarkers((List<Event>) data);
+                if(data.toString().equals("success"))
+                {
+                    AddMarkers(mEventsViewModel.liveEventList.getValue());
+                }
+                else
+                {
+                    Log.e("Map Fragment", "Failed to load events");
+                }
             }
         });
 
@@ -183,16 +189,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             @Override
             public void onCallback(Object data) {
 
-                Event event = (Event)data;
-                if (!event.eventName.equals(""))
+                if(data.toString().equals("success"))
                 {
-                    Log.d("TAG", "add fragment event page");
-                    ((MainActivity)activity).addFragment( new EventPageFragment(event), "EventPageFragment");
+                    ((MainActivity)activity).addFragment( new EventPageFragment(mEventsViewModel.liveEvent.getValue()), "EventPageFragment");
                 }
                 else
                 {
                     Log.e("TAG", "error finding event by name");
-                    //error finding event by event name
                 }
             }
         });
