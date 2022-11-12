@@ -108,11 +108,18 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
             {
                 mViewModel.getUser(username, new ICallback()
                 {
+                    // if we fail to get user that means the username is available
                     @Override
-                    public void onCallback(Object user) {
+                    public void onCallback(Object data) {
 
-                        SignUp((User)user, username, password);
-
+                        if(data.toString().equals("success"))
+                        {
+                            mErrorMessage.setText("Username Not Available");
+                        }
+                        else
+                        {
+                            signUp(username, password);
+                        }
                     }
                 });
             }
@@ -135,17 +142,21 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
         }
         return valid;
     }
-    private void SignUp(User user, String username, String password)
+    private void signUp(String username, String password)
     {
-        Log.d("signupfragment", "observer call: " + user);
-        if  (user.username.equals("")) {
-            Log.d("signupfragment", "ADD USER NOW: " + username + password);
-            mViewModel.addUser(username, password, new ArrayList<String>());
-            ((MainActivity)activity).addFragment(((MapFragment) new MapFragment()).newInstance(), "MapFragment");
-        }
-        else
-        {
-            mErrorMessage.setText("Username Not Available");
-        }
+        User user = new User(username, password, new ArrayList<String>(), new ArrayList<String>());
+        mViewModel.addUser(user, new ICallback() {
+            @Override
+            public void onCallback(Object data) {
+                if(data.toString().equals("success"))
+                {
+                    ((MainActivity)activity).addFragment(((MapFragment) new MapFragment()).newInstance(), "MapFragment");
+                }
+                else
+                {
+                    Log.e("SignupFragment", "Failed to add user to database");
+                }
+            }
+        });
     }
 }

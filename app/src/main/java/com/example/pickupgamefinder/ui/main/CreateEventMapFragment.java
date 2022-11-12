@@ -22,6 +22,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.example.pickupgamefinder.Event;
+import com.example.pickupgamefinder.ICallback;
+import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -196,8 +198,19 @@ public class CreateEventMapFragment extends Fragment implements View.OnClickList
         {
             event.latitude = eventLocation.latitude;
             event.longitude = eventLocation.longitude;
-            mEventViewModel.addEvent(event);
-            mAccountViewModel.AddToUserEventList(event.eventName);
+            mEventViewModel.addEvent(event, new ICallback() {
+                @Override
+                public void onCallback(Object data) {
+                    if(data.toString().equals("success"))
+                    {
+                        ((MainActivity)activity).addFragment(new MapFragment().newInstance(), "MapFragment");
+                    }
+                    else
+                    {
+                        Log.e("TAG", "Failed to create event");
+                    }
+                }
+            });
         }
     }
 }

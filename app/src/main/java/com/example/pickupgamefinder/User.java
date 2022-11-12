@@ -6,16 +6,18 @@ import java.util.List;
 public class User {
     public String username;
     public String password;
-    public List<String> eventNames;
+    public List<String> createdEventNames;
+    public List<String> joinedEventNames;
 
     public User() {
         // Default constructor required for calls to DataSnapshot.getValue(com.example.pickupgamefinder.User.class)
     }
 
-    public User(String username, String password, List<String> eventNames) {
+    public User(String username, String password, List<String> createdEventNames, List<String> joinedEventNames) {
         this.username = username;
         this.password = password;
-        this.eventNames = eventNames;
+        this.createdEventNames = createdEventNames;
+        this.joinedEventNames = joinedEventNames;
     }
 
 }
