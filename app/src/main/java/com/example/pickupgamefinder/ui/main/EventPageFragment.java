@@ -124,12 +124,7 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
         }
         else if(id == deleteEvent.getId())
         {
-<<<<<<< Updated upstream
-            DeleteEvent();
-=======
             deleteEvent();
-
->>>>>>> Stashed changes
         }
     }
     private void SetCurrentPlayerCount(int oldPlayercount, int newPlayercount)
@@ -180,3 +175,6 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
                 });
     }
 }
+
+
+

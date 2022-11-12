@@ -101,7 +101,12 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
         if  (!user.username.equals("") && user.password.equals(password)) {
             mLoginButton.setText("Logged In");
             mAccountViewModel.liveUser.setValue(user);
-            ((MainActivity)activity).addFragment(((MapFragment) new MapFragment()).newInstance(), "MapFragment");
+            mAccountViewModel.LoadUserEvents(new ICallback() {
+                @Override
+                public void onCallback(Object data) {
+                    ((MainActivity)activity).addFragment(((MapFragment) new MapFragment()).newInstance(), "MapFragment");
+                }
+            });
         }
         else
         {
