@@ -63,37 +63,44 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
 
         int viewId = view.getId();
 
-        if(viewId == mLoginButton.getId())
-        {
+        if(viewId == mLoginButton.getId()) {
             String username = mUsernameField.getText().toString();
             String password = mPasswordField.getText().toString();
 
-            mAccountViewModel.getUser(username, new ICallback()
-            {
-                @Override
-                public void onCallback(Object data) {
+            ((MainActivity) activity).showLoadingScreen();
 
-                    if(data.toString().equals("success"))
+            checkLoginInfo(username, password);
+        }
+    }
+    private void checkLoginInfo(String username, String password)
+    {
+        mAccountViewModel.getUser(username, new ICallback()
+        {
+            @Override
+            public void onCallback(Object data) {
+
+                if(data.toString().equals("success"))
+                {
+                    User user = mAccountViewModel.liveUser.getValue();
+
+                    if(!username.equals("") && user.password.equals(password))
                     {
-                        User user = mAccountViewModel.liveUser.getValue();
-
-                        if(!username.equals("") && user.password.equals(password))
-                        {
-                            Login(username, password);
-                        }
-                        else
-                        {
-                            mErrorMessage.setText("Invalid Username or Password");
-                        }
+                        Login(username, password);
                     }
                     else
                     {
-                        Log.e("Login Fragment", "failed to get user from database");
+                        ((MainActivity) activity).hideLoadingScreen();
+                        mErrorMessage.setText("Invalid Username or Password");
                     }
                 }
-            });
+                else
+                {
+                    ((MainActivity) activity).hideLoadingScreen();
+                    Log.e("Login Fragment", "failed to get user from database");
+                }
+            }
+        });
 
-        }
     }
     private void Login(String username, String password)
     {
@@ -101,6 +108,7 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
             @Override
             public void onCallback(Object data) {
 
+                ((MainActivity) activity).hideLoadingScreen();
                 if(data.toString().equals("success"))
                 {
                     mLoginButton.setText("Logged In");

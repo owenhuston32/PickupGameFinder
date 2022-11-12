@@ -90,8 +90,6 @@ public class CreateEventFragment extends Fragment implements View.OnClickListene
         if(id == nextPageButton.getId())
         {
             ((MainActivity)activity).addFragment(new CreateEventMapFragment(CreateEvent()), "MapFragment");
-        // todo: add this after selectin location on create event map fragment
-        //    mEventViewModel.addEvent(event);
         }
         else if(id == skillLevelLeftArrow.getId())
         {

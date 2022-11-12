@@ -136,6 +136,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
     private void getCurrentLocation()
     {
+        ((MainActivity) activity).showLoadingScreen();
         @SuppressLint("MissingPermission") Task<Location> task = fusedLocationProviderClient.getLastLocation();
 
         task.addOnSuccessListener(new OnSuccessListener<Location>() {
@@ -156,6 +157,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
 
                             googleMap.addMarker(options);
+
+                            ((MainActivity) activity).hideLoadingScreen();
 
                         }
                     });
@@ -185,12 +188,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     public void onInfoWindowClick(@NonNull Marker marker) {
 
         Log.d("TAG", "INFO WINDOW CLICK, marker title: " + marker.getTitle());
+
+        ((MainActivity) activity).showLoadingScreen();
+
         mEventsViewModel.getEvent(marker.getTitle(), new ICallback() {
             @Override
             public void onCallback(Object data) {
 
                 if(data.toString().equals("success"))
                 {
+                    ((MainActivity) activity).hideLoadingScreen();
                     ((MainActivity)activity).addFragment( new EventPageFragment(mEventsViewModel.liveEvent.getValue()), "EventPageFragment");
                 }
                 else

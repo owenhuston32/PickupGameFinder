@@ -106,6 +106,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
 
             if(isPasswordValid(password, passwordConfirm))
             {
+                ((MainActivity) activity).showLoadingScreen();
                 mViewModel.getUser(username, new ICallback()
                 {
                     // if we fail to get user that means the username is available
@@ -114,6 +115,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
 
                         if(data.toString().equals("success"))
                         {
+                            ((MainActivity) activity).hideLoadingScreen();
                             mErrorMessage.setText("Username Not Available");
                         }
                         else
@@ -150,6 +152,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
             public void onCallback(Object data) {
                 if(data.toString().equals("success"))
                 {
+                    ((MainActivity) activity).hideLoadingScreen();
                     ((MainActivity)activity).addFragment(((MapFragment) new MapFragment()).newInstance(), "MapFragment");
                 }
                 else
