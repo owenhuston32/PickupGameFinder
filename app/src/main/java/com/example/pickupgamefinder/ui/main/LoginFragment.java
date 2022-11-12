@@ -97,23 +97,6 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
     }
     private void Login(String username, String password)
     {
-<<<<<<< Updated upstream
-        if  (!user.username.equals("") && user.password.equals(password)) {
-            mLoginButton.setText("Logged In");
-            mAccountViewModel.liveUser.setValue(user);
-            mAccountViewModel.LoadUserEvents(new ICallback() {
-                @Override
-                public void onCallback(Object data) {
-                    ((MainActivity)activity).addFragment(((MapFragment) new MapFragment()).newInstance(), "MapFragment");
-                }
-            });
-        }
-        else
-        {
-            mErrorMessage.setText("Invalid Username or Password");
-        }
-=======
-        mLoginButton.setText("Logged In");
         mAccountViewModel.loadUserEvents(new ICallback() {
             @Override
             public void onCallback(Object data) {
@@ -129,7 +112,6 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
                 }
             }
         });
->>>>>>> Stashed changes
     }
 
     @Override

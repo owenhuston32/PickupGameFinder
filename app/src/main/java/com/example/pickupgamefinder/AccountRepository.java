@@ -9,8 +9,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -103,18 +105,50 @@ public class AccountRepository {
                 });
     }
     public void loadUserEvents(ICallback callback) {
-        dbRef.child("users").child(accountViewModel.liveUser.getValue().username).child("events").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+
+        dbRef.child("users").child(accountViewModel.liveUser.getValue().username).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (task.isSuccessful()) {
 
-                    if (task.getResult().getValue() != null) {
-                        List<String> list = new ArrayList<String>();
-                        for (String s : (List<String>) task.getResult().getValue()) {
-                            list.add(s);
+                    User user = accountViewModel.liveUser.getValue();
+
+                    if(task.getResult().hasChildren())
+                    {
+                        GenericTypeIndicator<HashMap<String, Integer>> t = new GenericTypeIndicator<HashMap<String, Integer>>() {};
+                        HashMap<String, Integer> createdEventsMap = task.getResult().child("createdEvents").getValue(t);
+
+                        List<String> createdEvents = null;
+
+                        if(createdEventsMap != null)
+                        {
+                            createdEvents = new ArrayList<String>();
+                            for (String s : createdEventsMap.keySet()) {
+                                createdEvents.add(s);
+                                Log.d("Account Repo", "created event: " + s);
+                            }
                         }
-                        User user = accountViewModel.liveUser.getValue();
-                        user.createdEventNames = list;
+
+                        HashMap<String, Integer> joinedEventsMap = task.getResult().child("joinedEvents").getValue(t);
+                        List<String> joinedEvents = null;
+                        if(joinedEventsMap != null)
+                        {
+                            joinedEvents = new ArrayList<String>();
+                            for (String s : joinedEventsMap.keySet()) {
+                                joinedEvents.add(s);
+                                Log.d("Account Repo", "joined event: " + s);
+                            }
+                        }
+
+                        user.createdEventNames = createdEvents;
+                        user.joinedEventNames = joinedEvents;
+
+
+
+
+                        Log.d("Account Repo", "" + user.createdEventNames);
+                        Log.d("Account Repo", "" + user.joinedEventNames);
+
                         accountViewModel.liveUser.setValue(user);
 
                         callback.onCallback("success");

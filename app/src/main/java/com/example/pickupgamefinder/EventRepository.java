@@ -106,11 +106,12 @@ public class EventRepository {
             public void onComplete(@NonNull Task<DataSnapshot> task) {
 
                 if (task.isSuccessful() && task.getResult().hasChildren()) {
+
+
                     List<Event> list = new ArrayList<Event>();
                     for(DataSnapshot childrenSnapshot : task.getResult().getChildren())
                     {
                         list.add(createEventFromSnapshot(childrenSnapshot));
-                        Log.d("tag", childrenSnapshot.toString());
                     }
                     eventsViewModel.liveEventList.setValue(list);
                     callback.onCallback("success");
@@ -131,7 +132,7 @@ public class EventRepository {
         //if old player count > new player count this means we left the event
         // set the val to null to delete the entry from the database under joined events
         Integer val = null;
-        if(oldPlayerCount > newCurrentPlayerCount)
+        if(newCurrentPlayerCount > oldPlayerCount)
         {
             val = 0;
         }
