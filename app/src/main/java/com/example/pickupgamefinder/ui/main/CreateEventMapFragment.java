@@ -124,6 +124,7 @@ public class CreateEventMapFragment extends Fragment implements View.OnClickList
     }
     private void getCurrentLocation()
     {
+        ((MainActivity) activity).showLoadingScreen();
         @SuppressLint("MissingPermission") Task<Location> task = fusedLocationProviderClient.getLastLocation();
         Log.e("GoogleMaps", "Get current location called");
         task.addOnSuccessListener(new OnSuccessListener<Location>() {
@@ -157,6 +158,7 @@ public class CreateEventMapFragment extends Fragment implements View.OnClickList
                             Log.e("GoogleMaps", "Drag should be initialized");
                             InitializeMarkerDrag();
 
+                            ((MainActivity) activity).hideLoadingScreen();
                         }
                     });
                 }
@@ -196,21 +198,27 @@ public class CreateEventMapFragment extends Fragment implements View.OnClickList
 
         if(id == createEventButton.getId())
         {
-            event.latitude = eventLocation.latitude;
-            event.longitude = eventLocation.longitude;
-            mEventViewModel.addEvent(event, new ICallback() {
-                @Override
-                public void onCallback(Object data) {
-                    if(data.toString().equals("success"))
-                    {
-                        ((MainActivity)activity).addFragment(new MapFragment().newInstance(), "MapFragment");
-                    }
-                    else
-                    {
-                        Log.e("TAG", "Failed to create event");
-                    }
-                }
-            });
+            ((MainActivity) activity).showLoadingScreen();
+            createEvent();
         }
+    }
+    private void createEvent()
+    {
+        event.latitude = eventLocation.latitude;
+        event.longitude = eventLocation.longitude;
+        mEventViewModel.addEvent(event, new ICallback() {
+            @Override
+            public void onCallback(Object data) {
+                ((MainActivity) activity).hideLoadingScreen();
+                if(data.toString().equals("success"))
+                {
+                    ((MainActivity)activity).addFragment(new MapFragment().newInstance(), "MapFragment");
+                }
+                else
+                {
+                    Log.e("TAG", "Failed to create event");
+                }
+            }
+        });
     }
 }

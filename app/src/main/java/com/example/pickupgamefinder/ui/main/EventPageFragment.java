@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.example.pickupgamefinder.Event;
 import com.example.pickupgamefinder.EventRecyclerAdapter;
 import com.example.pickupgamefinder.ICallback;
+import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
 
 import java.util.List;
@@ -66,9 +67,11 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
 
         activity = requireActivity();
 
+        ((MainActivity) activity).showLoadingScreen();
         accountViewModel.loadUserEvents(new ICallback() {
             @Override
             public void onCallback(Object data) {
+                ((MainActivity) activity).hideLoadingScreen();
                 InitializeUI();
             }
         });
@@ -112,13 +115,16 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
 
         if(id == joinEvent.getId())
         {
+            ((MainActivity) activity).showLoadingScreen();
             SetCurrentPlayerCount(event.currentPlayerCount, event.currentPlayerCount + 1);
         }
         else if(id == leaveEvent.getId()) {
+            ((MainActivity) activity).showLoadingScreen();
             SetCurrentPlayerCount(event.currentPlayerCount, event.currentPlayerCount - 1);
         }
         else if(id == deleteEvent.getId())
         {
+            ((MainActivity) activity).showLoadingScreen();
             deleteEvent();
         }
     }
@@ -128,6 +134,7 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
                 new ICallback() {
                     @Override
                     public void onCallback(Object data) {
+                        ((MainActivity) activity).hideLoadingScreen();
                         if(data.toString().equals("success"))
                         {
                             if(oldPlayercount > newPlayercount)
@@ -156,6 +163,7 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
                 new ICallback() {
                     @Override
                     public void onCallback(Object data) {
+                        ((MainActivity) activity).hideLoadingScreen();
                         if(data.toString().equals("success"))
                         {
                             deleteEvent.setVisibility(View.GONE);

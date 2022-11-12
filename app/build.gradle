@@ -47,4 +47,5 @@ dependencies {
     implementation 'com.google.android.gms:play-services-maps:18.1.0'
 
 
+    implementation 'com.github.sakshampruthi:custom-loading-screen:1.16'
 }

@@ -22,29 +22,6 @@ public class EventsViewModel extends ViewModel {
     public EventRepository eventRepository = null;
     public AccountRepository accountRepository = null;
 
-
-    public void initializeObservers(LifecycleOwner lifecycleOwner) {
-        Observer<Event> observer = new Observer<Event>() {
-            @Override
-            public void onChanged(Event event) {
-                loadEvents(new ICallback() {
-                    @Override
-                    public void onCallback(Object data) {
-                        if(data.toString().equals("success"))
-                        {
-
-                        }
-                        else
-                        {
-                            Log.e("EventsViewModel", "load Events failed (onChanged observer)");
-                        }
-                    }
-                });
-            }
-        };
-        liveEvent.observe(lifecycleOwner, observer);
-    }
-
     public void addEvent(Event event, ICallback callback)
     {
         eventRepository.addEvent(event, callback);

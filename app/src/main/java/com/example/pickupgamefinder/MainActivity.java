@@ -17,8 +17,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 
-
-
 import com.example.pickupgamefinder.ui.main.AccountFragment;
 import com.example.pickupgamefinder.ui.main.CreateEventFragment;
 import com.example.pickupgamefinder.ui.main.EventListFragment;
@@ -30,6 +28,8 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+
+import com.saksham.customloadingdialog.LoaderKt;
 
 public class MainActivity extends AppCompatActivity implements  LifecycleObserver, NavigationView.OnNavigationItemSelectedListener{
 
@@ -70,8 +70,16 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
 
         eventsViewModel.eventRepository = eventRepository;
         eventsViewModel.accountRepository = accountRepository;
-        eventsViewModel.initializeObservers(this);
 
+    }
+
+    public void showLoadingScreen()
+    {
+        com.saksham.customloadingdialog.LoaderKt.showDialog(this, false, R.raw.loading_animation);
+    }
+    public void hideLoadingScreen()
+    {
+        com.saksham.customloadingdialog.LoaderKt.hideDialog();
     }
 
     private void InitializeActionbar()
