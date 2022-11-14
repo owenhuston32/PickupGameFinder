@@ -152,7 +152,7 @@ public class CreateEventMapFragment extends Fragment implements View.OnClickList
 
                             googleMap = map;
 
-                            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(eventLocation, 10));
+                            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(eventLocation, 13));
 
                             googleMap.addMarker(options);
                             Log.e("GoogleMaps", "Drag should be initialized");
@@ -212,7 +212,7 @@ public class CreateEventMapFragment extends Fragment implements View.OnClickList
                 ((MainActivity) activity).hideLoadingScreen();
                 if(data.toString().equals("success"))
                 {
-                    ((MainActivity)activity).addFragment(new MapFragment().newInstance(), "MapFragment");
+                    ((MainActivity)activity).addFragment(new EventPageFragment(event), "EventPageFragment");
                 }
                 else
                 {

@@ -1,29 +1,39 @@
 package com.example.pickupgamefinder;
 
+import android.app.Activity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+
+import com.example.pickupgamefinder.ui.main.EventPageFragment;
+import com.example.pickupgamefinder.ui.main.MapFragment;
 
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class EventRecyclerAdapter extends RecyclerView.Adapter<EventRecyclerAdapter.MyViewHolder> {
+public class EventRecyclerAdapter extends RecyclerView.Adapter<EventRecyclerAdapter.MyViewHolder>  {
 
     private List<Event> eventsList;
+    private Activity activity;
 
-    public EventRecyclerAdapter(List<Event> eventsList)
+    public EventRecyclerAdapter(List<Event> eventsList, Activity activity)
     {
         this.eventsList = eventsList;
+        this.activity = activity;
     }
+
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
         private TextView eventName;
         private TextView caption;
         private TextView skillLevel;
         private TextView players;
+        private Button viewEvent;
 
         public MyViewHolder(final View view)
         {
@@ -33,6 +43,7 @@ public class EventRecyclerAdapter extends RecyclerView.Adapter<EventRecyclerAdap
             caption = view.findViewById(R.id.list_event_caption);
             skillLevel = view.findViewById(R.id.list_event_skill_level);
             players = view.findViewById(R.id.list_event_players);
+            viewEvent = view.findViewById(R.id.list_event_view_event);
         }
     }
 
@@ -60,6 +71,25 @@ public class EventRecyclerAdapter extends RecyclerView.Adapter<EventRecyclerAdap
         holder.caption.setText(caption);
         holder.skillLevel.setText(skill);
         holder.players.setText(players);
+        holder.viewEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((MainActivity)activity).eventsViewModel.getEvent(e.eventName, new ICallback() {
+                    @Override
+                    public void onCallback(Object data) {
+
+                        if(data.toString().equals("success"))
+                        {
+                            ((MainActivity)activity).addFragment(new EventPageFragment(e), "EventPageFragment");
+                        }
+                        else
+                        {
+                            Log.e("EventRcyclerAdapter", "Failed to load event");
+                        }
+                    }
+                });
+            }
+        });
 
     }
 
