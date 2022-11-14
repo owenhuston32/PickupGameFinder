@@ -154,7 +154,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                             MarkerOptions options = new MarkerOptions().position(latLng)
                                     .title("YOU ARE HERE");
 
-                            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
+                            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13));
 
                             googleMap.addMarker(options);
 

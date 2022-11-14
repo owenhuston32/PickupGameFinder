@@ -55,11 +55,11 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
         accountViewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
 
         eventDetailsTV = v.findViewById(R.id.event_page_event_details);
-        eventDetailsTV.setText(event.eventName + "\n" + event.caption
+        eventDetailsTV.setText("Title: " + event.eventName + "\n" + "caption: " + event.caption
          + "\nSkill Level: " + event.skillLevel + "/10\n");
 
         currentPlayerTV = v.findViewById(R.id.event_page_player_count);
-        currentPlayerTV.setText(event.currentPlayerCount + "\\" + event.maxPlayers);
+        currentPlayerTV.setText("Players: " + event.currentPlayerCount + "\\" + event.maxPlayers);
 
         joinEvent = v.findViewById(R.id.event_page_join);
         leaveEvent = v.findViewById(R.id.event_page_leave);
@@ -147,7 +147,7 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
                                 leaveEvent.setVisibility(View.VISIBLE);
                                 joinEvent.setVisibility(View.GONE);
                             }
-                            currentPlayerTV.setText("players: "+ newPlayercount + "\\" + event.maxPlayers);
+                            currentPlayerTV.setText("Players: "+ newPlayercount + "\\" + event.maxPlayers);
                             event.currentPlayerCount = newPlayercount;
                         }
                         else
@@ -178,6 +178,3 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
                 });
     }
 }
-
-
-
