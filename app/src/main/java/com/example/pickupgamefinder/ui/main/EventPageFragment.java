@@ -5,9 +5,6 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,7 +14,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.pickupgamefinder.Event;
-import com.example.pickupgamefinder.EventRecyclerAdapter;
 import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
@@ -32,6 +28,8 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
     Button joinEvent;
     Button leaveEvent;
     Button deleteEvent;
+    Button returnToMapEvent;
+
     EventsViewModel eventsViewModel;
     Event event;
     AccountViewModel accountViewModel;
@@ -64,6 +62,7 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
         joinEvent = v.findViewById(R.id.event_page_join);
         leaveEvent = v.findViewById(R.id.event_page_leave);
         deleteEvent = v.findViewById(R.id.event_page_delete);
+        returnToMapEvent = v.findViewById(R.id.event_page_return);
 
         activity = requireActivity();
 
@@ -79,6 +78,7 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
         joinEvent.setOnClickListener(this);
         leaveEvent.setOnClickListener(this);
         deleteEvent.setOnClickListener(this);
+        returnToMapEvent.setOnClickListener(this);
         // Inflate the layout for this fragment
         return v;
     }
@@ -127,6 +127,13 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
             ((MainActivity) activity).showLoadingScreen();
             deleteEvent();
         }
+        else if (id == returnToMapEvent.getId()) {
+         //   ((MainActivity) activity).showLoadingScreen();
+          //  ((MainActivity) activity).hideLoadingScreen();
+            ((MainActivity)activity).addFragment(((MapFragment) new MapFragment()).newInstance(), "MapFragment");
+
+        }
+        // FIXME add here
     }
     private void SetCurrentPlayerCount(int oldPlayercount, int newPlayercount)
     {
@@ -169,6 +176,7 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
                             deleteEvent.setVisibility(View.GONE);
                             eventDetailsTV.setText("EVENT HAS BEEN DELETED");
                             currentPlayerTV.setText("");
+                            // add button that allows you
                         }
                         else
                         {
