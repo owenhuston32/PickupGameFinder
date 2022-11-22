@@ -128,10 +128,7 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
             deleteEvent();
         }
         else if (id == returnToMapEvent.getId()) {
-         //   ((MainActivity) activity).showLoadingScreen();
-          //  ((MainActivity) activity).hideLoadingScreen();
-            ((MainActivity)activity).addFragment(((MapFragment) new MapFragment()).newInstance(), "MapFragment");
-
+            ((MainActivity)activity).addFragment(new MapFragment(), "MapFragment");
         }
         // FIXME add here
     }

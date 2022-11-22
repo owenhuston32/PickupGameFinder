@@ -14,19 +14,14 @@ import android.widget.Button;
 import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link WelcomeScreenFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class WelcomeScreenFragment extends Fragment implements View.OnClickListener {
 
     private Button mLoginButton;
     private Button mSignUpButton;
     private ViewGroup mContainer;
 
-    public static WelcomeScreenFragment newInstance() {
-        return new WelcomeScreenFragment();
+    public WelcomeScreenFragment() {
+
     }
 
     @Override

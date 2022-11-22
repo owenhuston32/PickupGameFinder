@@ -31,9 +31,9 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
     private Button mLoginButton;
     private Activity activity;
 
-
-    public static LoginFragment newInstance() {
-        return new LoginFragment();
+    public LoginFragment()
+    {
+        Log.d("LoginFragment", "LoginFragment constructor");
     }
 
     @Nullable
@@ -54,12 +54,16 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
 
         mLoginButton.setOnClickListener(this);
 
+        Log.d("LoginFragment", "on create view");
+
         return v;
     }
 
     @Override
     public void onClick(View view)
     {
+
+        Log.d("LoginFragment", "on click");
 
         int viewId = view.getId();
 
@@ -111,8 +115,9 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
                 ((MainActivity) activity).hideLoadingScreen();
                 if(data.toString().equals("success"))
                 {
+                    Log.d("LoginFragment", "log in click");
                     mLoginButton.setText("Logged In");
-                    ((MainActivity)activity).addFragment(((MapFragment) new MapFragment()).newInstance(), "MapFragment");
+                    ((MainActivity)activity).addFragment(new MapFragment(), "MapFragment");
                 }
                 else
                 {

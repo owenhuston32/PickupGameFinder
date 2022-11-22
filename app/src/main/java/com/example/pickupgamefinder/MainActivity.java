@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, WelcomeScreenFragment.newInstance())
+                    .replace(R.id.fragment_container, new WelcomeScreenFragment())
                     .commitNow();
         }
 
@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
             drawerLayout.closeDrawer(GravityCompat.START);
             return true;
         } else if (id == R.id.menu_map) {
-            addFragment(new MapFragment().newInstance(), "MapFragment");
+            addFragment(new MapFragment(), "MapFragment");
             drawerLayout.closeDrawer(GravityCompat.START);
             return true;
         } else if (id == R.id.menu_event_list) {
@@ -182,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
                 fm.popBackStack();
             }
 
-            addFragment(new WelcomeScreenFragment().newInstance(), "WelcomeScreenFragment");
+            addFragment(new WelcomeScreenFragment(), "WelcomeScreenFragment");
             accountViewModel.liveUser.setValue(new User("", "", new ArrayList<String>(), new ArrayList<String>()));
             drawerLayout.closeDrawer(GravityCompat.START);
             return true;
