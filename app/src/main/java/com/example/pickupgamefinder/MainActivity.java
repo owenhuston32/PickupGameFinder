@@ -16,6 +16,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.FrameLayout;
 
 import com.example.pickupgamefinder.ui.main.AccountFragment;
 import com.example.pickupgamefinder.ui.main.CreateEventFragment;
@@ -23,20 +24,20 @@ import com.example.pickupgamefinder.ui.main.EventListFragment;
 import com.example.pickupgamefinder.ui.main.AccountViewModel;
 import com.example.pickupgamefinder.ui.main.EventsViewModel;
 import com.example.pickupgamefinder.ui.main.MapFragment;
+import com.example.pickupgamefinder.ui.main.PopupNotificationFragment;
 import com.example.pickupgamefinder.ui.main.WelcomeScreenFragment;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
-import com.saksham.customloadingdialog.LoaderKt;
-
 public class MainActivity extends AppCompatActivity implements  LifecycleObserver, NavigationView.OnNavigationItemSelectedListener{
 
-    DrawerLayout drawerLayout;
-    AccountViewModel accountViewModel;
-    EventsViewModel eventsViewModel;
-    public boolean hasLocationPermission = false;
+    private InternetManager internetManager;
+    private DrawerLayout drawerLayout;
+    private AccountViewModel accountViewModel;
+    private EventsViewModel eventsViewModel;
+    private PopupNotificationFragment popup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,11 +49,20 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container, new WelcomeScreenFragment())
                     .commitNow();
+
+            popup = new PopupNotificationFragment();
+
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_popup_container, popup)
+                    .commitNow();
+
+
         }
 
         InitializeViewModels();
         InitializeActionbar();
+        internetManager = new InternetManager(this);
     }
+
 
     private void InitializeViewModels()
     {
@@ -71,6 +81,24 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
         eventsViewModel.eventRepository = eventRepository;
         eventsViewModel.accountRepository = accountRepository;
 
+    }
+
+    public void checkWifi(ICallback checkWifiCallback)
+    {
+        // show loading screen and move onto callback
+        if(internetManager.checkWifi())
+        {
+            Log.d("MainActivity", "showLoadingScreen");
+            showLoadingScreen();
+            checkWifiCallback.onCallback(true);
+        }
+        // show dialog saying "not connected to internet"
+        else
+        {
+            Log.e("MainActivity", "show no internet dialog");
+            popup.showPopup();
+            checkWifiCallback.onCallback(false);
+        }
     }
 
     public void showLoadingScreen()
