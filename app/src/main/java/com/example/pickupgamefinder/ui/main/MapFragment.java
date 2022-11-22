@@ -3,22 +3,21 @@ package com.example.pickupgamefinder.ui.main;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.example.pickupgamefinder.Event;
 import com.example.pickupgamefinder.ICallback;
@@ -30,36 +29,36 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 import java.util.List;
 
-public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
+public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClickListener {
 
+    private int getLocationWaitTime = 10000;
     private EventsViewModel mEventsViewModel;
     private MapView mapView;
     private GoogleMap googleMap;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private Activity activity;
+    private Button requestLocationButton;
+    private CircleOptions userLocationCircle;
+    private Boolean isTrackingUserLocation = false;
 
     public MapFragment() {
         // Required empty public constructor
 
     }
 
-    // TODO: Rename and change types and number of parameters
-    public static MapFragment newInstance() {
-        return new MapFragment();
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.e("TAG", "on create");
         super.onCreate(savedInstanceState);
-
 
     }
 
@@ -69,40 +68,73 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
         View v = inflater.inflate(R.layout.fragment_map, container, false);
 
-
         activity = requireActivity();
 
         mEventsViewModel = new ViewModelProvider(requireActivity()).get(EventsViewModel.class);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity);
 
-        if(ActivityCompat.checkSelfPermission(activity,
-                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-        {
-
-            getCurrentLocation();
-        }
-        else
-        {
-            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
-        }
+        Log.d("TAG", "on create view");
 
         return v;
     }
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState)
     {
+        Log.d("TAG", "on view created");
+        // setup permissionhandler fragment
+        Fragment permissionHandler = new PermissionHandlerFragment(this);
+        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+        transaction.replace(R.id.map_permission_fragment_container, permissionHandler).commit();
+
+        Log.d("TAG", "permission fragment added");
+
+        Log.d("TAG", "on view created");
         mapView = (MapView) view.findViewById(R.id.map);
         mapView.onCreate(savedInstanceState);
-        mapView.onResume();
-        mapView.getMapAsync(this);
+        mapView.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(@NonNull GoogleMap googleMap) {
+                initializeMap(googleMap);
+                ((PermissionHandlerFragment)permissionHandler).requestPermission(Manifest.permission.ACCESS_FINE_LOCATION,
+                        new ICallback() {
+                        @Override
+                        public void onCallback(Object data) {
+                            permissionResultCallback((boolean) data);
+                        }
+                    });
+            }
+        });
     }
+
     @Override
-    public void onMapReady(@NonNull GoogleMap googleMap) {
+    public void onResume() {
+        super.onResume();
+        mapView.onResume();
+    }
+
+    public void permissionResultCallback(boolean result)
+    {
+        if(result)
+        {
+            getUserLocation(true);
+            loadEvents();
+        }
+
+    }
+    public void initializeMap(@NonNull GoogleMap googleMap) {
+
+        Log.d("TAG", "initialize map");
 
         this.googleMap = googleMap;
+        this.googleMap.setOnInfoWindowClickListener(this);
+    }
 
-        //add markers
+
+
+    private void loadEvents()
+    {
+        Log.d("TAG", "load events");
         mEventsViewModel.loadEvents(new ICallback() {
             @Override
             public void onCallback(Object data) {
@@ -116,73 +148,93 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                 }
             }
         });
+    }
 
-        this.googleMap.setOnInfoWindowClickListener(this);
+    private void startLocationTrackingThread()
+    {
+        Log.d("TAG", "start location tracker");
+
+        Handler handler = new Handler();
+
+        Runnable r = new Runnable() {
+            public void run() {
+                if(googleMap != null)
+                {
+                    // update user location but don't move
+                    getUserLocation(false);
+                }
+                handler.postDelayed(this, getLocationWaitTime);
+            }
+        };
+        handler.postDelayed(r, getLocationWaitTime);
     }
 
     private void AddMarkers(List<Event> eventList)
     {
-        for(Event e : eventList)
+        Log.d("TAG", "add marker");
+        if(googleMap != null)
         {
-            googleMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(e.latitude, e.longitude))
-                    .title(e.eventName)
-                    .snippet(e.caption + "\n"
-                            + "skill: " + e.skillLevel + "\n"
-                            + "players: " + e.currentPlayerCount + "/" + e.maxPlayers));
+            for(Event e : eventList)
+            {
+                googleMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(e.latitude, e.longitude))
+                        .title(e.eventName)
+                        .snippet(e.caption + "\n"
+                                + "skill: " + e.skillLevel + "\n"
+                                + "players: " + e.currentPlayerCount + "/" + e.maxPlayers));
+            }
         }
     }
 
+    private void getUserLocation(Boolean shouldMoveCamera) {
 
-    private void getCurrentLocation()
-    {
-        ((MainActivity) activity).showLoadingScreen();
+        Log.d("TAG", "get user location");
+
         @SuppressLint("MissingPermission") Task<Location> task = fusedLocationProviderClient.getLastLocation();
 
-        task.addOnSuccessListener(new OnSuccessListener<Location>() {
+        task.addOnCompleteListener(new OnCompleteListener<Location>() {
             @Override
-            public void onSuccess(Location location) {
-
-                if(location != null)
-                {
-                    mapView.getMapAsync(new OnMapReadyCallback() {
-                        @Override
-                        public void onMapReady(@NonNull GoogleMap googleMap) {
-                            LatLng latLng = new LatLng(location.getLatitude(),
-                                    location.getLongitude());
-
-                            MarkerOptions options = new MarkerOptions().position(latLng)
-                                    .title("YOU ARE HERE");
-
-                            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13));
-
-                            googleMap.addMarker(options);
-
-                            ((MainActivity) activity).hideLoadingScreen();
-
-                        }
-                    });
-                }
+            public void onComplete(@NonNull Task<Location> task) {
+                onGetLocationCallback(task, shouldMoveCamera);
             }
         });
     }
-    ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
-                new ActivityResultContracts.RequestPermission(),
-                new ActivityResultCallback<Boolean>()
-                {
-                    @Override
-                    public void onActivityResult(Boolean result)
-                    {
-                        if(result)
-                        {
-                            getCurrentLocation();
-                        }
-                        else
-                        {
-                            // permission denied
-                        }
-                    }
-                });
+    private void onGetLocationCallback(Task<Location> task, boolean shouldMoveCamera)
+    {
+        // if location data is not null
+        if (task.getResult() != null) {
+
+            if(googleMap != null)
+            {
+                setUserLocationCircle(task.getResult());
+                updateCamera(shouldMoveCamera);
+            }
+        }
+        // start a thread to update user location every few seconds
+        if(isTrackingUserLocation)
+            startLocationTrackingThread();
+    }
+    private void updateCamera(boolean shouldMoveCamera)
+    {
+        // move camera
+        if(shouldMoveCamera)
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLocationCircle.getCenter(), 13));
+    }
+
+    private void setUserLocationCircle(Location location)
+    {
+        Log.d("TAG", "set user location circle");
+        LatLng latLng = new LatLng(location.getLatitude(),
+                location.getLongitude());
+
+        userLocationCircle = new CircleOptions()
+                .center(latLng)
+                .radius(100)
+                .strokeColor(Color.BLUE)
+                .fillColor(Color.BLUE);
+
+        googleMap.addCircle(userLocationCircle);
+    }
 
     @Override
     public void onInfoWindowClick(@NonNull Marker marker) {
@@ -191,13 +243,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
         ((MainActivity) activity).showLoadingScreen();
 
+        // on event click load event page
         mEventsViewModel.getEvent(marker.getTitle(), new ICallback() {
             @Override
             public void onCallback(Object data) {
 
                 if(data.toString().equals("success"))
                 {
-                    ((MainActivity) activity).hideLoadingScreen();
+                    ((MainActivity)activity).hideLoadingScreen();
                     ((MainActivity)activity).addFragment( new EventPageFragment(mEventsViewModel.liveEvent.getValue()), "EventPageFragment");
                 }
                 else
@@ -206,6 +259,5 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                 }
             }
         });
-
     }
 }

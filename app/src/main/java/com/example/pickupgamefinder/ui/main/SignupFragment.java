@@ -34,7 +34,12 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
     private Button mSignUpButton;
     private Activity activity;
 
-    public static SignupFragment newInstance() {
+    public SignupFragment()
+    {
+
+    }
+
+    public SignupFragment newInstance() {
         return new SignupFragment();
     }
 
@@ -153,7 +158,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
                 if(data.toString().equals("success"))
                 {
                     ((MainActivity) activity).hideLoadingScreen();
-                    ((MainActivity)activity).addFragment(((MapFragment) new MapFragment()).newInstance(), "MapFragment");
+                    ((MainActivity)activity).addFragment(new MapFragment(), "MapFragment");
                 }
                 else
                 {

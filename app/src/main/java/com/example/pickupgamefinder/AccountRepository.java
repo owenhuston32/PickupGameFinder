@@ -157,7 +157,6 @@ public class AccountRepository {
                     {
                         Log.e("Account repository", "load user event list is null");
                     }
-                    callback.onCallback("success");
                 } else {
                     Log.e("account repository", "Error loading user events");
                 }
