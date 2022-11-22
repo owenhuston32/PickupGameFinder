@@ -111,22 +111,11 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
 
             if(isPasswordValid(password, passwordConfirm))
             {
-                ((MainActivity) activity).showLoadingScreen();
-                mViewModel.getUser(username, new ICallback()
-                {
-                    // if we fail to get user that means the username is available
+                ((MainActivity) activity).checkWifi(new ICallback() {
                     @Override
                     public void onCallback(Object data) {
-
-                        if(data.toString().equals("success"))
-                        {
-                            ((MainActivity) activity).hideLoadingScreen();
-                            mErrorMessage.setText("Username Not Available");
-                        }
-                        else
-                        {
-                            signUp(username, password);
-                        }
+                        if((boolean) data)
+                            trySignup(username, password);
                     }
                 });
             }
@@ -135,6 +124,29 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
 
         }
     }
+
+    private void trySignup(String username, String password)
+    {
+        mViewModel.getUser(username, new ICallback()
+        {
+            // if we fail to get user that means the username is available
+            @Override
+            public void onCallback(Object data) {
+
+                if(data.toString().equals("success"))
+                {
+                    ((MainActivity) activity).hideLoadingScreen();
+                    mErrorMessage.setText("Username Not Available");
+                }
+                else
+                {
+                    signUp(username, password);
+                }
+            }
+        });
+    }
+
+
     private boolean isPasswordValid(String pass1, String pass2)
     {
         boolean valid = true;

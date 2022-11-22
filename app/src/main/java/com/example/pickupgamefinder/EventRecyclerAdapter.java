@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.pickupgamefinder.ui.main.EventPageFragment;
+import com.example.pickupgamefinder.ui.main.EventsViewModel;
 import com.example.pickupgamefinder.ui.main.MapFragment;
 
 import java.util.List;
@@ -20,11 +21,13 @@ public class EventRecyclerAdapter extends RecyclerView.Adapter<EventRecyclerAdap
 
     private List<Event> eventsList;
     private Activity activity;
+    private EventsViewModel eventsViewModel;
 
-    public EventRecyclerAdapter(List<Event> eventsList, Activity activity)
+    public EventRecyclerAdapter(List<Event> eventsList, Activity activity, EventsViewModel eventsViewModel)
     {
         this.eventsList = eventsList;
         this.activity = activity;
+        this.eventsViewModel = eventsViewModel;
     }
 
 
@@ -74,7 +77,7 @@ public class EventRecyclerAdapter extends RecyclerView.Adapter<EventRecyclerAdap
         holder.viewEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((MainActivity)activity).eventsViewModel.getEvent(e.eventName, new ICallback() {
+                eventsViewModel.getEvent(e.eventName, new ICallback() {
                     @Override
                     public void onCallback(Object data) {
 

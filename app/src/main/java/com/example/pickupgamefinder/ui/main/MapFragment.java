@@ -241,9 +241,17 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
 
         Log.d("TAG", "INFO WINDOW CLICK, marker title: " + marker.getTitle());
 
-        ((MainActivity) activity).showLoadingScreen();
+        ((MainActivity) activity).checkWifi(new ICallback() {
+            @Override
+            public void onCallback(Object data) {
+                if((boolean) data)
+                    loadEventPage(marker);
+            }
+        });
 
-        // on event click load event page
+    }
+    private void loadEventPage(Marker marker)
+    {
         mEventsViewModel.getEvent(marker.getTitle(), new ICallback() {
             @Override
             public void onCallback(Object data) {
@@ -260,4 +268,5 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
             }
         });
     }
+
 }
