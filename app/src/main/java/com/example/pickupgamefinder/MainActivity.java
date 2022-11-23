@@ -87,7 +87,9 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
         AccountRepository accountRepository = new AccountRepository(eventsViewModel, accountViewModel, FirebaseDatabase.getInstance(),
                 FirebaseDatabase.getInstance().getReference());
 
-        accountViewModel.eventRepository = eventRepository;
+
+
+        accountViewModel.eventsViewModel = eventsViewModel;
         accountViewModel.accountRepository = accountRepository;
 
         eventsViewModel.eventRepository = eventRepository;

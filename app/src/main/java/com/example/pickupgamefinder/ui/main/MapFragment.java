@@ -136,21 +136,26 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
 
     private void loadEvents()
     {
+        if(((MainActivity)activity).checkWifi()) {
 
-        mEventsViewModel.loadEvents(new ICallback() {
-            @Override
-            public void onCallback(Object data) {
-                if(data.toString().equals("success"))
-                {
-                    AddMarkers(mEventsViewModel.liveEventList.getValue());
+            mEventsViewModel.loadEvents(new ICallback() {
+                @Override
+                public void onCallback(Object data) {
+                    if (data.toString().equals("success")) {
+                        AddMarkers(mEventsViewModel.liveEventList.getValue());
+                    } else {
+                        Log.e("Map Fragment", "Failed to load events");
+                    }
                 }
-                else
-                {
-                    AddMarkers(mEventsViewModel.liveEventList.getValue());
-                    Log.e("Map Fragment", "Failed to load events");
-                }
-            }
-        });
+            });
+        }
+        else
+        {
+            //no wifi show old events
+            AddMarkers(mEventsViewModel.liveEventList.getValue());
+        }
+        ((MainActivity)activity).hideLoadingScreen();
+
     }
 
     private void startLocationTrackingThread()

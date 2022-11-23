@@ -103,7 +103,7 @@ public class NavigationBarHandler implements NavigationView.OnNavigationItemSele
     private void createdEventsButtonClick()
     {
         setActionBarTitle("Created Events");
-        List<Event> createdEvents = getCreatedEventList();
+        List<Event> createdEvents = accountViewModel.getCreatedEventList();
 
         mainActivity.addFragment(new EventListFragment(createdEvents, false), "EventListFragment");
         drawerLayout.closeDrawer(GravityCompat.START);
@@ -111,7 +111,7 @@ public class NavigationBarHandler implements NavigationView.OnNavigationItemSele
     private void joinedEventsButtonClick()
     {
         setActionBarTitle("Joined Events");
-        List<Event> joinedEvents = getJoinedEventList();
+        List<Event> joinedEvents = accountViewModel.getJoinedEventList();
 
         mainActivity.addFragment(new EventListFragment(joinedEvents, false), "MapFragment");
         drawerLayout.closeDrawer(GravityCompat.START);
@@ -159,39 +159,5 @@ public class NavigationBarHandler implements NavigationView.OnNavigationItemSele
         actionBar.setTitle(title);
     }
 
-
-
-
-    private List<Event> getCreatedEventList()
-    {
-        List<Event> createdEvents = new ArrayList<Event>();
-
-        List<Event> liveEventList = eventsViewModel.liveEventList.getValue();
-        if(liveEventList != null && accountViewModel.liveUser.getValue().createdEventNames != null)
-        {
-            for(Event e : liveEventList)
-            {
-                if(accountViewModel.liveUser.getValue().createdEventNames.contains(e.eventName))
-                    createdEvents.add(e);
-            }
-        }
-        return createdEvents;
-    }
-    private List<Event> getJoinedEventList()
-    {
-        List<Event> joinedEvents = new ArrayList<Event>();
-
-        List<Event> liveEventList = eventsViewModel.liveEventList.getValue();
-
-        if(liveEventList != null && accountViewModel.liveUser.getValue().joinedEventNames != null)
-        {
-            for(Event e : liveEventList)
-            {
-                if(accountViewModel.liveUser.getValue().joinedEventNames.contains(e.eventName))
-                    joinedEvents.add(e);
-            }
-        }
-        return joinedEvents;
-    }
 
 }
