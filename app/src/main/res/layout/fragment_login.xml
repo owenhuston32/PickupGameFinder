@@ -7,7 +7,7 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.main.LoginFragment">
+    tools:context=".ui.Fragments.LoginFragment">
 
     <LinearLayout
         android:layout_width="match_parent"

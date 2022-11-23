@@ -1,4 +1,4 @@
-package com.example.pickupgamefinder.ui.main;
+package com.example.pickupgamefinder.ui.Fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -17,7 +17,7 @@ import com.example.pickupgamefinder.Event;
 import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
 
-import ViewModels.EventsViewModel;
+import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 
 public class CreateEventFragment extends Fragment implements View.OnClickListener {
 

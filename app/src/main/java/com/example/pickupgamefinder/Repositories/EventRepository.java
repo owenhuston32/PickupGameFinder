@@ -1,9 +1,9 @@
-package Repositories;
+package com.example.pickupgamefinder.Repositories;
 
 import android.util.Log;
 
-import ViewModels.AccountViewModel;
-import ViewModels.EventsViewModel;
+import com.example.pickupgamefinder.ViewModels.AccountViewModel;
+import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 
 import com.example.pickupgamefinder.Event;
 import com.example.pickupgamefinder.ICallback;

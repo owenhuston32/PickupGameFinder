@@ -1,4 +1,4 @@
-package com.example.pickupgamefinder.ui.main;
+package com.example.pickupgamefinder.ui.Fragments;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -37,8 +37,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
-import ViewModels.AccountViewModel;
-import ViewModels.EventsViewModel;
+import com.example.pickupgamefinder.ViewModels.AccountViewModel;
+import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 
 public class CreateEventMapFragment extends Fragment implements View.OnClickListener {
 
