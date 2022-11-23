@@ -22,7 +22,8 @@ import com.example.pickupgamefinder.R;
 import com.example.pickupgamefinder.User;
 
 import java.util.ArrayList;
-import java.util.List;
+
+import ViewModels.AccountViewModel;
 
 public class SignupFragment extends Fragment implements View.OnClickListener{
 

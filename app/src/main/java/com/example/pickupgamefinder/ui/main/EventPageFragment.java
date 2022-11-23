@@ -20,6 +20,9 @@ import com.example.pickupgamefinder.R;
 
 import java.util.List;
 
+import ViewModels.AccountViewModel;
+import ViewModels.EventsViewModel;
+
 public class EventPageFragment extends Fragment implements View.OnClickListener {
 
     Activity activity;

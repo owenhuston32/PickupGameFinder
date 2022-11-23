@@ -38,6 +38,8 @@ import com.google.android.gms.tasks.Task;
 
 import java.util.List;
 
+import ViewModels.EventsViewModel;
+
 public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClickListener {
 
     private int getLocationWaitTime = 10000;

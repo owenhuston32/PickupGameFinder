@@ -1,19 +1,12 @@
-package com.example.pickupgamefinder.ui.main;
+package ViewModels;
 
-import android.util.Log;
-
-import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.pickupgamefinder.AccountRepository;
+import Repositories.AccountRepository;
 import com.example.pickupgamefinder.Event;
 import com.example.pickupgamefinder.ICallback;
-import com.example.pickupgamefinder.EventRepository;
 import com.example.pickupgamefinder.User;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DataSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -37,6 +37,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
+import ViewModels.AccountViewModel;
+import ViewModels.EventsViewModel;
+
 public class CreateEventMapFragment extends Fragment implements View.OnClickListener {
 
     private EventsViewModel mEventViewModel;

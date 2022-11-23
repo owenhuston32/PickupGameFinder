@@ -1,7 +1,5 @@
 package com.example.pickupgamefinder.ui.main;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.util.Log;
 import android.view.MenuItem;
 
@@ -20,6 +18,9 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import ViewModels.AccountViewModel;
+import ViewModels.EventsViewModel;
 
 public class NavigationBarHandler implements NavigationView.OnNavigationItemSelectedListener {
 
