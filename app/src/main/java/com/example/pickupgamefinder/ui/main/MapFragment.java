@@ -70,6 +70,8 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
 
         activity = requireActivity();
 
+        ((MainActivity)activity).setActionBarTitle("Map");
+
         mEventsViewModel = new ViewModelProvider(requireActivity()).get(EventsViewModel.class);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity);
