@@ -1,10 +1,13 @@
 package com.example.pickupgamefinder.ui.main;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
@@ -13,16 +16,18 @@ import com.example.pickupgamefinder.Event;
 import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
 import com.example.pickupgamefinder.User;
+import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class NavigationBarHandler {
+public class NavigationBarHandler implements NavigationView.OnNavigationItemSelectedListener {
 
     AccountViewModel accountViewModel;
     EventsViewModel eventsViewModel;
     MainActivity mainActivity;
     DrawerLayout drawerLayout;
+    androidx.appcompat.app.ActionBar actionBar;
 
     public NavigationBarHandler(AccountViewModel accountViewModel, EventsViewModel eventsViewModel,
                                 MainActivity mainActivity, DrawerLayout drawerLayout)
@@ -31,8 +36,32 @@ public class NavigationBarHandler {
         this.eventsViewModel = eventsViewModel;
         this.mainActivity = mainActivity;
         this.drawerLayout = drawerLayout;
+        initializeActionbar();
     }
 
+    private void initializeActionbar()
+    {
+        NavigationView navigationView = mainActivity.findViewById(R.id.navigation_view);
+        Toolbar toolbar = (Toolbar) mainActivity.findViewById(R.id.toolbar);
+        mainActivity.setSupportActionBar(toolbar);
+
+        actionBar = mainActivity.getSupportActionBar();
+
+        drawerLayout = (DrawerLayout) mainActivity.findViewById(R.id.drawer_layout);
+
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(mainActivity, drawerLayout, toolbar,
+                R.string.navigation_draw_open, R.string.navigation_draw_close);
+
+        navigationView.setNavigationItemSelectedListener(this);
+        drawerLayout.addDrawerListener(toggle);
+
+        toggle.syncState();
+        setActionBarTitle("");
+        actionBar.hide();
+
+    }
+
+    @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) { // this is for menu icon
         int id = item.getItemId();
 
@@ -67,11 +96,13 @@ public class NavigationBarHandler {
 
     private void accountButtonClick()
     {
+        setActionBarTitle("Account");
         mainActivity.addFragment(new AccountFragment(), "AccountFragment");
         drawerLayout.closeDrawer(GravityCompat.START);
     }
     private void createdEventsButtonClick()
     {
+        setActionBarTitle("Created Events");
         List<Event> createdEvents = getCreatedEventList();
 
         mainActivity.addFragment(new EventListFragment(createdEvents, false), "EventListFragment");
@@ -79,6 +110,7 @@ public class NavigationBarHandler {
     }
     private void joinedEventsButtonClick()
     {
+        setActionBarTitle("Joined Events");
         List<Event> joinedEvents = getJoinedEventList();
 
         mainActivity.addFragment(new EventListFragment(joinedEvents, false), "MapFragment");
@@ -86,11 +118,13 @@ public class NavigationBarHandler {
     }
     private void mapButtonClick()
     {
+        setActionBarTitle("Map");
         mainActivity.addFragment(new MapFragment(), "MapFragment");
         drawerLayout.closeDrawer(GravityCompat.START);
     }
     private void viewEventsButtonClick()
     {
+        setActionBarTitle("View Events");
         List<Event> eventList = eventsViewModel.liveEventList.getValue();
 
         if(eventList != null)
@@ -102,11 +136,13 @@ public class NavigationBarHandler {
     }
     private void createEventButtonClick()
     {
+        setActionBarTitle("Create Events");
         mainActivity.addFragment(new CreateEventFragment().newInstance(), "CreateEventFragment");
         drawerLayout.closeDrawer(GravityCompat.START);
     }
     private void signOutButtonClick()
     {
+        setActionBarTitle("");
         //clear backstack
         FragmentManager fm = mainActivity.getSupportFragmentManager();
         for (int i = 0; i < fm.getBackStackEntryCount(); i++) {
@@ -116,6 +152,11 @@ public class NavigationBarHandler {
         mainActivity.addFragment(new WelcomeScreenFragment(), "WelcomeScreenFragment");
         accountViewModel.liveUser.setValue(new User("", "", new ArrayList<String>(), new ArrayList<String>()));
         drawerLayout.closeDrawer(GravityCompat.START);
+    }
+
+    public void setActionBarTitle(String title)
+    {
+        actionBar.setTitle(title);
     }
 
 

@@ -33,11 +33,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements  LifecycleObserver, NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements  LifecycleObserver{
 
     private NavigationBarHandler navigationBarHandler;
-    private InternetManager internetManager;
     private DrawerLayout drawerLayout;
+    private InternetManager internetManager;
     private AccountViewModel accountViewModel;
     private EventsViewModel eventsViewModel;
     private PopupNotificationFragment popup;
@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
 
         }
         InitializeViewModels();
-        InitializeActionbar();
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         internetManager = new InternetManager(this);
         navigationBarHandler = new NavigationBarHandler(accountViewModel, eventsViewModel, this, drawerLayout);
     }
@@ -64,6 +64,8 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, new WelcomeScreenFragment())
                 .commitNow();
+
+
     }
 
     private void createPopupFragment()
@@ -93,6 +95,10 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
 
     }
 
+    public void setActionBarTitle(String title)
+    {
+        navigationBarHandler.setActionBarTitle(title);
+    }
     public boolean checkWifi()
     {
         // show loading screen and move onto callback
@@ -120,23 +126,6 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
         com.saksham.customloadingdialog.LoaderKt.hideDialog();
     }
 
-    private void InitializeActionbar()
-    {
-        NavigationView navigationView = findViewById(R.id.navigation_view);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar,
-                R.string.navigation_draw_open, R.string.navigation_draw_close);
-
-        navigationView.setNavigationItemSelectedListener(this);
-        drawerLayout.addDrawerListener(toggle);
-
-        toggle.syncState();
-        getSupportActionBar().hide();
-
-    }
 
     @Override
     public void onBackPressed()
@@ -195,8 +184,4 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
         super.onStart();
     }
 
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) { // this is for menu icon
-        return navigationBarHandler.onNavigationItemSelected(item);
-    }
 }
