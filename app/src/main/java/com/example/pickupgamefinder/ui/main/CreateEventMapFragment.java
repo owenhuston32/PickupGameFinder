@@ -198,8 +198,11 @@ public class CreateEventMapFragment extends Fragment implements View.OnClickList
 
         if(id == createEventButton.getId())
         {
-            ((MainActivity) activity).showLoadingScreen();
-            createEvent();
+            if(((MainActivity) activity).checkWifi())
+            {
+                ((MainActivity) activity).showLoadingScreen();
+                createEvent();
+            }
         }
     }
     private void createEvent()

@@ -1,6 +1,7 @@
 package com.example.pickupgamefinder.ui.main;
 
 import android.app.Activity;
+import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
@@ -36,18 +37,22 @@ public class NavigationBarHandler {
         int id = item.getItemId();
 
         if (id == R.id.menu_account) {
+            Log.e("NaviationBarHandler", "account click");
             accountButtonClick();
             return true;
         } else if (id == R.id.menu_created_events) {
+            Log.e("NaviationBarHandler", "created events: " + eventsViewModel.liveEventList.getValue());
             createdEventsButtonClick();
             return true;
         } else if (id == R.id.menu_joined_events) {
+            Log.e("NaviationBarHandler", "created events: " + eventsViewModel.liveEventList.getValue());
             joinedEventsButtonClick();
             return true;
         } else if (id == R.id.menu_map) {
             mapButtonClick();
             return true;
         } else if (id == R.id.menu_event_list) {
+            Log.e("NaviationBarHandler", "created events: " + eventsViewModel.liveEventList.getValue());
             viewEventsButtonClick();
             return true;
         } else if (id == R.id.menu_create_event) {

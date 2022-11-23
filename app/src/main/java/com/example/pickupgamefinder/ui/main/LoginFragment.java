@@ -71,13 +71,10 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
             String username = mUsernameField.getText().toString();
             String password = mPasswordField.getText().toString();
 
-            ((MainActivity) activity).checkWifi(new ICallback() {
-                @Override
-                public void onCallback(Object data) {
-                    if((boolean) data)
-                        checkLoginInfo(username, password);
-                }
-            });
+            if(((MainActivity) activity).checkWifi())
+            {
+                checkLoginInfo(username, password);
+            }
         }
     }
     private void checkLoginInfo(String username, String password)

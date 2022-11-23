@@ -111,13 +111,10 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
 
             if(isPasswordValid(password, passwordConfirm))
             {
-                ((MainActivity) activity).checkWifi(new ICallback() {
-                    @Override
-                    public void onCallback(Object data) {
-                        if((boolean) data)
-                            trySignup(username, password);
-                    }
-                });
+                if(((MainActivity) activity).checkWifi())
+                {
+                    trySignup(username, password);
+                }
             }
         }
         else {

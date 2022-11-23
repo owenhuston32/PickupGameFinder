@@ -60,7 +60,7 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
         recyclerView = v.findViewById(R.id.events_list_recyclerView);
         refreshButton = v.findViewById(R.id.event_list_refresh_button);
 
-        refreshEvents();
+        setAdapter();
 
         if(showRefreshButton)
             refreshButton.setVisibility(View.VISIBLE);
@@ -87,19 +87,10 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
 
     private void refreshEvents()
     {
-        ((MainActivity)activity).checkWifi(new ICallback() {
-            @Override
-            public void onCallback(Object data) {
-                if((boolean) data)
-                {
-                    loadEvents();
-                }
-                else
-                {
-                    //no wifi cant refresh events
-                }
-            }
-        });
+        if(((MainActivity)activity).checkWifi())
+        {
+            loadEvents();
+        }
     }
 
     private void loadEvents()
@@ -111,11 +102,13 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
                 if(eventsViewModel.liveEventList.getValue() != null)
                 {
                     ((MainActivity)activity).hideLoadingScreen();
+                    eventList = eventsViewModel.liveEventList.getValue();
                     setAdapter();
                 }
                 else
                 {
                     ((MainActivity)activity).hideLoadingScreen();
+                    setAdapter();
                     Log.e("EventListFragment", "no events found");
                 }
             }
