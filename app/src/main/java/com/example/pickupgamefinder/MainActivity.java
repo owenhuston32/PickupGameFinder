@@ -12,14 +12,14 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 
-import Repositories.AccountRepository;
-import Repositories.EventRepository;
-import ViewModels.AccountViewModel;
-import ViewModels.EventsViewModel;
+import com.example.pickupgamefinder.Repositories.AccountRepository;
+import com.example.pickupgamefinder.Repositories.EventRepository;
+import com.example.pickupgamefinder.ViewModels.AccountViewModel;
+import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 
-import com.example.pickupgamefinder.ui.main.NavigationBarHandler;
-import com.example.pickupgamefinder.ui.main.PopupNotificationFragment;
-import com.example.pickupgamefinder.ui.main.WelcomeScreenFragment;
+import com.example.pickupgamefinder.ui.Fragments.NavigationBarHandler;
+import com.example.pickupgamefinder.ui.Fragments.PopupNotificationFragment;
+import com.example.pickupgamefinder.ui.Fragments.WelcomeScreenFragment;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity implements  LifecycleObserver{

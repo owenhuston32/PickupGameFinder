@@ -1,4 +1,4 @@
-package com.example.pickupgamefinder.ui.main;
+package com.example.pickupgamefinder.ui.Fragments;
 
 import android.Manifest;
 import android.app.Activity;
@@ -17,7 +17,6 @@ import androidx.fragment.app.Fragment;
 
 import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.R;
-import com.example.pickupgamefinder.ui.main.MapFragment;
 
 public class PermissionHandlerFragment extends Fragment implements  View.OnClickListener{
 

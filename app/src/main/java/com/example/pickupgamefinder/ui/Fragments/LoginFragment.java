@@ -1,4 +1,4 @@
-package com.example.pickupgamefinder.ui.main;
+package com.example.pickupgamefinder.ui.Fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -21,7 +21,7 @@ import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
 import com.example.pickupgamefinder.User;
 
-import ViewModels.AccountViewModel;
+import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 
 public class LoginFragment extends Fragment implements  View.OnClickListener {
 

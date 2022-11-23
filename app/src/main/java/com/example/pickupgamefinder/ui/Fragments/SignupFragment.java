@@ -1,4 +1,4 @@
-package com.example.pickupgamefinder.ui.main;
+package com.example.pickupgamefinder.ui.Fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -23,7 +23,7 @@ import com.example.pickupgamefinder.User;
 
 import java.util.ArrayList;
 
-import ViewModels.AccountViewModel;
+import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 
 public class SignupFragment extends Fragment implements View.OnClickListener{
 

@@ -1,9 +1,9 @@
-package ViewModels;
+package com.example.pickupgamefinder.ViewModels;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import Repositories.AccountRepository;
+import com.example.pickupgamefinder.Repositories.AccountRepository;
 import com.example.pickupgamefinder.Event;
 import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.User;
