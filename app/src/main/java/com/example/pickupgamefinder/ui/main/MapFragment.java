@@ -134,7 +134,7 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
 
     private void loadEvents()
     {
-        Log.d("TAG", "load events");
+
         mEventsViewModel.loadEvents(new ICallback() {
             @Override
             public void onCallback(Object data) {
@@ -144,6 +144,7 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
                 }
                 else
                 {
+                    AddMarkers(mEventsViewModel.liveEventList.getValue());
                     Log.e("Map Fragment", "Failed to load events");
                 }
             }
@@ -241,13 +242,15 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
 
         Log.d("TAG", "INFO WINDOW CLICK, marker title: " + marker.getTitle());
 
-        ((MainActivity) activity).checkWifi(new ICallback() {
-            @Override
-            public void onCallback(Object data) {
-                if((boolean) data)
-                    loadEventPage(marker);
-            }
-        });
+        if(((MainActivity) activity).checkWifi())
+        {
+            loadEventPage(marker);
+        }
+        else
+        {
+            ((MainActivity)activity).hideLoadingScreen();
+            ((MainActivity)activity).addFragment( new EventPageFragment(mEventsViewModel.liveEvent.getValue()), "EventPageFragment");
+        }
 
     }
     private void loadEventPage(Marker marker)

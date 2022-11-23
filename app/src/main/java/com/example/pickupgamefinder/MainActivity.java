@@ -33,7 +33,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements  LifecycleObserver, NavigationView.OnNavigationItemSelectedListener{
+public class MainActivity extends AppCompatActivity implements  LifecycleObserver, NavigationView.OnNavigationItemSelectedListener {
 
     private NavigationBarHandler navigationBarHandler;
     private InternetManager internetManager;
@@ -49,22 +49,30 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
         setContentView(R.layout.activity_main);
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new WelcomeScreenFragment())
-                    .commitNow();
-
-            popup = new PopupNotificationFragment();
-
-            getSupportFragmentManager().beginTransaction().replace(R.id.main_popup_container, popup)
-                    .commitNow();
+            createWelcomeScreen();
+            createPopupFragment();
 
         }
         InitializeViewModels();
         InitializeActionbar();
         internetManager = new InternetManager(this);
-        navigationBarHandler = new NavigationBarHandler(accountViewModel, eventsViewModel, this,drawerLayout);
+        navigationBarHandler = new NavigationBarHandler(accountViewModel, eventsViewModel, this, drawerLayout);
     }
 
+    private void createWelcomeScreen() {
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, new WelcomeScreenFragment())
+                .commitNow();
+    }
+
+    private void createPopupFragment()
+    {
+        popup = new PopupNotificationFragment();
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_popup_container, popup)
+                .commitNow();
+    }
 
     private void InitializeViewModels()
     {
@@ -85,21 +93,21 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
 
     }
 
-    public void checkWifi(ICallback checkWifiCallback)
+    public boolean checkWifi()
     {
         // show loading screen and move onto callback
         if(internetManager.checkWifi())
         {
             Log.d("MainActivity", "showLoadingScreen");
             showLoadingScreen();
-            checkWifiCallback.onCallback(true);
+            return true;
         }
         // show dialog saying "not connected to internet"
         else
         {
             Log.e("MainActivity", "show no internet dialog");
             popup.showPopup();
-            checkWifiCallback.onCallback(false);
+            return false;
         }
     }
 
@@ -189,8 +197,6 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) { // this is for menu icon
-        int id = item.getItemId();
-
         return navigationBarHandler.onNavigationItemSelected(item);
     }
 }
