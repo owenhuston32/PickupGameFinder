@@ -14,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.example.pickupgamefinder.Event;
 import com.example.pickupgamefinder.EventRecyclerAdapter;
@@ -23,6 +22,9 @@ import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
 
 import java.util.List;
+
+import ViewModels.AccountViewModel;
+import ViewModels.EventsViewModel;
 
 public class EventListFragment extends Fragment implements View.OnClickListener {
 

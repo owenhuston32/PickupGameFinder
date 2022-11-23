@@ -1,18 +1,13 @@
-package com.example.pickupgamefinder.ui.main;
+package ViewModels;
 
-import android.util.Log;
-
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
-import com.example.pickupgamefinder.AccountRepository;
+import Repositories.AccountRepository;
 import com.example.pickupgamefinder.Event;
 import com.example.pickupgamefinder.ICallback;
-import com.example.pickupgamefinder.EventRepository;
+import Repositories.EventRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class EventsViewModel extends ViewModel {

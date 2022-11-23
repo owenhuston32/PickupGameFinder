@@ -1,9 +1,12 @@
-package com.example.pickupgamefinder;
+package Repositories;
 
 import android.util.Log;
 
-import com.example.pickupgamefinder.ui.main.AccountViewModel;
-import com.example.pickupgamefinder.ui.main.EventsViewModel;
+import ViewModels.AccountViewModel;
+import ViewModels.EventsViewModel;
+
+import com.example.pickupgamefinder.ICallback;
+import com.example.pickupgamefinder.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;

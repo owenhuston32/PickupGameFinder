@@ -21,6 +21,8 @@ import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
 import com.example.pickupgamefinder.User;
 
+import ViewModels.AccountViewModel;
+
 public class LoginFragment extends Fragment implements  View.OnClickListener {
 
     private AccountViewModel mAccountViewModel;

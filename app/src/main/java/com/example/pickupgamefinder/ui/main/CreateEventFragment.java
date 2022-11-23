@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.view.LayoutInflater;
@@ -18,6 +16,8 @@ import android.widget.TextView;
 import com.example.pickupgamefinder.Event;
 import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
+
+import ViewModels.EventsViewModel;
 
 public class CreateEventFragment extends Fragment implements View.OnClickListener {
 
