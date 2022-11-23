@@ -24,15 +24,18 @@ import com.example.pickupgamefinder.ui.main.EventListFragment;
 import com.example.pickupgamefinder.ui.main.AccountViewModel;
 import com.example.pickupgamefinder.ui.main.EventsViewModel;
 import com.example.pickupgamefinder.ui.main.MapFragment;
+import com.example.pickupgamefinder.ui.main.NavigationBarHandler;
 import com.example.pickupgamefinder.ui.main.PopupNotificationFragment;
 import com.example.pickupgamefinder.ui.main.WelcomeScreenFragment;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements  LifecycleObserver, NavigationView.OnNavigationItemSelectedListener{
 
+    private NavigationBarHandler navigationBarHandler;
     private InternetManager internetManager;
     private DrawerLayout drawerLayout;
     private AccountViewModel accountViewModel;
@@ -55,12 +58,11 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
             getSupportFragmentManager().beginTransaction().replace(R.id.main_popup_container, popup)
                     .commitNow();
 
-
         }
-
         InitializeViewModels();
         InitializeActionbar();
         internetManager = new InternetManager(this);
+        navigationBarHandler = new NavigationBarHandler(accountViewModel, eventsViewModel, this,drawerLayout);
     }
 
 
@@ -125,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
 
         toggle.syncState();
         getSupportActionBar().hide();
+
     }
 
     @Override
@@ -187,34 +190,7 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) { // this is for menu icon
         int id = item.getItemId();
-        if (id == R.id.menu_account) {
-            addFragment(new AccountFragment().newInstance(), "AccountFragment");
-            drawerLayout.closeDrawer(GravityCompat.START);
-            return true;
-        } else if (id == R.id.menu_map) {
-            addFragment(new MapFragment(), "MapFragment");
-            drawerLayout.closeDrawer(GravityCompat.START);
-            return true;
-        } else if (id == R.id.menu_event_list) {
-            addFragment(new EventListFragment().newInstance(), "EventListFragment");
-            drawerLayout.closeDrawer(GravityCompat.START);
-            return true;
-        } else if (id == R.id.menu_create_event) {
-            addFragment(new CreateEventFragment().newInstance(), "CreateEventFragment");
-            drawerLayout.closeDrawer(GravityCompat.START);
-            return true;
-        } else if (id == R.id.menu_signout) {
-            //clear backstack
-            FragmentManager fm = getSupportFragmentManager();
-            for (int i = 0; i < fm.getBackStackEntryCount(); i++) {
-                fm.popBackStack();
-            }
 
-            addFragment(new WelcomeScreenFragment(), "WelcomeScreenFragment");
-            accountViewModel.liveUser.setValue(new User("", "", new ArrayList<String>(), new ArrayList<String>()));
-            drawerLayout.closeDrawer(GravityCompat.START);
-            return true;
-        }
-        return false;
+        return navigationBarHandler.onNavigationItemSelected(item);
     }
 }
