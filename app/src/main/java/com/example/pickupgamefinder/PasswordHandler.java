@@ -38,19 +38,18 @@ public class PasswordHandler {
                 special++;
         }
 
-        if(upChars!=0 && lowChars!=0 && digits!=0 && special!=0 && password.length() >= minPasswordLength)
+        if(upChars!=0 && lowChars!=0 && digits!=0 && special!=0
+                && password.length() >= minPasswordLength && password.equals(confirmPassword))
         {
             if(password.length() >= 12)
             {
                 errorTV.setText("Great Password Strength");
                 errorTV.setTextColor(Color.GREEN);
-                System.out.println("\nThe Strength of Password is Strong.");
             }
             else
             {
                 errorTV.setText("Good Password Strength");
                 errorTV.setTextColor(Color.YELLOW);
-                System.out.println("\nThe Strength of Password is Medium.");
             }
             return true;
         }
@@ -66,7 +65,7 @@ public class PasswordHandler {
                 errorText += "\nThe Password must contain at least one digit.";
             if(special==0)
                 errorText += "\nThe Password must contain at least one special character.";
-            if(password.equals(confirmPassword))
+            if(!password.equals(confirmPassword))
                 errorText += "\nPasswords Do Not Match";
             if(password.length() < minPasswordLength)
                 errorText += "\nPassword must be " + minPasswordLength + " characters long";
