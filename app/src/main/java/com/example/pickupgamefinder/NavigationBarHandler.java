@@ -1,4 +1,4 @@
-package com.example.pickupgamefinder.ui.Fragments;
+package com.example.pickupgamefinder;
 
 import android.util.Log;
 import android.view.MenuItem;
@@ -14,6 +14,11 @@ import com.example.pickupgamefinder.Event;
 import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
 import com.example.pickupgamefinder.User;
+import com.example.pickupgamefinder.ui.Fragments.AccountFragment;
+import com.example.pickupgamefinder.ui.Fragments.CreateEventFragment;
+import com.example.pickupgamefinder.ui.Fragments.EventListFragment;
+import com.example.pickupgamefinder.ui.Fragments.MapFragment;
+import com.example.pickupgamefinder.ui.Fragments.WelcomeScreenFragment;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
@@ -138,7 +143,7 @@ public class NavigationBarHandler implements NavigationView.OnNavigationItemSele
     private void createEventButtonClick()
     {
         setActionBarTitle("Create Events");
-        mainActivity.addFragment(new CreateEventFragment().newInstance(), "CreateEventFragment");
+        mainActivity.addFragment(new CreateEventFragment(), "CreateEventFragment");
         drawerLayout.closeDrawer(GravityCompat.START);
     }
     private void signOutButtonClick()

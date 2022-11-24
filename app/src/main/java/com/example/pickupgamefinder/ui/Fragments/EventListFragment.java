@@ -99,7 +99,7 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
     {
         eventsViewModel.loadEvents(new ICallback() {
             @Override
-            public void onCallback(Object data) {
+            public void onCallback(boolean result) {
 
                 if(eventsViewModel.liveEventList.getValue() != null)
                 {

@@ -16,7 +16,6 @@ public class WelcomeScreenFragment extends Fragment implements View.OnClickListe
 
     private Button mLoginButton;
     private Button mSignUpButton;
-    private ViewGroup mContainer;
 
     public WelcomeScreenFragment() {
 
@@ -32,8 +31,6 @@ public class WelcomeScreenFragment extends Fragment implements View.OnClickListe
                              Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_welcome_screen, container, false);
-
-        mContainer = container;
 
         mLoginButton = (Button) v.findViewById(R.id.welcome_login_button);
         mSignUpButton = (Button) v.findViewById(R.id.welcome_signup_button);
@@ -56,9 +53,6 @@ public class WelcomeScreenFragment extends Fragment implements View.OnClickListe
         else if(viewId == R.id.welcome_signup_button)
         {
             ((MainActivity)getActivity()).addFragment(new SignupFragment(), "SignupFragment");
-        }
-        else {
-
         }
     }
 }

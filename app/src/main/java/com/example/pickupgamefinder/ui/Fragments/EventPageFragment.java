@@ -70,9 +70,10 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
         activity = requireActivity();
 
         ((MainActivity) activity).showLoadingScreen();
+
         accountViewModel.loadUserEvents(new ICallback() {
             @Override
-            public void onCallback(Object data) {
+            public void onCallback(boolean result) {
                 ((MainActivity) activity).hideLoadingScreen();
                 InitializeUI();
             }
@@ -116,16 +117,16 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
 
         int id = view.getId();
 
-        if(id == joinEvent.getId())
+        if(id == joinEvent.getId() && ((MainActivity)activity).checkWifi())
         {
             ((MainActivity) activity).showLoadingScreen();
-            SetCurrentPlayerCount(event.currentPlayerCount, event.currentPlayerCount + 1);
+            setCurrentPlayerCount(event.currentPlayerCount, event.currentPlayerCount + 1);
         }
-        else if(id == leaveEvent.getId()) {
+        else if(id == leaveEvent.getId() && ((MainActivity)activity).checkWifi()) {
             ((MainActivity) activity).showLoadingScreen();
-            SetCurrentPlayerCount(event.currentPlayerCount, event.currentPlayerCount - 1);
+            setCurrentPlayerCount(event.currentPlayerCount, event.currentPlayerCount - 1);
         }
-        else if(id == deleteEvent.getId())
+        else if(id == deleteEvent.getId() && ((MainActivity)activity).checkWifi())
         {
             ((MainActivity) activity).showLoadingScreen();
             deleteEvent();
@@ -135,14 +136,14 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
         }
         // FIXME add here
     }
-    private void SetCurrentPlayerCount(int oldPlayercount, int newPlayercount)
+    private void setCurrentPlayerCount(int oldPlayercount, int newPlayercount)
     {
         eventsViewModel.setCurrentPlayerCount(oldPlayercount, newPlayercount, event,
                 new ICallback() {
                     @Override
-                    public void onCallback(Object data) {
+                    public void onCallback(boolean result) {
                         ((MainActivity) activity).hideLoadingScreen();
-                        if(data.toString().equals("success"))
+                        if(result)
                         {
                             if(oldPlayercount > newPlayercount)
                             {
@@ -169,9 +170,9 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
         eventsViewModel.deleteEvent(event,
                 new ICallback() {
                     @Override
-                    public void onCallback(Object data) {
+                    public void onCallback(boolean result) {
                         ((MainActivity) activity).hideLoadingScreen();
-                        if(data.toString().equals("success"))
+                        if(result)
                         {
                             deleteEvent.setVisibility(View.GONE);
                             eventDetailsTV.setText("EVENT HAS BEEN DELETED");

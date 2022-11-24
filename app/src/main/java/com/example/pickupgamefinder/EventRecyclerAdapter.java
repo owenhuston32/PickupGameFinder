@@ -78,9 +78,9 @@ public class EventRecyclerAdapter extends RecyclerView.Adapter<EventRecyclerAdap
             public void onClick(View view) {
                 eventsViewModel.getEvent(e.eventName, new ICallback() {
                     @Override
-                    public void onCallback(Object data) {
+                    public void onCallback(boolean result) {
 
-                        if(data.toString().equals("success"))
+                        if(result)
                         {
                             ((MainActivity)activity).addFragment(new EventPageFragment(e), "EventPageFragment");
                         }

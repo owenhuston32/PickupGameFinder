@@ -53,7 +53,6 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
     private Boolean isTrackingUserLocation = false;
 
     public MapFragment() {
-        // Required empty public constructor
 
     }
 
@@ -103,8 +102,8 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
                 ((PermissionHandlerFragment)permissionHandler).requestPermission(Manifest.permission.ACCESS_FINE_LOCATION,
                         new ICallback() {
                         @Override
-                        public void onCallback(Object data) {
-                            permissionResultCallback((boolean) data);
+                        public void onCallback(boolean result) {
+                            permissionResultCallback(result);
                         }
                     });
             }
@@ -142,8 +141,8 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
 
             mEventsViewModel.loadEvents(new ICallback() {
                 @Override
-                public void onCallback(Object data) {
-                    if (data.toString().equals("success")) {
+                public void onCallback(boolean result) {
+                    if (result) {
                         AddMarkers(mEventsViewModel.liveEventList.getValue());
                     } else {
                         Log.e("Map Fragment", "Failed to load events");
@@ -266,9 +265,9 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
     {
         mEventsViewModel.getEvent(marker.getTitle(), new ICallback() {
             @Override
-            public void onCallback(Object data) {
+            public void onCallback(boolean result) {
 
-                if(data.toString().equals("success"))
+                if(result)
                 {
                     ((MainActivity)activity).hideLoadingScreen();
                     ((MainActivity)activity).addFragment( new EventPageFragment(mEventsViewModel.liveEvent.getValue()), "EventPageFragment");

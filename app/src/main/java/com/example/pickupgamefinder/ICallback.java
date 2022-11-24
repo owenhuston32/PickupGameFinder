@@ -1,5 +1,5 @@
 package com.example.pickupgamefinder;
 
 public interface ICallback {
-    public void onCallback(Object data);
+    public void onCallback(boolean result);
 }

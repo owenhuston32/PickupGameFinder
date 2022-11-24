@@ -63,9 +63,9 @@ public class EventRepository {
                     user.createdEventNames = nameList;
                     accountViewModel.liveUser.setValue(user);
 
-                    callback.onCallback("success");
+                    callback.onCallback(true);
                 } else {
-                    callback.onCallback("fail");
+                    callback.onCallback(false);
                 }
             }
         });
@@ -82,9 +82,9 @@ public class EventRepository {
                     Event e = createEventFromSnapshot(snapshot);
                     eventsViewModel.liveEvent.setValue(e);
 
-                    callback.onCallback("success");
+                    callback.onCallback(true);
                 } else {
-                    callback.onCallback("fail");
+                    callback.onCallback(false);
                     Log.e("firebase", "Error getting data", task.getException());
 
                 }
@@ -118,12 +118,12 @@ public class EventRepository {
                         list.add(createEventFromSnapshot(childrenSnapshot));
                     }
                     eventsViewModel.liveEventList.setValue(list);
-                    callback.onCallback("success");
+                    callback.onCallback(true);
 
                 }
                 else
                 {
-                    callback.onCallback("fail");
+                    callback.onCallback(false);
                 }
             }
         });
@@ -171,9 +171,9 @@ public class EventRepository {
                                 accountViewModel.liveUser.setValue(user);
                             }
 
-                            callback.onCallback("success");
+                            callback.onCallback(true);
                         } else {
-                            callback.onCallback("fail");
+                            callback.onCallback(false);
                         }
 
                     }
@@ -198,9 +198,9 @@ public class EventRepository {
                     user.createdEventNames.remove(event.eventName);
                     accountViewModel.liveUser.setValue(user);
 
-                    callback.onCallback("success");
+                    callback.onCallback(true);
                 } else {
-                    callback.onCallback("fail");
+                    callback.onCallback(false);
                 }
 
             }

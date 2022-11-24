@@ -82,8 +82,8 @@ public class PermissionHandlerFragment extends Fragment implements  View.OnClick
         {
             requestPermission(Manifest.permission.ACCESS_FINE_LOCATION, new ICallback() {
                 @Override
-                public void onCallback(Object data) {
-                    ((MapFragment)parentFragment).permissionResultCallback((boolean) data);
+                public void onCallback(boolean result) {
+                    ((MapFragment)parentFragment).permissionResultCallback(result);
                 }
             });
         }

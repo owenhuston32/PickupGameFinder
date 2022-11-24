@@ -40,10 +40,6 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
 
     }
 
-    public SignupFragment newInstance() {
-        return new SignupFragment();
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -129,9 +125,9 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
         {
             // if we fail to get user that means the username is available
             @Override
-            public void onCallback(Object data) {
+            public void onCallback(boolean result) {
 
-                if(data.toString().equals("success"))
+                if(result)
                 {
                     ((MainActivity) activity).hideLoadingScreen();
                     mErrorMessage.setText("Username Not Available");
@@ -164,8 +160,8 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
         User user = new User(username, password, new ArrayList<String>(), new ArrayList<String>());
         mViewModel.addUser(user, new ICallback() {
             @Override
-            public void onCallback(Object data) {
-                if(data.toString().equals("success"))
+            public void onCallback(boolean result) {
+                if(result)
                 {
                     ((MainActivity) activity).hideLoadingScreen();
                     ((MainActivity)activity).addFragment(new MapFragment(), "MapFragment");

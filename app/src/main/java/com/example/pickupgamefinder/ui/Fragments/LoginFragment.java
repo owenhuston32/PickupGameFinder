@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.MainActivity;
+import com.example.pickupgamefinder.PasswordHandler;
 import com.example.pickupgamefinder.R;
 import com.example.pickupgamefinder.User;
 
@@ -25,8 +26,8 @@ import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 
 public class LoginFragment extends Fragment implements  View.OnClickListener {
 
+    private PasswordHandler passwordHandler;
     private AccountViewModel mAccountViewModel;
-    private TextView mUsersText;
     private TextView mErrorMessage;
     private EditText mUsernameField;
     private EditText mPasswordField;
@@ -51,6 +52,8 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
         mUsernameField = (EditText) v.findViewById(R.id.signin_username);
         mPasswordField = (EditText) v.findViewById(R.id.signin_password);
         mLoginButton = (Button) v.findViewById(R.id.signin_login_button);
+
+        passwordHandler = new PasswordHandler();
 
         mAccountViewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
 
@@ -84,13 +87,13 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
         mAccountViewModel.getUser(username, new ICallback()
         {
             @Override
-            public void onCallback(Object data) {
+            public void onCallback(boolean result) {
 
-                if(data.toString().equals("success"))
+                if(result)
                 {
                     User user = mAccountViewModel.liveUser.getValue();
 
-                    if(!username.equals("") && user.password.equals(password))
+                    if(user.password.equals(password))
                     {
                         Login(username, password);
                     }
@@ -103,6 +106,7 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
                 else
                 {
                     ((MainActivity) activity).hideLoadingScreen();
+                    mErrorMessage.setText("Invalid Username or Password");
                     Log.e("Login Fragment", "failed to get user from database");
                 }
             }
@@ -113,10 +117,10 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
     {
         mAccountViewModel.loadUserEvents(new ICallback() {
             @Override
-            public void onCallback(Object data) {
+            public void onCallback(boolean result) {
 
                 ((MainActivity) activity).hideLoadingScreen();
-                if(data.toString().equals("success"))
+                if(result)
                 {
                     Log.d("LoginFragment", "log in click");
                     mLoginButton.setText("Logged In");
@@ -128,6 +132,10 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
                 }
             }
         });
+    }
+    private void moveToMapFragment()
+    {
+
     }
 
     @Override

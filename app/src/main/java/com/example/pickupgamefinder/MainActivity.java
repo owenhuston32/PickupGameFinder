@@ -17,7 +17,6 @@ import com.example.pickupgamefinder.Repositories.EventRepository;
 import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 
-import com.example.pickupgamefinder.ui.Fragments.NavigationBarHandler;
 import com.example.pickupgamefinder.ui.Fragments.PopupNotificationFragment;
 import com.example.pickupgamefinder.ui.Fragments.WelcomeScreenFragment;
 import com.google.firebase.database.FirebaseDatabase;

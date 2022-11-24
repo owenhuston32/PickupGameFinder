@@ -13,12 +13,7 @@ import com.example.pickupgamefinder.R;
 public class AccountFragment extends Fragment {
 
     public AccountFragment() {
-        // Required empty public constructor
-    }
 
-
-    public static AccountFragment newInstance() {
-        return new AccountFragment();
     }
 
     @Override
