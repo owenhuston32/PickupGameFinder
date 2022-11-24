@@ -3,6 +3,7 @@ package com.example.pickupgamefinder.ViewModels;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.Repositories.AccountRepository;
 import com.example.pickupgamefinder.Event;
 import com.example.pickupgamefinder.ICallback;
@@ -16,21 +17,45 @@ public class AccountViewModel extends ViewModel {
     public MutableLiveData<User> liveUser = new MutableLiveData<User>();
     public AccountRepository accountRepository = null;
     public EventsViewModel eventsViewModel = null;
-
+    public MainActivity mainActivity;
 
     public void addUser(User user, ICallback callback) {
 
-        accountRepository.addUser(user, callback);
-
+        if(mainActivity.checkWifi())
+        {
+            mainActivity.showLoadingScreen();
+            accountRepository.addUser(user, callback);
+        }
+        else
+        {
+            callback.onCallback(false);
+        }
     }
 
     public void getUser(String username, ICallback callback) {
-        accountRepository.getUser(username, callback);
+
+        if(mainActivity.checkWifi())
+        {
+            mainActivity.showLoadingScreen();
+            accountRepository.getUser(username, callback);
+        }
+        else
+        {
+            callback.onCallback(false);
+        }
     }
 
     public void loadUserEvents(ICallback callback)
     {
-        accountRepository.loadUserEvents(callback);
+        if(mainActivity.checkWifi())
+        {
+            mainActivity.showLoadingScreen();
+            accountRepository.loadUserEvents(callback);
+        }
+        else
+        {
+            callback.onCallback(false);
+        }
     }
 
     public List<Event> getJoinedEventList()

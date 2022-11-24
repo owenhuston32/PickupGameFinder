@@ -89,10 +89,7 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
 
     private void refreshEvents()
     {
-        if(((MainActivity)activity).checkWifi())
-        {
-            loadEvents();
-        }
+        loadEvents();
     }
 
     private void loadEvents()
@@ -103,13 +100,11 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
 
                 if(eventsViewModel.liveEventList.getValue() != null)
                 {
-                    ((MainActivity)activity).hideLoadingScreen();
                     eventList = eventsViewModel.liveEventList.getValue();
                     setAdapter();
                 }
                 else
                 {
-                    ((MainActivity)activity).hideLoadingScreen();
                     setAdapter();
                     Log.e("EventListFragment", "no events found");
                 }

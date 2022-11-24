@@ -2,6 +2,7 @@ package com.example.pickupgamefinder.Repositories;
 
 import android.util.Log;
 
+import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 
@@ -23,14 +24,16 @@ import androidx.annotation.NonNull;
 
 public class EventRepository {
 
+    private MainActivity mainActivity;
     private EventsViewModel eventsViewModel;
     private AccountViewModel accountViewModel;
     private FirebaseDatabase database;
     private DatabaseReference dbRef;
 
-    public EventRepository(EventsViewModel eventsViewModel, AccountViewModel accountViewModel
+    public EventRepository(MainActivity mainActivity, EventsViewModel eventsViewModel, AccountViewModel accountViewModel
             , FirebaseDatabase database, DatabaseReference dbRef)
     {
+        this.mainActivity = mainActivity;
         this.eventsViewModel = eventsViewModel;
         this.accountViewModel = accountViewModel;
         this.database = database;
@@ -45,7 +48,7 @@ public class EventRepository {
         dbRef.updateChildren(childUpdates).addOnCompleteListener(new OnCompleteListener() {
             @Override
             public void onComplete(@NonNull Task task) {
-
+                mainActivity.hideLoadingScreen();
                 if (task.isSuccessful()) {
                     List<Event> list = eventsViewModel.liveEventList.getValue();
                     if(list == null)
@@ -76,6 +79,7 @@ public class EventRepository {
 
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
+                mainActivity.hideLoadingScreen();
                 if (task.isSuccessful() && task.getResult().getValue() != null) {
 
                     DataSnapshot snapshot = task.getResult();
@@ -108,9 +112,8 @@ public class EventRepository {
 
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
-
+                mainActivity.hideLoadingScreen();
                 if (task.isSuccessful() && task.getResult().hasChildren()) {
-
 
                     List<Event> list = new ArrayList<Event>();
                     for(DataSnapshot childrenSnapshot : task.getResult().getChildren())
@@ -146,7 +149,7 @@ public class EventRepository {
         dbRef.updateChildren(childUpdates).addOnCompleteListener(new OnCompleteListener() {
                     @Override
                     public void onComplete(@NonNull Task task) {
-
+                        mainActivity.hideLoadingScreen();
                         if (task.isSuccessful()) {
 
                             // change current player count on life event
@@ -188,6 +191,7 @@ public class EventRepository {
         dbRef.updateChildren(childUpdates).addOnCompleteListener(new OnCompleteListener() {
             @Override
             public void onComplete(@NonNull Task task) {
+                mainActivity.hideLoadingScreen();
 
                 if (task.isSuccessful()) {
 

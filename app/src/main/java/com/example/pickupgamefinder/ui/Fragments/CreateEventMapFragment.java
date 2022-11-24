@@ -127,7 +127,6 @@ public class CreateEventMapFragment extends Fragment implements View.OnClickList
     }
     private void getCurrentLocation()
     {
-        ((MainActivity) activity).showLoadingScreen();
         @SuppressLint("MissingPermission") Task<Location> task = fusedLocationProviderClient.getLastLocation();
         Log.e("GoogleMaps", "Get current location called");
         task.addOnSuccessListener(new OnSuccessListener<Location>() {
@@ -160,8 +159,6 @@ public class CreateEventMapFragment extends Fragment implements View.OnClickList
                             googleMap.addMarker(options);
                             Log.e("GoogleMaps", "Drag should be initialized");
                             InitializeMarkerDrag();
-
-                            ((MainActivity) activity).hideLoadingScreen();
                         }
                     });
                 }
@@ -201,11 +198,7 @@ public class CreateEventMapFragment extends Fragment implements View.OnClickList
 
         if(id == createEventButton.getId())
         {
-            if(((MainActivity) activity).checkWifi())
-            {
-                ((MainActivity) activity).showLoadingScreen();
-                createEvent();
-            }
+            createEvent();
         }
     }
     private void createEvent()
@@ -215,7 +208,6 @@ public class CreateEventMapFragment extends Fragment implements View.OnClickList
         mEventViewModel.addEvent(event, new ICallback() {
             @Override
             public void onCallback(boolean result) {
-                ((MainActivity) activity).hideLoadingScreen();
                 if(result)
                 {
                     ((MainActivity)activity).addFragment(new EventPageFragment(event), "EventPageFragment");

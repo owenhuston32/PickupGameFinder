@@ -137,26 +137,19 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
 
     private void loadEvents()
     {
-        if(((MainActivity)activity).checkWifi()) {
+        mEventsViewModel.loadEvents(new ICallback() {
+            @Override
+            public void onCallback(boolean result) {
+                if (result) {
+                    AddMarkers(mEventsViewModel.liveEventList.getValue());
+                } else {
+                    Log.e("Map Fragment", "Failed to load events");
 
-            mEventsViewModel.loadEvents(new ICallback() {
-                @Override
-                public void onCallback(boolean result) {
-                    if (result) {
-                        AddMarkers(mEventsViewModel.liveEventList.getValue());
-                    } else {
-                        Log.e("Map Fragment", "Failed to load events");
-                    }
+                    //no wifi show old events
+                    AddMarkers(mEventsViewModel.liveEventList.getValue());
                 }
-            });
-        }
-        else
-        {
-            //no wifi show old events
-            AddMarkers(mEventsViewModel.liveEventList.getValue());
-        }
-        ((MainActivity)activity).hideLoadingScreen();
-
+            }
+        });
     }
 
     private void startLocationTrackingThread()
@@ -250,15 +243,7 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
 
         Log.d("TAG", "INFO WINDOW CLICK, marker title: " + marker.getTitle());
 
-        if(((MainActivity) activity).checkWifi())
-        {
-            loadEventPage(marker);
-        }
-        else
-        {
-            ((MainActivity)activity).hideLoadingScreen();
-            ((MainActivity)activity).addFragment( new EventPageFragment(mEventsViewModel.liveEvent.getValue()), "EventPageFragment");
-        }
+        loadEventPage(marker);
 
     }
     private void loadEventPage(Marker marker)
@@ -269,7 +254,6 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
 
                 if(result)
                 {
-                    ((MainActivity)activity).hideLoadingScreen();
                     ((MainActivity)activity).addFragment( new EventPageFragment(mEventsViewModel.liveEvent.getValue()), "EventPageFragment");
                 }
                 else

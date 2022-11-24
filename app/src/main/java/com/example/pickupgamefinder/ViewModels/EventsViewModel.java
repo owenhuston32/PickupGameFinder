@@ -3,6 +3,7 @@ package com.example.pickupgamefinder.ViewModels;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.Repositories.AccountRepository;
 import com.example.pickupgamefinder.Event;
 import com.example.pickupgamefinder.ICallback;
@@ -16,27 +17,83 @@ public class EventsViewModel extends ViewModel {
     public MutableLiveData<List<Event>> liveEventList = new MutableLiveData<List<Event>>();
     public EventRepository eventRepository = null;
     public AccountRepository accountRepository = null;
+    public MainActivity mainActivity;
 
     public void addEvent(Event event, ICallback callback)
     {
-        eventRepository.addEvent(event, callback);
+        if(mainActivity.checkWifi())
+        {
+            mainActivity.showLoadingScreen();
+            eventRepository.addEvent(event, callback);
+        }
+        else
+        {
+            callback.onCallback(false);
+        }
     }
     public void getEvent(String eventName, ICallback callback)
     {
-        eventRepository.getEvent(eventName, callback);
+        //check if event is already in our known list of events
+        if(liveEventList.getValue() != null)
+        {
+            for(Event e : liveEventList.getValue())
+            {
+                if(e.eventName.equals(eventName))
+                {
+                    liveEvent.setValue(e);
+                    callback.onCallback(true);
+                    return;
+                }
+            }
+        }
+
+        if(mainActivity.checkWifi())
+        {
+            mainActivity.showLoadingScreen();
+            // check for event in database
+            eventRepository.getEvent(eventName, callback);
+        }
+        else
+        {
+            callback.onCallback(false);
+        }
     }
 
     public void loadEvents(ICallback callback)
     {
-        eventRepository.loadEvents(callback);
+        if(mainActivity.checkWifi())
+        {
+            mainActivity.showLoadingScreen();
+            eventRepository.loadEvents(callback);
+        }
+        else
+        {
+            callback.onCallback(false);
+        }
     }
 
     public void setCurrentPlayerCount(int oldPlayerCount, int newCurrentPlayerCount, Event event, ICallback callback)
     {
-        eventRepository.setCurrentPlayerCount(oldPlayerCount, newCurrentPlayerCount, event, callback);
+        if(mainActivity.checkWifi())
+        {
+            mainActivity.showLoadingScreen();
+            eventRepository.setCurrentPlayerCount(oldPlayerCount, newCurrentPlayerCount, event, callback);
+        }
+        else
+        {
+            callback.onCallback(false);
+        }
     }
 
     public void deleteEvent(Event event, ICallback callback) {
-        eventRepository.deleteEvent(event, callback);
+        if(mainActivity.checkWifi())
+        {
+            mainActivity.showLoadingScreen();
+            eventRepository.deleteEvent(event, callback);
+        }
+        else
+        {
+            callback.onCallback(false);
+        }
     }
 }
