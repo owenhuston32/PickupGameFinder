@@ -17,6 +17,10 @@ public class PopupNotificationFragment extends Fragment implements View.OnClickL
     private FrameLayout container;
     private Button okButton;
 
+    public PopupNotificationFragment()
+    {
+
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

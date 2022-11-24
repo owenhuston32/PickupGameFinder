@@ -214,9 +214,9 @@ public class CreateEventMapFragment extends Fragment implements View.OnClickList
         event.longitude = eventLocation.longitude;
         mEventViewModel.addEvent(event, new ICallback() {
             @Override
-            public void onCallback(Object data) {
+            public void onCallback(boolean result) {
                 ((MainActivity) activity).hideLoadingScreen();
-                if(data.toString().equals("success"))
+                if(result)
                 {
                     ((MainActivity)activity).addFragment(new EventPageFragment(event), "EventPageFragment");
                 }

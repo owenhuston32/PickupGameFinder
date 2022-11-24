@@ -37,12 +37,9 @@ public class CreateEventFragment extends Fragment implements View.OnClickListene
 
     Button nextPageButton;
 
-    public CreateEventFragment() {
-        // Required empty public constructor
-    }
+    public CreateEventFragment()
+    {
 
-    public static CreateEventFragment newInstance() {
-        return new CreateEventFragment();
     }
 
     @Override

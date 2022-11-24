@@ -43,11 +43,11 @@ public class AccountRepository {
                 if(task.isSuccessful())
                 {
                     accountViewModel.liveUser.setValue(user);
-                    callback.onCallback("success");
+                    callback.onCallback(true);
                 }
                 else
                 {
-                    callback.onCallback("fail");
+                    callback.onCallback(false);
                 }
             }
         });
@@ -63,9 +63,9 @@ public class AccountRepository {
                     Log.d("Account Repository", "" + task.getResult().getValue(User.class));
 
                     accountViewModel.liveUser.setValue(task.getResult().getValue(User.class));
-                    callback.onCallback("success");
+                    callback.onCallback(true);
                 } else {
-                    callback.onCallback("fail");
+                    callback.onCallback(false);
                     Log.e("firebase", "failed to getUser");
                 }
             }
@@ -87,9 +87,9 @@ public class AccountRepository {
                             User user = accountViewModel.liveUser.getValue();
                             user.createdEventNames.add(eventName);
                             accountViewModel.liveUser.setValue(user);
-                            callback.onCallback("success");
+                            callback.onCallback(true);
                         } else {
-                            callback.onCallback("fail");
+                            callback.onCallback(false);
                         }
                     }
                 });
@@ -100,9 +100,9 @@ public class AccountRepository {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            callback.onCallback("success");
+                            callback.onCallback(true);
                         } else {
-                            callback.onCallback("fail");
+                            callback.onCallback(false);
                         }
                     }
                 });
@@ -146,21 +146,20 @@ public class AccountRepository {
                         user.createdEventNames = createdEvents;
                         user.joinedEventNames = joinedEvents;
 
-
-
-
                         Log.d("Account Repo", "" + user.createdEventNames);
                         Log.d("Account Repo", "" + user.joinedEventNames);
 
                         accountViewModel.liveUser.setValue(user);
 
-                        callback.onCallback("success");
+                        callback.onCallback(true);
                     }
                     else
                     {
+                        callback.onCallback(false);
                         Log.e("Account repository", "load user event list is null");
                     }
                 } else {
+                    callback.onCallback(false);
                     Log.e("account repository", "Error loading user events");
                 }
             }
