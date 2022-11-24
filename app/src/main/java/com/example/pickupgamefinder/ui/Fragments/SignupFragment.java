@@ -1,6 +1,7 @@
 package com.example.pickupgamefinder.ui.Fragments;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 
 import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.MainActivity;
+import com.example.pickupgamefinder.PasswordHandler;
 import com.example.pickupgamefinder.R;
 import com.example.pickupgamefinder.User;
 
@@ -27,6 +29,7 @@ import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 
 public class SignupFragment extends Fragment implements View.OnClickListener{
 
+    private PasswordHandler passwordHandler;
     private AccountViewModel mViewModel;
     private TextView mErrorMessage;
     private EditText mUsernameField;
@@ -60,16 +63,17 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
 
         mViewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
 
-        setTextChangedListener(mUsernameField);
         setTextChangedListener(mPasswordField);
         setTextChangedListener(mConfirmPasswordField);
+
+        passwordHandler = new PasswordHandler();
+
         mSignUpButton.setOnClickListener(this);
 
         return v;
     }
 
-
-    private void setTextChangedListener(EditText editText)
+    public void setTextChangedListener(EditText editText)
     {
         int textId = editText.getId();
         editText.addTextChangedListener(new TextWatcher() {
@@ -80,11 +84,9 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                if(textId == mConfirmPasswordField.getId() || textId == mPasswordField.getId())
-                {
-                    isPasswordValid(mPasswordField.getText().toString(), mConfirmPasswordField.getText().toString());
-                }
+                passwordHandler.isPasswordValid(mPasswordField.getText().toString()
+                        ,mConfirmPasswordField.getText().toString()
+                        ,mErrorMessage);
             }
 
             @Override
@@ -93,6 +95,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
             }
         });
     }
+
 
     @Override
     public void onClick(View view)
@@ -106,13 +109,10 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
             String password = mPasswordField.getText().toString();
             String passwordConfirm = mConfirmPasswordField.getText().toString();
 
-            if(isPasswordValid(password, passwordConfirm))
+            if(passwordHandler.isPasswordValid(password, passwordConfirm, mErrorMessage))
             {
                 trySignup(username, password);
             }
-        }
-        else {
-
         }
     }
 
@@ -126,7 +126,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
 
                 if(result)
                 {
-                    ((MainActivity) activity).hideLoadingScreen();
+                    mErrorMessage.setTextColor(Color.RED);
                     mErrorMessage.setText("Username Not Available");
                 }
                 else
@@ -137,24 +137,11 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
         });
     }
 
-
-    private boolean isPasswordValid(String pass1, String pass2)
-    {
-        boolean valid = true;
-        if(pass1.equals(pass2))
-        {
-            mErrorMessage.setText("");
-        }
-        else
-        {
-            valid = false;
-            mErrorMessage.setText("Passwords Do not match");
-        }
-        return valid;
-    }
     private void signUp(String username, String password)
     {
-        User user = new User(username, password, new ArrayList<String>(), new ArrayList<String>());
+        String hashedPassword = passwordHandler.getHashedPassword(password);
+
+        User user = new User(username, hashedPassword, new ArrayList<String>(), new ArrayList<String>());
         mViewModel.addUser(user, new ICallback() {
             @Override
             public void onCallback(boolean result) {
