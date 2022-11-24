@@ -89,11 +89,15 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
 
                 if(result)
                 {
-                    User user = mAccountViewModel.liveUser.getValue();
 
-                    if(user.password.equals(password))
+                    //check if the password in database matched the password typed in
+                    String databasePassword = mAccountViewModel.liveUser.getValue().password;
+
+                    String hashedPassword = passwordHandler.getHashedPassword(password);
+
+                    if(databasePassword.equals(hashedPassword))
                     {
-                        Login(username, password);
+                        Login();
                     }
                     else
                     {
@@ -109,7 +113,7 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
         });
 
     }
-    private void Login(String username, String password)
+    private void Login()
     {
         mAccountViewModel.loadUserEvents(new ICallback() {
             @Override
@@ -127,43 +131,4 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
             }
         });
     }
-    private void moveToMapFragment()
-    {
-
-    }
-
-    @Override
-    public void onStart()
-    {
-        super.onStart();
-
-        SetDebugMessage("onStart");
-    }
-
-    @Override
-    public void onResume()
-    {
-        super.onResume();
-        SetDebugMessage("onResume");
-    }
-
-    @Override
-    public void onPause()
-    {
-        super.onPause();
-        SetDebugMessage("onPause");
-    }
-
-    @Override
-    public void onStop()
-    {
-        super.onStop();
-        SetDebugMessage("onStop");
-    }
-
-    private void SetDebugMessage(String message)
-    {
-
-    }
-
 }
