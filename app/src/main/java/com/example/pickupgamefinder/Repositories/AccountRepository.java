@@ -2,6 +2,7 @@ package com.example.pickupgamefinder.Repositories;
 
 import android.util.Log;
 
+import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 
@@ -22,14 +23,16 @@ import androidx.annotation.NonNull;
 
 public class AccountRepository {
 
+    private MainActivity mainActivity;
     private EventsViewModel eventsViewModel;
     private AccountViewModel accountViewModel;
     private FirebaseDatabase database;
     private DatabaseReference dbRef;
 
-    public AccountRepository(EventsViewModel eventsViewModel, AccountViewModel accountViewModel
+    public AccountRepository(MainActivity mainActivity, EventsViewModel eventsViewModel, AccountViewModel accountViewModel
             , FirebaseDatabase database, DatabaseReference dbRef)
     {
+        this.mainActivity = mainActivity;
         this.eventsViewModel = eventsViewModel;
         this.accountViewModel = accountViewModel;
         this.database = database;
@@ -40,6 +43,7 @@ public class AccountRepository {
         dbRef.child("users").child(user.username).setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
+                mainActivity.hideLoadingScreen();
                 if(task.isSuccessful())
                 {
                     accountViewModel.liveUser.setValue(user);
@@ -58,6 +62,7 @@ public class AccountRepository {
 
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
+                mainActivity.hideLoadingScreen();
                 if (task.isSuccessful() && task.getResult().getValue() != null) {
 
                     Log.d("Account Repository", "" + task.getResult().getValue(User.class));
@@ -72,46 +77,12 @@ public class AccountRepository {
         });
     }
 
-    public void addToCreatedEvents(String eventName, ICallback callback) {
-
-        List list = accountViewModel.liveUser.getValue().createdEventNames;
-        if (list == null) {
-            list = new ArrayList();
-        }
-        list.add(eventName);
-        dbRef.child("users").child(accountViewModel.liveUser.getValue().username)
-                .child("events").setValue(list).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            User user = accountViewModel.liveUser.getValue();
-                            user.createdEventNames.add(eventName);
-                            accountViewModel.liveUser.setValue(user);
-                            callback.onCallback(true);
-                        } else {
-                            callback.onCallback(false);
-                        }
-                    }
-                });
-    }
-    public void removeFromUserEventList(String eventName, ICallback callback) {
-        dbRef.child("users").child(accountViewModel.liveUser.getValue().username)
-                .child("events").child(eventName).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            callback.onCallback(true);
-                        } else {
-                            callback.onCallback(false);
-                        }
-                    }
-                });
-    }
     public void loadUserEvents(ICallback callback) {
 
         dbRef.child("users").child(accountViewModel.liveUser.getValue().username).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
+                mainActivity.hideLoadingScreen();
                 if (task.isSuccessful()) {
 
                     User user = accountViewModel.liveUser.getValue();

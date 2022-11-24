@@ -69,20 +69,20 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
         accountViewModel  = new ViewModelProvider(this).get(AccountViewModel.class);
         eventsViewModel = new ViewModelProvider(this).get(EventsViewModel.class);
 
-        EventRepository eventRepository = new EventRepository( eventsViewModel, accountViewModel, FirebaseDatabase.getInstance(),
+        EventRepository eventRepository = new EventRepository(this, eventsViewModel, accountViewModel, FirebaseDatabase.getInstance(),
                 FirebaseDatabase.getInstance().getReference());
 
-        AccountRepository accountRepository = new AccountRepository(eventsViewModel, accountViewModel, FirebaseDatabase.getInstance(),
+        AccountRepository accountRepository = new AccountRepository(this, eventsViewModel, accountViewModel, FirebaseDatabase.getInstance(),
                 FirebaseDatabase.getInstance().getReference());
-
 
 
         accountViewModel.eventsViewModel = eventsViewModel;
         accountViewModel.accountRepository = accountRepository;
+        accountViewModel.mainActivity = this;
 
         eventsViewModel.eventRepository = eventRepository;
         eventsViewModel.accountRepository = accountRepository;
-
+        eventsViewModel.mainActivity = this;
     }
 
     public void setActionBarTitle(String title)

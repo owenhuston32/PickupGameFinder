@@ -76,10 +76,8 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
             String username = mUsernameField.getText().toString();
             String password = mPasswordField.getText().toString();
 
-            if(((MainActivity) activity).checkWifi())
-            {
-                checkLoginInfo(username, password);
-            }
+            checkLoginInfo(username, password);
+
         }
     }
     private void checkLoginInfo(String username, String password)
@@ -99,13 +97,11 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
                     }
                     else
                     {
-                        ((MainActivity) activity).hideLoadingScreen();
                         mErrorMessage.setText("Invalid Username or Password");
                     }
                 }
                 else
                 {
-                    ((MainActivity) activity).hideLoadingScreen();
                     mErrorMessage.setText("Invalid Username or Password");
                     Log.e("Login Fragment", "failed to get user from database");
                 }
@@ -118,8 +114,6 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
         mAccountViewModel.loadUserEvents(new ICallback() {
             @Override
             public void onCallback(boolean result) {
-
-                ((MainActivity) activity).hideLoadingScreen();
                 if(result)
                 {
                     Log.d("LoginFragment", "log in click");

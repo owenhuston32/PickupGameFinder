@@ -68,16 +68,14 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
         returnToMapEvent = v.findViewById(R.id.event_page_return);
 
         activity = requireActivity();
-
-        ((MainActivity) activity).showLoadingScreen();
-
         accountViewModel.loadUserEvents(new ICallback() {
             @Override
             public void onCallback(boolean result) {
-                ((MainActivity) activity).hideLoadingScreen();
                 InitializeUI();
             }
         });
+
+        InitializeUI();
 
         joinEvent.setOnClickListener(this);
         leaveEvent.setOnClickListener(this);
@@ -117,24 +115,20 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
 
         int id = view.getId();
 
-        if(id == joinEvent.getId() && ((MainActivity)activity).checkWifi())
+        if(id == joinEvent.getId())
         {
-            ((MainActivity) activity).showLoadingScreen();
             setCurrentPlayerCount(event.currentPlayerCount, event.currentPlayerCount + 1);
         }
-        else if(id == leaveEvent.getId() && ((MainActivity)activity).checkWifi()) {
-            ((MainActivity) activity).showLoadingScreen();
+        else if(id == leaveEvent.getId()) {
             setCurrentPlayerCount(event.currentPlayerCount, event.currentPlayerCount - 1);
         }
-        else if(id == deleteEvent.getId() && ((MainActivity)activity).checkWifi())
+        else if(id == deleteEvent.getId())
         {
-            ((MainActivity) activity).showLoadingScreen();
             deleteEvent();
         }
         else if (id == returnToMapEvent.getId()) {
             ((MainActivity)activity).addFragment(new MapFragment(), "MapFragment");
         }
-        // FIXME add here
     }
     private void setCurrentPlayerCount(int oldPlayercount, int newPlayercount)
     {
@@ -142,7 +136,6 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
                 new ICallback() {
                     @Override
                     public void onCallback(boolean result) {
-                        ((MainActivity) activity).hideLoadingScreen();
                         if(result)
                         {
                             if(oldPlayercount > newPlayercount)
@@ -171,7 +164,6 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
                 new ICallback() {
                     @Override
                     public void onCallback(boolean result) {
-                        ((MainActivity) activity).hideLoadingScreen();
                         if(result)
                         {
                             deleteEvent.setVisibility(View.GONE);

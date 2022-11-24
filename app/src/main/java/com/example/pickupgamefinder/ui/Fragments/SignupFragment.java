@@ -108,10 +108,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
 
             if(isPasswordValid(password, passwordConfirm))
             {
-                if(((MainActivity) activity).checkWifi())
-                {
-                    trySignup(username, password);
-                }
+                trySignup(username, password);
             }
         }
         else {
@@ -163,7 +160,6 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
             public void onCallback(boolean result) {
                 if(result)
                 {
-                    ((MainActivity) activity).hideLoadingScreen();
                     ((MainActivity)activity).addFragment(new MapFragment(), "MapFragment");
                 }
                 else
