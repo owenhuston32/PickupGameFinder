@@ -91,34 +91,10 @@ public class AccountRepository {
                     {
                         GenericTypeIndicator<HashMap<String, Integer>> t = new GenericTypeIndicator<HashMap<String, Integer>>() {};
                         HashMap<String, Integer> createdEventsMap = task.getResult().child("createdEvents").getValue(t);
-
-                        List<String> createdEvents = null;
-
-                        if(createdEventsMap != null)
-                        {
-                            createdEvents = new ArrayList<String>();
-                            for (String s : createdEventsMap.keySet()) {
-                                createdEvents.add(s);
-                                Log.d("Account Repo", "created event: " + s);
-                            }
-                        }
-
                         HashMap<String, Integer> joinedEventsMap = task.getResult().child("joinedEvents").getValue(t);
-                        List<String> joinedEvents = null;
-                        if(joinedEventsMap != null)
-                        {
-                            joinedEvents = new ArrayList<String>();
-                            for (String s : joinedEventsMap.keySet()) {
-                                joinedEvents.add(s);
-                                Log.d("Account Repo", "joined event: " + s);
-                            }
-                        }
 
-                        user.createdEventNames = createdEvents;
-                        user.joinedEventNames = joinedEvents;
-
-                        Log.d("Account Repo", "" + user.createdEventNames);
-                        Log.d("Account Repo", "" + user.joinedEventNames);
+                        user.createdEventNames = getEventNamesFromHashMap(createdEventsMap);
+                        user.joinedEventNames = getEventNamesFromHashMap(joinedEventsMap);
 
                         accountViewModel.liveUser.setValue(user);
 
@@ -136,4 +112,22 @@ public class AccountRepository {
             }
         });
     }
+
+    private List<String> getEventNamesFromHashMap(HashMap<String, Integer> map)
+    {
+        List<String> eventNames = null;
+
+        if(map != null)
+        {
+            eventNames = new ArrayList<String>();
+            for (String s : map.keySet()) {
+                eventNames.add(s);
+                Log.d("Account Repo", "created event: " + s);
+            }
+        }
+        return eventNames;
+    }
+
+
+
 }

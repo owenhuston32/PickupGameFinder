@@ -50,21 +50,10 @@ public class EventRepository {
             public void onComplete(@NonNull Task task) {
                 mainActivity.hideLoadingScreen();
                 if (task.isSuccessful()) {
-                    List<Event> list = eventsViewModel.liveEventList.getValue();
-                    if(list == null)
-                        list = new ArrayList<Event>();
 
-                    list.add(event);
-                    eventsViewModel.liveEventList.setValue(list);
+                    addEventToEvents(event);
 
-
-                    List<String> nameList = accountViewModel.liveUser.getValue().createdEventNames;
-                    if(nameList == null)
-                        nameList = new ArrayList<String>();
-                    nameList.add(event.eventName);
-                    User user = accountViewModel.liveUser.getValue();
-                    user.createdEventNames = nameList;
-                    accountViewModel.liveUser.setValue(user);
+                    addEventToCreatedEvents(event);
 
                     callback.onCallback(true);
                 } else {
@@ -73,6 +62,28 @@ public class EventRepository {
             }
         });
     }
+
+    private void addEventToEvents(Event event)
+    {
+        List<Event> list = eventsViewModel.liveEventList.getValue();
+        if(list == null)
+            list = new ArrayList<Event>();
+
+        list.add(event);
+        eventsViewModel.liveEventList.setValue(list);
+    }
+
+    private void addEventToCreatedEvents(Event event)
+    {
+        List<String> nameList = accountViewModel.liveUser.getValue().createdEventNames;
+        if(nameList == null)
+            nameList = new ArrayList<String>();
+        nameList.add(event.eventName);
+        User user = accountViewModel.liveUser.getValue();
+        user.createdEventNames = nameList;
+        accountViewModel.liveUser.setValue(user);
+    }
+
     public void getEvent(String eventName, ICallback callback) {
 
         dbRef.child("events").child(eventName).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
@@ -152,26 +163,18 @@ public class EventRepository {
                         mainActivity.hideLoadingScreen();
                         if (task.isSuccessful()) {
 
-                            // change current player count on life event
+                            // change current player count on live event
                             Event e = eventsViewModel.liveEvent.getValue();
                             e.currentPlayerCount = newCurrentPlayerCount;
                             eventsViewModel.liveEvent.setValue(e);
 
                             if(oldPlayerCount > newCurrentPlayerCount)
                             {
-                                // remove event name to user's joined events
-                                User user = accountViewModel.liveUser.getValue();
-                                user.joinedEventNames.remove(event.eventName);
-                                accountViewModel.liveUser.setValue(user);
+                                leaveEvent(event);
                             }
                             else
                             {
-                                // add event name to user's joined events
-                                User user = accountViewModel.liveUser.getValue();
-                                if(user.joinedEventNames == null)
-                                    user.joinedEventNames = new ArrayList<String>();
-                                user.joinedEventNames.add(event.eventName);
-                                accountViewModel.liveUser.setValue(user);
+                                joinEvent(event);
                             }
 
                             callback.onCallback(true);
@@ -182,6 +185,23 @@ public class EventRepository {
                     }
                 });
     }
+    private void leaveEvent(Event event)
+    {
+        // remove event name to user's joined events
+        User user = accountViewModel.liveUser.getValue();
+        user.joinedEventNames.remove(event.eventName);
+        accountViewModel.liveUser.setValue(user);
+    }
+    private void joinEvent(Event event)
+    {
+        // add event name to user's joined events
+        User user = accountViewModel.liveUser.getValue();
+        if(user.joinedEventNames == null)
+            user.joinedEventNames = new ArrayList<String>();
+        user.joinedEventNames.add(event.eventName);
+        accountViewModel.liveUser.setValue(user);
+    }
+
     public void deleteEvent(Event event, ICallback callback) {
 
         Map<String, Object> childUpdates = new HashMap<String, Object>();
@@ -197,7 +217,7 @@ public class EventRepository {
 
                     eventsViewModel.liveEvent.setValue(null);
 
-                    // add event name to user's joined events
+                    // remove event from created events list
                     User user = accountViewModel.liveUser.getValue();
                     user.createdEventNames.remove(event.eventName);
                     accountViewModel.liveUser.setValue(user);
