@@ -42,7 +42,9 @@ import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 
 public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClickListener {
 
-    private int getLocationWaitTime = 10000;
+    private Handler locationTrackerHandler;
+    private Runnable locationTrackerRunnable;
+    private final int getLocationWaitTime = 10000;
     private EventsViewModel mEventsViewModel;
     private MapView mapView;
     private GoogleMap googleMap;
@@ -59,6 +61,7 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.e("TAG", "on create");
+        locationTrackerHandler = new Handler();
         super.onCreate(savedInstanceState);
 
     }
@@ -112,8 +115,19 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
 
     @Override
     public void onResume() {
-        super.onResume();
         mapView.onResume();
+        if(isTrackingUserLocation)
+            startLocationTrackingThread();
+        super.onResume();
+    }
+
+    @Override
+    public void onStop() {
+
+        if(locationTrackerRunnable != null)
+            locationTrackerHandler.removeCallbacks(locationTrackerRunnable);
+
+        super.onStop();
     }
 
     public void permissionResultCallback(boolean result)
@@ -155,20 +169,17 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
     private void startLocationTrackingThread()
     {
         Log.d("TAG", "start location tracker");
-
-        Handler handler = new Handler();
-
-        Runnable r = new Runnable() {
+        locationTrackerRunnable = new Runnable() {
             public void run() {
                 if(googleMap != null)
                 {
                     // update user location but don't move
                     getUserLocation(false);
                 }
-                handler.postDelayed(this, getLocationWaitTime);
+                locationTrackerHandler.postDelayed(this, getLocationWaitTime);
             }
         };
-        handler.postDelayed(r, getLocationWaitTime);
+        locationTrackerHandler.postDelayed(locationTrackerRunnable, getLocationWaitTime);
     }
 
     private void AddMarkers(List<Event> eventList)
@@ -208,13 +219,21 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
 
             if(googleMap != null)
             {
+                Log.d("MapFragment", "get user location SUCCESS");
                 setUserLocationCircle(task.getResult());
                 updateCamera(shouldMoveCamera);
             }
         }
+        else
+        {
+
+            Log.e("MapFragment", "get user location FAILED");
+        }
         // start a thread to update user location every few seconds
-        if(isTrackingUserLocation)
+        if(!isTrackingUserLocation) {
+            isTrackingUserLocation = true;
             startLocationTrackingThread();
+        }
     }
     private void updateCamera(boolean shouldMoveCamera)
     {
