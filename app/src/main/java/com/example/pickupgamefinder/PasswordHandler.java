@@ -57,20 +57,24 @@ public class PasswordHandler {
         {
             if(password.length() >= 12)
             {
-                errorTV.setText("Great Password Strength");
-                errorTV.setTextColor(Color.GREEN);
+                if(errorTV != null) {
+                    errorTV.setText("Great Password Strength");
+                    errorTV.setTextColor(Color.GREEN);
+                }
             }
             else
             {
-                errorTV.setText("Good Password Strength");
-                errorTV.setTextColor(Color.YELLOW);
+                if(errorTV != null)
+                {
+                    errorTV.setText("Good Password Strength");
+                    errorTV.setTextColor(Color.YELLOW);
+                }
             }
             return true;
         }
 
         else
         {
-            errorTV.setTextColor(Color.RED);
             if(upChars==0)
                 errorText += "\nThe Password must contain at least one uppercase character";
             if(lowChars==0)
@@ -83,11 +87,17 @@ public class PasswordHandler {
                 errorText += "\nPasswords Do Not Match";
             if(password.length() < minPasswordLength)
                 errorText += "\nPassword must be " + minPasswordLength + " characters long";
-            errorTV.setText(errorText);
+
+            if(errorTV != null)
+            {
+                errorTV.setText(errorText);
+                errorTV.setTextColor(Color.RED);
+            }
             return false;
 
         }
     }
+
 
     private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
 
