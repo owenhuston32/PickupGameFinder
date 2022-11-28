@@ -21,7 +21,11 @@ public class InternetManager {
         NetworkInfo ni = cm.getActiveNetworkInfo();
 
         // return whether we are connected to wifi or not
-        return ni != null && ni.getType() == ConnectivityManager.TYPE_WIFI;
+        return ni != null && (ni.getType() == ConnectivityManager.TYPE_WIFI
+                || ni.getType() == ConnectivityManager.TYPE_ETHERNET
+                || ni.getType() == ConnectivityManager.TYPE_MOBILE
+                || ni.getType() == ConnectivityManager.TYPE_VPN
+                || ni.getType() == ConnectivityManager.TYPE_BLUETOOTH);
 
     }
 
