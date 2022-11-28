@@ -1,11 +1,10 @@
 package com.example.pickupgamefinder;
 
 import org.junit.Test;
-import com.example.pickupgamefinder.PasswordHandler;
 
 import static org.junit.Assert.*;
 
-public class ExampleUnitTest {
+public class PasswordUnitTest {
 
     @Test
     public void valid_password() {
@@ -19,7 +18,7 @@ public class ExampleUnitTest {
 
     @Test
     public void missing_special_character() {
-        assertFalse(new PasswordHandler().isPasswordValid("Abcdefghij", "Abcdefghij", null));
+        assertFalse(new PasswordHandler().isPasswordValid("Abc12345", "Abc12345", null));
     }
 
     @Test
