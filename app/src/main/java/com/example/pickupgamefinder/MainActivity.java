@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
     }
     public boolean checkWifi()
     {
-        // show loading screen and move onto callback
+        // show loading screen
         if(internetManager.checkWifi())
         {
             Log.d("MainActivity", "showLoadingScreen");
