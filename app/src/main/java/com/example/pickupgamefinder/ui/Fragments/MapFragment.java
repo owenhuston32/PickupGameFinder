@@ -187,14 +187,16 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
         Log.d("TAG", "add marker");
         if(googleMap != null)
         {
-            for(Event e : eventList)
-            {
-                googleMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(e.latitude, e.longitude))
-                        .title(e.eventName)
-                        .snippet(e.caption + "\n"
-                                + "skill: " + e.skillLevel + "\n"
-                                + "players: " + e.currentPlayerCount + "/" + e.maxPlayers));
+            if(eventList != null) {
+
+                for (Event e : eventList) {
+                    googleMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(e.latitude, e.longitude))
+                            .title(e.eventName)
+                            .snippet(e.caption + "\n"
+                                    + "skill: " + e.skillLevel + "\n"
+                                    + "players: " + e.currentPlayerCount + "/" + e.maxPlayers));
+                }
             }
         }
     }
