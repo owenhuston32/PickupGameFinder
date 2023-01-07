@@ -169,7 +169,6 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
                             deleteEvent.setVisibility(View.GONE);
                             eventDetailsTV.setText("EVENT HAS BEEN DELETED");
                             currentPlayerTV.setText("");
-                            // add button that allows you
                         }
                         else
                         {
