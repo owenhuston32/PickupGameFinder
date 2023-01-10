@@ -63,7 +63,7 @@ public class AccountViewModel extends ViewModel {
         if(mainActivity.checkWifi())
         {
             mainActivity.showLoadingScreen();
-            accountRepository.loadUserEvents(callback);
+            //accountRepository.loadUserEvents(callback);
         }
         else
         {
@@ -73,15 +73,16 @@ public class AccountViewModel extends ViewModel {
 
     public List<Event> getJoinedEventList()
     {
+
         List<Event> joinedEvents = new ArrayList<Event>();
 
         List<Event> liveEventList = eventsViewModel.liveEventList.getValue();
 
-        if(liveEventList != null && liveUser.getValue().joinedEventNames != null)
+        if(liveEventList != null && liveUser.getValue().joinedEventIds != null)
         {
             for(Event e : liveEventList)
             {
-                if(liveUser.getValue().joinedEventNames.contains(e.eventName))
+                if(liveUser.getValue().joinedEventIds.contains(e.id))
                     joinedEvents.add(e);
             }
         }
@@ -93,11 +94,11 @@ public class AccountViewModel extends ViewModel {
         List<Event> createdEvents = new ArrayList<Event>();
 
         List<Event> liveEventList = eventsViewModel.liveEventList.getValue();
-        if(liveEventList != null && liveUser.getValue().createdEventNames != null)
+        if(liveEventList != null && liveUser.getValue().createdEventIds != null)
         {
             for(Event e : liveEventList)
             {
-                if(liveUser.getValue().createdEventNames.contains(e.eventName))
+                if(liveUser.getValue().createdEventIds.contains(e.id))
                     createdEvents.add(e);
             }
         }

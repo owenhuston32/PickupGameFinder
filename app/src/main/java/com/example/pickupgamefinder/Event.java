@@ -2,6 +2,7 @@ package com.example.pickupgamefinder;
 
 public class Event {
 
+    public String id;
     public String eventName = "";
     public String caption = "";
     public int skillLevel = 0;
@@ -10,9 +11,10 @@ public class Event {
     public double latitude = 0;
     public double longitude = 0;
 
-    public Event(String eventName, String caption, int skillLevel, int currentPlayerCount, int maxPlayers,
+    public Event(String id, String eventName, String caption, int skillLevel, int currentPlayerCount, int maxPlayers,
                  double latitude, double longitude)
     {
+        this.id = id;
         this.eventName = eventName;
         this.caption = caption;
         this.skillLevel = skillLevel;

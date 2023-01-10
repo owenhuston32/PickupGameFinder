@@ -87,8 +87,8 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
 
     public void InitializeUI()
     {
-        List<String> createdEventNames = accountViewModel.liveUser.getValue().createdEventNames;
-        List<String> joinedEventNames = accountViewModel.liveUser.getValue().joinedEventNames;
+        List<String> createdEventNames = accountViewModel.liveUser.getValue().createdEventIds;
+        List<String> joinedEventNames = accountViewModel.liveUser.getValue().joinedEventIds;
 
         // if the user created this event
         if(createdEventNames != null && createdEventNames.contains(event.eventName)) {

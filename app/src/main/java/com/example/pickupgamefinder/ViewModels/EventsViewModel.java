@@ -9,6 +9,7 @@ import com.example.pickupgamefinder.Event;
 import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.Repositories.EventRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EventsViewModel extends ViewModel {
@@ -95,5 +96,14 @@ public class EventsViewModel extends ViewModel {
         {
             callback.onCallback(false);
         }
+    }
+    public void addToLiveEventList(Event event)
+    {
+        List<Event> eventList = liveEventList.getValue();
+        if(eventList == null)
+            eventList = new ArrayList<Event>();
+
+        eventList.add(event);
+        liveEventList.setValue(eventList);
     }
 }

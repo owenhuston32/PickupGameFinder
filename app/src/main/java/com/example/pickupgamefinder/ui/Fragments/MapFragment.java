@@ -135,7 +135,7 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
         if(result)
         {
             getUserLocation(true);
-            loadEvents();
+            //loadEvents();
         }
 
     }
