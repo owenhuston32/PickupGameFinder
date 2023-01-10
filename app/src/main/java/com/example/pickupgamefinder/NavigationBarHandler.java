@@ -156,7 +156,7 @@ public class NavigationBarHandler implements NavigationView.OnNavigationItemSele
         }
 
         mainActivity.addFragment(new WelcomeScreenFragment(), "WelcomeScreenFragment");
-        accountViewModel.liveUser.setValue(new User("", "", new ArrayList<String>(), new ArrayList<String>()));
+        accountViewModel.liveUser.setValue(new User(Long.valueOf(0), "", "", new ArrayList<String>(), new ArrayList<String>()));
         drawerLayout.closeDrawer(GravityCompat.START);
     }
 

@@ -19,12 +19,12 @@ public class AccountViewModel extends ViewModel {
     public EventsViewModel eventsViewModel = null;
     public MainActivity mainActivity;
 
-    public void addUser(User user, ICallback callback) {
+    public void addUser(String userName, String hashedPassword, ICallback callback) {
 
         if(mainActivity.checkWifi())
         {
             mainActivity.showLoadingScreen();
-            accountRepository.addUser(user, callback);
+            accountRepository.addUser(userName, hashedPassword, callback);
         }
         else
         {
@@ -32,12 +32,25 @@ public class AccountViewModel extends ViewModel {
         }
     }
 
-    public void getUser(String username, ICallback callback) {
+    public void getUserName(String username, ICallback callback) {
 
         if(mainActivity.checkWifi())
         {
             mainActivity.showLoadingScreen();
-            accountRepository.getUser(username, callback);
+            accountRepository.getUserName(username, callback);
+        }
+        else
+        {
+            callback.onCallback(false);
+        }
+    }
+
+    public void tryLogin(String username, String hashedPassword, ICallback callback)
+    {
+        if(mainActivity.checkWifi())
+        {
+            mainActivity.showLoadingScreen();
+            accountRepository.tryLogin(username, hashedPassword, callback);
         }
         else
         {

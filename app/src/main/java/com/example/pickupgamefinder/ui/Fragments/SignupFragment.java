@@ -118,7 +118,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
 
     private void trySignup(String username, String password)
     {
-        mViewModel.getUser(username, new ICallback()
+        mViewModel.getUserName(username, new ICallback()
         {
             // if we fail to get user that means the username is available
             @Override
@@ -141,8 +141,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
     {
         String hashedPassword = passwordHandler.getHashedPassword(password);
 
-        User user = new User(username, hashedPassword, new ArrayList<String>(), new ArrayList<String>());
-        mViewModel.addUser(user, new ICallback() {
+        mViewModel.addUser(username, hashedPassword, new ICallback() {
             @Override
             public void onCallback(boolean result) {
                 if(result)
