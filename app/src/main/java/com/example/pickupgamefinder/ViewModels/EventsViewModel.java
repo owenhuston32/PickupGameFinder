@@ -32,27 +32,12 @@ public class EventsViewModel extends ViewModel {
             callback.onCallback(false);
         }
     }
-    public void getEvent(String eventName, ICallback callback)
+    public void getEvent(String eventId, ICallback callback)
     {
-        //check if event is already in our known list of events
-        if(liveEventList.getValue() != null)
-        {
-            for(Event e : liveEventList.getValue())
-            {
-                if(e.eventName.equals(eventName))
-                {
-                    liveEvent.setValue(e);
-                    callback.onCallback(true);
-                    return;
-                }
-            }
-        }
-
         if(mainActivity.checkWifi())
         {
             mainActivity.showLoadingScreen();
-            // check for event in database
-            eventRepository.getEvent(eventName, callback);
+            eventRepository.getEvent(eventId, callback);
         }
         else
         {

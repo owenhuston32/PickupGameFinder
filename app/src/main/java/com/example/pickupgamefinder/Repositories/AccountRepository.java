@@ -1,5 +1,6 @@
 package com.example.pickupgamefinder.Repositories;
 
+import android.provider.ContactsContract;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -95,6 +96,54 @@ public class AccountRepository {
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 mainActivity.hideLoadingScreen();
                 callback.onCallback(task.isSuccessful() && task.getResult().getValue() != null);
+            }
+        });
+    }
+
+    public void loadCreatedEventIds(User user, ICallback callback)
+    {
+        dbRef.child("server/users/" + user.username + "/createdEvents").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+
+                boolean successful = task.isSuccessful() && task.getResult().getValue() != null;
+                if(successful)
+                {
+                    List<String> eventIds = new ArrayList<String>();
+                    for(DataSnapshot snapshot : task.getResult().getChildren())
+                    {
+                        eventIds.add(snapshot.getKey());
+                    }
+                    user.createdEventIds = eventIds;
+                    accountViewModel.liveUser.setValue(user);
+                }
+                mainActivity.hideLoadingScreen();
+                callback.onCallback(successful);
+            }
+        });
+    }
+
+    public void loadJoinedEvents(User user, ICallback callback)
+    {
+        dbRef.child("server/users/" + user.username + "/joinedEvents").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+
+                boolean successful = task.isSuccessful() && task.getResult().getValue() != null;
+                if(successful)
+                {
+                    List<String> eventIds = new ArrayList<String>();
+                    for(DataSnapshot snapshot : task.getResult().getChildren())
+                    {
+                        eventIds.add(snapshot.getKey());
+                    }
+                    user.joinedEventIds = eventIds;
+                    accountViewModel.liveUser.setValue(user);
+                }
+                mainActivity.hideLoadingScreen();
+                callback.onCallback(successful);
             }
         });
     }

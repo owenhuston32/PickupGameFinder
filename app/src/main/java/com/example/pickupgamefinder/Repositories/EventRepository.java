@@ -2,7 +2,9 @@ package com.example.pickupgamefinder.Repositories;
 
 import android.util.Log;
 
+import com.example.pickupgamefinder.GroupChat;
 import com.example.pickupgamefinder.MainActivity;
+import com.example.pickupgamefinder.Message;
 import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 
@@ -55,6 +57,9 @@ public class EventRepository {
                 currentData.child("events/" + id).setValue(event);
                 currentData.child("users/" + accountViewModel.liveUser.getValue().username + "/createdEvents/" + id).setValue(0);
 
+                GroupChat groupChat =  new GroupChat(event.eventName + " Group", accountViewModel.liveUser.getValue().username, new ArrayList<User>(), new ArrayList<Message>());
+                currentData.child("groupChats/" + id).setValue(groupChat);
+
                 return Transaction.success(currentData);
             }
 
@@ -67,6 +72,10 @@ public class EventRepository {
                     User user = accountViewModel.liveUser.getValue();
                     user.addIdToList(event.id, user.createdEventIds);
 
+                    for(int i = 0; i < user.createdEventIds.size(); i++) {
+                        Log.e("created event: ", user.createdEventIds.get(i));
+                    }
+
                     eventsViewModel.addToLiveEventList(event);
                     callback.onCallback(true);
                 }
@@ -78,13 +87,51 @@ public class EventRepository {
         });
     }
 
-    public void getEvent(String eventName, ICallback callback) {
+    public void getEvent(String eventId, ICallback callback) {
 
+        dbRef.child("server/events/" + eventId).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                mainActivity.hideLoadingScreen();
+
+                if(task.isSuccessful() && task.getResult().getValue() != null)
+                {
+                    Event event = task.getResult().getValue(Event.class);
+                    eventsViewModel.liveEvent.setValue(event);
+                    callback.onCallback(true);
+                }
+                else
+                {
+                    callback.onCallback(false);
+                }
+            }
+        });
     }
 
     public void loadEvents(ICallback callback)
     {
+        dbRef.child("/server/events").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                mainActivity.hideLoadingScreen();
 
+                if(task.isSuccessful() && task.getResult().getValue() != null)
+                {
+                    List<Event> eventList = new ArrayList<Event>();
+                    for(DataSnapshot snapshot : task.getResult().getChildren())
+                    {
+                        Event event = snapshot.getValue(Event.class);
+                        eventList.add(event);
+                    }
+                    eventsViewModel.liveEventList.setValue(eventList);
+                    callback.onCallback(true);
+                }
+                else
+                {
+                    callback.onCallback(false);
+                }
+            }
+        });
     }
     public void setCurrentPlayerCount(int oldPlayerCount, int newCurrentPlayerCount, Event event, ICallback callback) {
 

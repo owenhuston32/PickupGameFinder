@@ -63,10 +63,12 @@ public class EventRecyclerAdapter extends RecyclerView.Adapter<EventRecyclerAdap
 
         Event e = eventsList.get(position);
 
+        Integer playerCount = e.joinedUsers != null ? e.joinedUsers.size() : 0;
+
         String eventName = "Name: " + e.eventName;
         String caption = "Caption: " + e.caption;
         String skill = "Skill Level: " + e.skillLevel;
-        String players = "Players: " + e.currentPlayerCount + "/" + e.maxPlayers;
+        String players = "Players: " + playerCount + "/" + e.maxPlayers;
 
 
         holder.eventName.setText(eventName);
@@ -76,7 +78,7 @@ public class EventRecyclerAdapter extends RecyclerView.Adapter<EventRecyclerAdap
         holder.viewEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                eventsViewModel.getEvent(e.eventName, new ICallback() {
+                eventsViewModel.getEvent(e.id, new ICallback() {
                     @Override
                     public void onCallback(boolean result) {
 

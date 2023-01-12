@@ -13,6 +13,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Handler;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -135,7 +136,7 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
         if(result)
         {
             getUserLocation(true);
-            //loadEvents();
+            loadEvents();
         }
 
     }
@@ -190,12 +191,18 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
             if(eventList != null) {
 
                 for (Event e : eventList) {
+                    MarkerOptions markerOptions = new MarkerOptions()
+                            .position(new LatLng(e.latitude, e.longitude))
+                            .title(e.eventName)
+                            .snippet(e.caption);
+
+
+
+
                     googleMap.addMarker(new MarkerOptions()
                             .position(new LatLng(e.latitude, e.longitude))
                             .title(e.eventName)
-                            .snippet(e.caption + "\n"
-                                    + "skill: " + e.skillLevel + "\n"
-                                    + "players: " + e.currentPlayerCount + "/" + e.maxPlayers));
+                            .snippet(e.caption));
                 }
             }
         }
@@ -269,6 +276,7 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
     }
     private void loadEventPage(Marker marker)
     {
+        //TODO CHANGE THIS TO getEvent(event id ) some how
         mEventsViewModel.getEvent(marker.getTitle(), new ICallback() {
             @Override
             public void onCallback(boolean result) {

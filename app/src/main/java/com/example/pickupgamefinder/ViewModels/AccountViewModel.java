@@ -58,12 +58,20 @@ public class AccountViewModel extends ViewModel {
         }
     }
 
-    public void loadUserEvents(ICallback callback)
+    public void loadEventIds(boolean joinedEvents, boolean createdEvents, ICallback callback)
     {
         if(mainActivity.checkWifi())
         {
-            mainActivity.showLoadingScreen();
-            //accountRepository.loadUserEvents(callback);
+            if(createdEvents)
+            {
+                accountRepository.loadCreatedEventIds(liveUser.getValue(), callback);
+                getEventsFromEventIds(liveUser.getValue().createdEventIds);
+            }
+            if(joinedEvents)
+            {
+                User user = liveUser.getValue();
+                accountRepository.loadJoinedEvents(liveUser.getValue(), callback);
+            }
         }
         else
         {
@@ -71,38 +79,20 @@ public class AccountViewModel extends ViewModel {
         }
     }
 
-    public List<Event> getJoinedEventList()
+    public List<Event> getEventsFromEventIds(List<String> eventIds)
     {
-
-        List<Event> joinedEvents = new ArrayList<Event>();
+        List<Event> events = new ArrayList<Event>();
 
         List<Event> liveEventList = eventsViewModel.liveEventList.getValue();
 
-        if(liveEventList != null && liveUser.getValue().joinedEventIds != null)
+        if(liveEventList != null && eventIds != null)
         {
             for(Event e : liveEventList)
             {
-                if(liveUser.getValue().joinedEventIds.contains(e.id))
-                    joinedEvents.add(e);
+                if(eventIds.contains(e.id))
+                    events.add(e);
             }
         }
-        return joinedEvents;
+        return events;
     }
-
-    public List<Event> getCreatedEventList()
-    {
-        List<Event> createdEvents = new ArrayList<Event>();
-
-        List<Event> liveEventList = eventsViewModel.liveEventList.getValue();
-        if(liveEventList != null && liveUser.getValue().createdEventIds != null)
-        {
-            for(Event e : liveEventList)
-            {
-                if(liveUser.getValue().createdEventIds.contains(e.id))
-                    createdEvents.add(e);
-            }
-        }
-        return createdEvents;
-    }
-
 }

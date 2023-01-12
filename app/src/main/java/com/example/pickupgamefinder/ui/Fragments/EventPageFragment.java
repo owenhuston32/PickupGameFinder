@@ -60,7 +60,10 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
          + "\nSkill Level: " + event.skillLevel + "/10\n");
 
         currentPlayerTV = v.findViewById(R.id.event_page_player_count);
-        currentPlayerTV.setText("Players: " + event.currentPlayerCount + "\\" + event.maxPlayers);
+
+        Integer playerCount = event.joinedUsers != null ? event.joinedUsers.size() : 0;
+
+        currentPlayerTV.setText("Players: " + playerCount + "\\" + event.maxPlayers);
 
         joinEvent = v.findViewById(R.id.event_page_join);
         leaveEvent = v.findViewById(R.id.event_page_leave);
@@ -68,12 +71,6 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
         returnToMapEvent = v.findViewById(R.id.event_page_return);
 
         activity = requireActivity();
-        accountViewModel.loadUserEvents(new ICallback() {
-            @Override
-            public void onCallback(boolean result) {
-                InitializeUI();
-            }
-        });
 
         InitializeUI();
 
@@ -91,12 +88,13 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
         List<String> joinedEventNames = accountViewModel.liveUser.getValue().joinedEventIds;
 
         // if the user created this event
-        if(createdEventNames != null && createdEventNames.contains(event.eventName)) {
+        if(createdEventNames != null && createdEventNames.contains(event.id)) {
             leaveEvent.setVisibility(View.GONE);
             joinEvent.setVisibility(View.GONE);
             deleteEvent.setVisibility(View.VISIBLE);
         }
-        else if(joinedEventNames != null && joinedEventNames.contains(event.eventName))
+        // if the user already joined this event
+        else if(joinedEventNames != null && joinedEventNames.contains(event.id))
         {
             leaveEvent.setVisibility(View.VISIBLE);
             joinEvent.setVisibility(View.GONE);
@@ -117,10 +115,10 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
 
         if(id == joinEvent.getId())
         {
-            setCurrentPlayerCount(event.currentPlayerCount, event.currentPlayerCount + 1);
+
         }
         else if(id == leaveEvent.getId()) {
-            setCurrentPlayerCount(event.currentPlayerCount, event.currentPlayerCount - 1);
+
         }
         else if(id == deleteEvent.getId())
         {
@@ -130,34 +128,7 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
             ((MainActivity)activity).addFragment(new MapFragment(), "MapFragment");
         }
     }
-    private void setCurrentPlayerCount(int oldPlayercount, int newPlayercount)
-    {
-        eventsViewModel.setCurrentPlayerCount(oldPlayercount, newPlayercount, event,
-                new ICallback() {
-                    @Override
-                    public void onCallback(boolean result) {
-                        if(result)
-                        {
-                            if(oldPlayercount > newPlayercount)
-                            {
-                                leaveEvent.setVisibility(View.GONE);
-                                joinEvent.setVisibility(View.VISIBLE);
-                            }
-                            else
-                            {
-                                leaveEvent.setVisibility(View.VISIBLE);
-                                joinEvent.setVisibility(View.GONE);
-                            }
-                            currentPlayerTV.setText("Players: "+ newPlayercount + "\\" + event.maxPlayers);
-                            event.currentPlayerCount = newPlayercount;
-                        }
-                        else
-                        {
-                            Log.e("Event page frag", "failed to set current player count");
-                        }
-                    }
-                });
-    }
+
     private void deleteEvent()
     {
         eventsViewModel.deleteEvent(event,

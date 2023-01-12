@@ -109,17 +109,13 @@ public class NavigationBarHandler implements NavigationView.OnNavigationItemSele
     private void createdEventsButtonClick()
     {
         setActionBarTitle("Created Events");
-        List<Event> createdEvents = accountViewModel.getCreatedEventList();
-
-        mainActivity.addFragment(new EventListFragment(createdEvents, false), "EventListFragment");
+        mainActivity.addFragment(new EventListFragment(false, true, false, false), "EventListFragment");
         drawerLayout.closeDrawer(GravityCompat.START);
     }
     private void joinedEventsButtonClick()
     {
         setActionBarTitle("Joined Events");
-        List<Event> joinedEvents = accountViewModel.getJoinedEventList();
-
-        mainActivity.addFragment(new EventListFragment(joinedEvents, false), "MapFragment");
+        mainActivity.addFragment(new EventListFragment(false, false, true, false), "MapFragment");
         drawerLayout.closeDrawer(GravityCompat.START);
     }
     private void mapButtonClick()
@@ -131,13 +127,7 @@ public class NavigationBarHandler implements NavigationView.OnNavigationItemSele
     private void viewEventsButtonClick()
     {
         setActionBarTitle("View Events");
-        List<Event> eventList = eventsViewModel.liveEventList.getValue();
-
-        if(eventList != null)
-            mainActivity.addFragment(new EventListFragment(eventList, true), "EventListFragment");
-        else
-            mainActivity.addFragment(new EventListFragment(new ArrayList<Event>(), true), "EventListFragment");
-
+        mainActivity.addFragment(new EventListFragment(true, false, false, true), "EventListFragment");
         drawerLayout.closeDrawer(GravityCompat.START);
     }
     private void createEventButtonClick()

@@ -34,14 +34,19 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
     AccountViewModel accountViewModel;
     RecyclerView recyclerView;
     List<Event> eventList;
+    boolean showAllEvents;
+    boolean showCreatedEvents;
+    boolean showJoinedEvents;
     boolean showRefreshButton;
 
 
-    public EventListFragment(List<Event> eventsList, boolean showRefreshButton) {
+    public EventListFragment(boolean showAllEvents, boolean showCreatedEvents, boolean showJoinedEvents
+            , boolean showRefreshButton) {
 
-        this.eventList = eventsList;
+        this.showAllEvents = showAllEvents;
+        this.showCreatedEvents = showCreatedEvents;
+        this.showJoinedEvents = showJoinedEvents;
         this.showRefreshButton = showRefreshButton;
-
     }
 
     @Override
@@ -62,14 +67,37 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
         recyclerView = v.findViewById(R.id.events_list_recyclerView);
         refreshButton = v.findViewById(R.id.event_list_refresh_button);
 
-        setAdapter();
-
         if(showRefreshButton)
             refreshButton.setVisibility(View.VISIBLE);
         else
             refreshButton.setVisibility(View.GONE);
 
         refreshButton.setOnClickListener(this);
+
+        if(showAllEvents)
+        {
+            loadEvents();
+        }
+        if(showCreatedEvents)
+        {
+            accountViewModel.loadEventIds(false, true, new ICallback() {
+                @Override
+                public void onCallback(boolean result) {
+                    eventList = accountViewModel.getEventsFromEventIds(accountViewModel.liveUser.getValue().createdEventIds);
+                    setAdapter();
+                }
+            });
+        }
+        if(showJoinedEvents)
+        {
+            accountViewModel.loadEventIds(true, false, new ICallback() {
+                @Override
+                public void onCallback(boolean result) {
+                    eventList = accountViewModel.getEventsFromEventIds(accountViewModel.liveUser.getValue().joinedEventIds);
+                    setAdapter();
+                }
+            });
+        }
 
         // Inflate the layout for this fragment
         return v;
