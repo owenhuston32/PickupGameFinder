@@ -18,11 +18,11 @@ import android.widget.TextView;
 
 import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.MainActivity;
-import com.example.pickupgamefinder.PasswordHandler;
+import com.example.pickupgamefinder.Handlers.PasswordHandler;
 import com.example.pickupgamefinder.R;
-import com.example.pickupgamefinder.User;
 
 import com.example.pickupgamefinder.ViewModels.AccountViewModel;
+import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 
 public class LoginFragment extends Fragment implements  View.OnClickListener {
 
@@ -32,6 +32,7 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
     private EditText mUsernameField;
     private EditText mPasswordField;
     private Button mLoginButton;
+    private EventsViewModel eventsViewModel;
     private Activity activity;
 
     public LoginFragment()
@@ -56,7 +57,7 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
         passwordHandler = new PasswordHandler();
 
         mAccountViewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
-
+        eventsViewModel = new ViewModelProvider(requireActivity()).get(EventsViewModel.class);
         mLoginButton.setOnClickListener(this);
 
         Log.d("LoginFragment", "on create view");
@@ -105,25 +106,12 @@ public class LoginFragment extends Fragment implements  View.OnClickListener {
     private void Login()
     {
 
-        ((MainActivity)activity).addFragment(new MapFragment(), "MapFragment");
-
-        /*
-        mAccountViewModel.loadUserEvents(new ICallback() {
+        eventsViewModel.loadEvents(new ICallback() {
             @Override
             public void onCallback(boolean result) {
-                if(result)
-                {
-                    Log.d("LoginFragment", "log in click");
-                    mLoginButton.setText("Logged In");
-                    ((MainActivity)activity).addFragment(new MapFragment(), "MapFragment");
-                }
-                else
-                {
-                    mLoginButton.setText("Failed to load user events");
-                }
+                ((MainActivity)activity).addFragment(new MapFragment(eventsViewModel.liveEventList.getValue(), false), "MapFragment");
             }
         });
 
-         */
     }
 }

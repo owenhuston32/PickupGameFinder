@@ -19,18 +19,17 @@ import android.widget.TextView;
 
 import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.MainActivity;
-import com.example.pickupgamefinder.PasswordHandler;
+import com.example.pickupgamefinder.Handlers.PasswordHandler;
 import com.example.pickupgamefinder.R;
-import com.example.pickupgamefinder.User;
-
-import java.util.ArrayList;
 
 import com.example.pickupgamefinder.ViewModels.AccountViewModel;
+import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 
 public class SignupFragment extends Fragment implements View.OnClickListener{
 
     private PasswordHandler passwordHandler;
-    private AccountViewModel mViewModel;
+    private AccountViewModel accountViewModel;
+    private EventsViewModel eventsViewModel;
     private TextView mErrorMessage;
     private EditText mUsernameField;
     private EditText mPasswordField;
@@ -61,8 +60,8 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
         mConfirmPasswordField = (EditText) v.findViewById(R.id.signup_password_confirm);
         mSignUpButton = (Button) v.findViewById(R.id.signup_create_account);
 
-        mViewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
-
+        accountViewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
+        eventsViewModel = new ViewModelProvider(requireActivity()).get(EventsViewModel.class);
         setTextChangedListener(mPasswordField);
         setTextChangedListener(mConfirmPasswordField);
 
@@ -118,7 +117,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
 
     private void trySignup(String username, String password)
     {
-        mViewModel.getUserName(username, new ICallback()
+        accountViewModel.getUserName(username, new ICallback()
         {
             // if we fail to get user that means the username is available
             @Override
@@ -141,17 +140,26 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
     {
         String hashedPassword = passwordHandler.getHashedPassword(password);
 
-        mViewModel.addUser(username, hashedPassword, new ICallback() {
+        accountViewModel.addUser(username, hashedPassword, new ICallback() {
             @Override
             public void onCallback(boolean result) {
                 if(result)
                 {
-                    ((MainActivity)activity).addFragment(new MapFragment(), "MapFragment");
+                    goToMapFragment();
                 }
                 else
                 {
                     Log.e("SignupFragment", "Failed to add user to database");
                 }
+            }
+        });
+    }
+    private void goToMapFragment()
+    {
+        eventsViewModel.loadEvents(new ICallback() {
+            @Override
+            public void onCallback(boolean result) {
+                ((MainActivity)activity).addFragment(new MapFragment(eventsViewModel.liveEventList.getValue(), false), "MapFragment");
             }
         });
     }

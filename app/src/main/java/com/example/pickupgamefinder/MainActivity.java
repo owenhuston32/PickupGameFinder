@@ -12,8 +12,11 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.example.pickupgamefinder.Handlers.NavigationBarHandler;
 import com.example.pickupgamefinder.Repositories.AccountRepository;
 import com.example.pickupgamefinder.Repositories.EventRepository;
+import com.example.pickupgamefinder.Singletons.ErrorUIHandler;
+import com.example.pickupgamefinder.Singletons.NavigationController;
 import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 
@@ -39,9 +42,9 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
         if (savedInstanceState == null) {
             createWelcomeScreen();
             createPopupFragment();
-
         }
         InitializeViewModels();
+        NavigationController.getInstance().setupNavController(this, eventsViewModel, accountViewModel);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         internetManager = new InternetManager(this);
         navigationBarHandler = new NavigationBarHandler(accountViewModel, eventsViewModel, this, drawerLayout);
@@ -53,7 +56,6 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
                 .replace(R.id.fragment_container, new WelcomeScreenFragment())
                 .commitNow();
 
-
     }
 
     private void createPopupFragment()
@@ -62,6 +64,8 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
 
         getSupportFragmentManager().beginTransaction().replace(R.id.main_popup_container, popup)
                 .commitNow();
+
+        ErrorUIHandler.getInstance().setPopupFragment(popup);
     }
 
     private void InitializeViewModels()
@@ -85,26 +89,9 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
         eventsViewModel.mainActivity = this;
     }
 
-    public void setActionBarTitle(String title)
-    {
-        navigationBarHandler.setActionBarTitle(title);
-    }
     public boolean checkWifi()
     {
-        // show loading screen
-        if(internetManager.checkWifi())
-        {
-            Log.d("MainActivity", "showLoadingScreen");
-            showLoadingScreen();
-            return true;
-        }
-        // show dialog saying "not connected to internet"
-        else
-        {
-            Log.e("MainActivity", "show no internet dialog");
-            popup.showPopup();
-            return false;
-        }
+        return internetManager.checkWifi();
     }
 
     public void showLoadingScreen()

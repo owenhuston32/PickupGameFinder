@@ -13,7 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.example.pickupgamefinder.Event;
+import com.example.pickupgamefinder.Models.Event;
 import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
 
@@ -92,7 +92,12 @@ public class CreateEventFragment extends Fragment implements View.OnClickListene
         int id = view.getId();
         if(id == nextPageButton.getId())
         {
-            ((MainActivity)activity).addFragment(new CreateEventMapFragment(CreateEvent()), "MapFragment");
+            Event event = CreateEvent();
+            List<Event> eventList = new ArrayList<Event>();
+
+            eventList.add(event);
+
+            ((MainActivity)activity).addFragment(new MapFragment(eventList, true), "MapFragment");
         }
         else if(id == skillLevelLeftArrow.getId())
         {
@@ -143,8 +148,6 @@ public class CreateEventFragment extends Fragment implements View.OnClickListene
 
         Event event = new Event("0", eventName, caption, skillLevel, maxPlayers, 0, 0
                 , mAccountViewModel.liveUser.getValue().username, new ArrayList<String>());
-
-
 
         return event;
     }

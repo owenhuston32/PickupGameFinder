@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.pickupgamefinder.Models.Event;
 import com.example.pickupgamefinder.ui.Fragments.EventPageFragment;
 import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 

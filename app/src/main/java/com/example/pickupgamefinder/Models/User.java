@@ -1,4 +1,4 @@
-package com.example.pickupgamefinder;
+package com.example.pickupgamefinder.Models;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,7 @@ public class User {
     public List<String> joinedEventIds;
 
     public User() {
-        // Default constructor required for calls to DataSnapshot.getValue(com.example.pickupgamefinder.User.class)
+        // Default constructor required for calls to DataSnapshot.getValue(com.example.pickupgamefinder.Models.User.class)
     }
 
     public User(String username, String password, List<String> createdEventIds, List<String> joinedEventIds) {

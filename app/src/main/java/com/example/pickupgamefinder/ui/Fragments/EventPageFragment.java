@@ -13,9 +13,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.pickupgamefinder.Event;
+import com.example.pickupgamefinder.Models.Event;
 import com.example.pickupgamefinder.ICallback;
-import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
 
 import java.util.List;
@@ -31,7 +30,6 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
     Button joinEvent;
     Button leaveEvent;
     Button deleteEvent;
-    Button returnToMapEvent;
 
     EventsViewModel eventsViewModel;
     Event event;
@@ -68,7 +66,6 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
         joinEvent = v.findViewById(R.id.event_page_join);
         leaveEvent = v.findViewById(R.id.event_page_leave);
         deleteEvent = v.findViewById(R.id.event_page_delete);
-        returnToMapEvent = v.findViewById(R.id.event_page_return);
 
         activity = requireActivity();
 
@@ -77,7 +74,6 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
         joinEvent.setOnClickListener(this);
         leaveEvent.setOnClickListener(this);
         deleteEvent.setOnClickListener(this);
-        returnToMapEvent.setOnClickListener(this);
         // Inflate the layout for this fragment
         return v;
     }
@@ -123,9 +119,6 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
         else if(id == deleteEvent.getId())
         {
             deleteEvent();
-        }
-        else if (id == returnToMapEvent.getId()) {
-            ((MainActivity)activity).addFragment(new MapFragment(), "MapFragment");
         }
     }
 

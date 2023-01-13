@@ -1,34 +1,20 @@
 package com.example.pickupgamefinder.Repositories;
 
-import android.provider.ContactsContract;
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.pickupgamefinder.Event;
 import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.MainActivity;
-import com.example.pickupgamefinder.User;
+import com.example.pickupgamefinder.Models.User;
 import com.example.pickupgamefinder.ViewModels.AccountViewModel;
-import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
-import com.google.firebase.database.MutableData;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.database.Transaction;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class AccountRepository {
 

@@ -1,4 +1,4 @@
-package com.example.pickupgamefinder;
+package com.example.pickupgamefinder.Handlers;
 
 import android.graphics.Color;
 import android.text.Editable;

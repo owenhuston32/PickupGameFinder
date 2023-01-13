@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import com.example.pickupgamefinder.R;
 
@@ -16,6 +17,7 @@ public class PopupNotificationFragment extends Fragment implements View.OnClickL
 
     private FrameLayout container;
     private Button okButton;
+    private TextView errorTV;
 
     public PopupNotificationFragment()
     {
@@ -37,6 +39,7 @@ public class PopupNotificationFragment extends Fragment implements View.OnClickL
 
         container.setVisibility(View.GONE);
 
+        errorTV = v.findViewById(R.id.popup_text);
         okButton = v.findViewById(R.id.popup_Ok_Button);
 
         okButton.setOnClickListener(this);
@@ -55,8 +58,9 @@ public class PopupNotificationFragment extends Fragment implements View.OnClickL
         }
     }
 
-    public void showPopup()
+    public void showPopup(String errorMessage)
     {
+        this.errorTV.setText(errorMessage);
         container.setVisibility(View.VISIBLE);
     }
 }

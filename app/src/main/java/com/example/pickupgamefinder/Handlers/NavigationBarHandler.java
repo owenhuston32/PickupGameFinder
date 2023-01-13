@@ -1,6 +1,5 @@
-package com.example.pickupgamefinder;
+package com.example.pickupgamefinder.Handlers;
 
-import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
@@ -10,10 +9,10 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 
-import com.example.pickupgamefinder.Event;
+import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.MainActivity;
+import com.example.pickupgamefinder.Models.User;
 import com.example.pickupgamefinder.R;
-import com.example.pickupgamefinder.User;
 import com.example.pickupgamefinder.ui.Fragments.AccountFragment;
 import com.example.pickupgamefinder.ui.Fragments.CreateEventFragment;
 import com.example.pickupgamefinder.ui.Fragments.EventListFragment;
@@ -22,7 +21,6 @@ import com.example.pickupgamefinder.ui.Fragments.WelcomeScreenFragment;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 import com.example.pickupgamefinder.ViewModels.EventsViewModel;
@@ -72,28 +70,31 @@ public class NavigationBarHandler implements NavigationView.OnNavigationItemSele
         int id = item.getItemId();
 
         if (id == R.id.menu_account) {
-            Log.e("NaviationBarHandler", "account click");
+            menuItemClick("Account");
             accountButtonClick();
             return true;
         } else if (id == R.id.menu_created_events) {
-            Log.e("NaviationBarHandler", "created events: " + eventsViewModel.liveEventList.getValue());
+            menuItemClick("Created Events");
             createdEventsButtonClick();
             return true;
         } else if (id == R.id.menu_joined_events) {
-            Log.e("NaviationBarHandler", "created events: " + eventsViewModel.liveEventList.getValue());
+            menuItemClick("Joined Events");
             joinedEventsButtonClick();
             return true;
         } else if (id == R.id.menu_map) {
+            menuItemClick("Map");
             mapButtonClick();
             return true;
         } else if (id == R.id.menu_event_list) {
-            Log.e("NaviationBarHandler", "created events: " + eventsViewModel.liveEventList.getValue());
+            menuItemClick("Events");
             viewEventsButtonClick();
             return true;
         } else if (id == R.id.menu_create_event) {
+            menuItemClick("Created Events");
             createEventButtonClick();
             return true;
         } else if (id == R.id.menu_signout) {
+            menuItemClick("");
             signOutButtonClick();
             return true;
         }
@@ -102,39 +103,32 @@ public class NavigationBarHandler implements NavigationView.OnNavigationItemSele
 
     private void accountButtonClick()
     {
-        setActionBarTitle("Account");
-        mainActivity.addFragment(new AccountFragment(), "AccountFragment");
-        drawerLayout.closeDrawer(GravityCompat.START);
+        mainActivity.addFragment(new AccountFragment(accountViewModel.liveUser.getValue()), "AccountFragment");
     }
     private void createdEventsButtonClick()
     {
-        setActionBarTitle("Created Events");
         mainActivity.addFragment(new EventListFragment(false, true, false, false), "EventListFragment");
-        drawerLayout.closeDrawer(GravityCompat.START);
     }
     private void joinedEventsButtonClick()
     {
-        setActionBarTitle("Joined Events");
         mainActivity.addFragment(new EventListFragment(false, false, true, false), "MapFragment");
-        drawerLayout.closeDrawer(GravityCompat.START);
     }
     private void mapButtonClick()
     {
-        setActionBarTitle("Map");
-        mainActivity.addFragment(new MapFragment(), "MapFragment");
-        drawerLayout.closeDrawer(GravityCompat.START);
+        eventsViewModel.loadEvents(new ICallback() {
+            @Override
+            public void onCallback(boolean result) {
+                mainActivity.addFragment(new MapFragment(eventsViewModel.liveEventList.getValue(), false), "MapFragment");
+            }
+        });
     }
     private void viewEventsButtonClick()
     {
-        setActionBarTitle("View Events");
         mainActivity.addFragment(new EventListFragment(true, false, false, true), "EventListFragment");
-        drawerLayout.closeDrawer(GravityCompat.START);
     }
     private void createEventButtonClick()
     {
-        setActionBarTitle("Create Events");
         mainActivity.addFragment(new CreateEventFragment(), "CreateEventFragment");
-        drawerLayout.closeDrawer(GravityCompat.START);
     }
     private void signOutButtonClick()
     {
@@ -155,5 +149,10 @@ public class NavigationBarHandler implements NavigationView.OnNavigationItemSele
         actionBar.setTitle(title);
     }
 
+    private void menuItemClick(String newActionBarTitle)
+    {
+        drawerLayout.closeDrawer(GravityCompat.START);
+        setActionBarTitle(newActionBarTitle);
+    }
 
 }

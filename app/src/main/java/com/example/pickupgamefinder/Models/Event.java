@@ -1,4 +1,4 @@
-package com.example.pickupgamefinder;
+package com.example.pickupgamefinder.Models;
 
 import java.util.List;
 
