@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.pickupgamefinder.Models.Event;
+import com.example.pickupgamefinder.Singletons.NavigationController;
 import com.example.pickupgamefinder.ui.Fragments.EventPageFragment;
 import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 
@@ -20,14 +21,10 @@ import androidx.recyclerview.widget.RecyclerView;
 public class EventRecyclerAdapter extends RecyclerView.Adapter<EventRecyclerAdapter.MyViewHolder>  {
 
     private List<Event> eventsList;
-    private Activity activity;
-    private EventsViewModel eventsViewModel;
 
-    public EventRecyclerAdapter(List<Event> eventsList, Activity activity, EventsViewModel eventsViewModel)
+    public EventRecyclerAdapter(List<Event> eventsList)
     {
         this.eventsList = eventsList;
-        this.activity = activity;
-        this.eventsViewModel = eventsViewModel;
     }
 
 
@@ -79,20 +76,7 @@ public class EventRecyclerAdapter extends RecyclerView.Adapter<EventRecyclerAdap
         holder.viewEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                eventsViewModel.getEvent(e.id, new ICallback() {
-                    @Override
-                    public void onCallback(boolean result) {
-
-                        if(result)
-                        {
-                            ((MainActivity)activity).addFragment(new EventPageFragment(e), "EventPageFragment");
-                        }
-                        else
-                        {
-                            Log.e("EventRcyclerAdapter", "Failed to load event");
-                        }
-                    }
-                });
+                NavigationController.getInstance().goToEventPage(e.id);
             }
         });
 

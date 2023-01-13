@@ -13,6 +13,7 @@ import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.Models.User;
 import com.example.pickupgamefinder.R;
+import com.example.pickupgamefinder.Singletons.NavigationController;
 import com.example.pickupgamefinder.ui.Fragments.AccountFragment;
 import com.example.pickupgamefinder.ui.Fragments.CreateEventFragment;
 import com.example.pickupgamefinder.ui.Fragments.EventListFragment;
@@ -103,45 +104,31 @@ public class NavigationBarHandler implements NavigationView.OnNavigationItemSele
 
     private void accountButtonClick()
     {
-        mainActivity.addFragment(new AccountFragment(accountViewModel.liveUser.getValue()), "AccountFragment");
+        NavigationController.getInstance().goToAccountFrag();
     }
     private void createdEventsButtonClick()
     {
-        mainActivity.addFragment(new EventListFragment(false, true, false, false), "EventListFragment");
+        NavigationController.getInstance().goToCreatedEvents();
     }
     private void joinedEventsButtonClick()
     {
-        mainActivity.addFragment(new EventListFragment(false, false, true, false), "MapFragment");
+        NavigationController.getInstance().goTojoinedEvents();
     }
     private void mapButtonClick()
     {
-        eventsViewModel.loadEvents(new ICallback() {
-            @Override
-            public void onCallback(boolean result) {
-                mainActivity.addFragment(new MapFragment(eventsViewModel.liveEventList.getValue(), false), "MapFragment");
-            }
-        });
+        NavigationController.getInstance().goToMap();
     }
     private void viewEventsButtonClick()
     {
-        mainActivity.addFragment(new EventListFragment(true, false, false, true), "EventListFragment");
+        NavigationController.getInstance().goToAllEventsList();
     }
     private void createEventButtonClick()
     {
-        mainActivity.addFragment(new CreateEventFragment(), "CreateEventFragment");
+        NavigationController.getInstance().goToCreateEvent();
     }
     private void signOutButtonClick()
     {
-        setActionBarTitle("");
-        //clear backstack
-        FragmentManager fm = mainActivity.getSupportFragmentManager();
-        for (int i = 0; i < fm.getBackStackEntryCount(); i++) {
-            fm.popBackStack();
-        }
-
-        mainActivity.addFragment(new WelcomeScreenFragment(), "WelcomeScreenFragment");
-        accountViewModel.liveUser.setValue(new User("", "", new ArrayList<String>(), new ArrayList<String>()));
-        drawerLayout.closeDrawer(GravityCompat.START);
+        NavigationController.getInstance().signOut();
     }
 
     public void setActionBarTitle(String title)

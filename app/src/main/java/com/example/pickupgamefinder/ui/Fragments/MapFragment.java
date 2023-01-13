@@ -23,6 +23,7 @@ import com.example.pickupgamefinder.Models.Event;
 import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
+import com.example.pickupgamefinder.Singletons.NavigationController;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -305,26 +306,10 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
     public void onInfoWindowClick(@NonNull Marker marker) {
 
         if(!marker.isDraggable())
-            loadEventPage(marker);
-    }
-
-    private void loadEventPage(Marker marker)
-    {
-        Log.e("Map Frag", marker.getId());
-        mEventsViewModel.getEvent(marker.getId().substring(1), new ICallback() {
-            @Override
-            public void onCallback(boolean result) {
-
-                if(result)
-                {
-                    ((MainActivity)activity).addFragment( new EventPageFragment(mEventsViewModel.liveEvent.getValue()), "EventPageFragment");
-                }
-                else
-                {
-                    Log.e("TAG", "error finding event by name");
-                }
-            }
-        });
+        {
+            String eventId = marker.getId().substring(1);
+            NavigationController.getInstance().goToEventPage(eventId);
+        }
     }
 
 }

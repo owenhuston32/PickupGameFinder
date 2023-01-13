@@ -11,6 +11,7 @@ import android.widget.Button;
 
 import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
+import com.example.pickupgamefinder.Singletons.NavigationController;
 
 public class WelcomeScreenFragment extends Fragment implements View.OnClickListener {
 
@@ -48,11 +49,11 @@ public class WelcomeScreenFragment extends Fragment implements View.OnClickListe
 
         if(viewId == R.id.welcome_login_button)
         {
-            ((MainActivity)getActivity()).addFragment(new LoginFragment(), "LoginFragment");
+            NavigationController.getInstance().goToLoginFrag();
         }
         else if(viewId == R.id.welcome_signup_button)
         {
-            ((MainActivity)getActivity()).addFragment(new SignupFragment(), "SignupFragment");
+            NavigationController.getInstance().goToSignUpFrag();
         }
     }
 }

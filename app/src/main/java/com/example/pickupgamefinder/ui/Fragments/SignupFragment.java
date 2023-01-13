@@ -22,6 +22,7 @@ import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.Handlers.PasswordHandler;
 import com.example.pickupgamefinder.R;
 
+import com.example.pickupgamefinder.Singletons.NavigationController;
 import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 
@@ -145,21 +146,12 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
             public void onCallback(boolean result) {
                 if(result)
                 {
-                    goToMapFragment();
+                    NavigationController.getInstance().goToMap();
                 }
                 else
                 {
                     Log.e("SignupFragment", "Failed to add user to database");
                 }
-            }
-        });
-    }
-    private void goToMapFragment()
-    {
-        eventsViewModel.loadEvents(new ICallback() {
-            @Override
-            public void onCallback(boolean result) {
-                ((MainActivity)activity).addFragment(new MapFragment(eventsViewModel.liveEventList.getValue(), false), "MapFragment");
             }
         });
     }

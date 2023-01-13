@@ -1,8 +1,24 @@
 package com.example.pickupgamefinder.Singletons;
 
+import android.util.Log;
+
+import androidx.fragment.app.FragmentManager;
+
+import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.MainActivity;
+import com.example.pickupgamefinder.Models.User;
 import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 import com.example.pickupgamefinder.ViewModels.EventsViewModel;
+import com.example.pickupgamefinder.ui.Fragments.AccountFragment;
+import com.example.pickupgamefinder.ui.Fragments.CreateEventFragment;
+import com.example.pickupgamefinder.ui.Fragments.EventListFragment;
+import com.example.pickupgamefinder.ui.Fragments.EventPageFragment;
+import com.example.pickupgamefinder.ui.Fragments.LoginFragment;
+import com.example.pickupgamefinder.ui.Fragments.MapFragment;
+import com.example.pickupgamefinder.ui.Fragments.SignupFragment;
+import com.example.pickupgamefinder.ui.Fragments.WelcomeScreenFragment;
+
+import java.util.ArrayList;
 
 public class NavigationController {
     private static volatile NavigationController INSTANCE = null;
@@ -32,37 +48,77 @@ public class NavigationController {
     }
 
 
-    public void goToAccountFrag()
-    {
-
-    }
-    public void goToCreateEventFrag()
-    {
-
-    }
-    public void goToEventListFrag()
-    {
-
-    }
-    public void goToEventPageFrag()
-    {
-
-    }
     public void goToLoginFrag()
     {
-
-    }
-    public void goToMapFrag()
-    {
-
+        mainActivity.addFragment(new LoginFragment(), "LoginFragment");
     }
     public void goToSignUpFrag()
     {
-
+        mainActivity.addFragment(new SignupFragment(), "SignupFragment");
     }
-    public void goToWelcomeScreen()
+    public void goToAccountFrag()
     {
+        accountViewModel.loadEventIds(true, true, new ICallback() {
+            @Override
+            public void onCallback(boolean result) {
+                mainActivity.addFragment(new AccountFragment(accountViewModel.liveUser.getValue()), "AccountFragment");
+            }
+        });
+    }
+    public void goToCreatedEvents()
+    {
+        mainActivity.addFragment(new EventListFragment(false, true, false, false), "EventListFragment");
+    }
+    public void goTojoinedEvents()
+    {
+        mainActivity.addFragment(new EventListFragment(false, false, true, false), "MapFragment");
+    }
+    public void goToMap()
+    {
+        eventsViewModel.loadEvents(new ICallback() {
+            @Override
+            public void onCallback(boolean result) {
+                mainActivity.addFragment(new MapFragment(eventsViewModel.liveEventList.getValue(), false), "MapFragment");
+            }
+        });
+    }
+    public void goToAllEventsList()
+    {
+        mainActivity.addFragment(new EventListFragment(true, false, false, true), "EventListFragment");
+    }
+    public void goToCreateEvent()
+    {
+        mainActivity.addFragment(new CreateEventFragment(), "CreateEventFragment");
+    }
 
+    public void goToEventPage(String eventId)
+    {
+        eventsViewModel.getEvent(eventId, new ICallback() {
+            @Override
+            public void onCallback(boolean result) {
+
+                if(result)
+                {
+                    mainActivity.addFragment( new EventPageFragment(eventsViewModel.liveEvent.getValue()), "EventPageFragment");
+                }
+                else
+                {
+                    Log.e("TAG", "error finding event by name");
+                }
+            }
+        });
+    }
+
+    public void signOut()
+    {
+        //clear backstack
+        FragmentManager fm = mainActivity.getSupportFragmentManager();
+        for (int i = 0; i < fm.getBackStackEntryCount(); i++) {
+            fm.popBackStack();
+        }
+
+        mainActivity.addFragment(new WelcomeScreenFragment(), "WelcomeScreenFragment");
+        accountViewModel.liveUser.setValue(new User("", "", new ArrayList<String>(), new ArrayList<String>()));
     }
 
 }

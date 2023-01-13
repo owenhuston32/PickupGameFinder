@@ -83,6 +83,9 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
         List<String> createdEventNames = accountViewModel.liveUser.getValue().createdEventIds;
         List<String> joinedEventNames = accountViewModel.liveUser.getValue().joinedEventIds;
 
+        Log.e("Event Page", createdEventNames.get(0));
+
+
         // if the user created this event
         if(createdEventNames != null && createdEventNames.contains(event.id)) {
             leaveEvent.setVisibility(View.GONE);

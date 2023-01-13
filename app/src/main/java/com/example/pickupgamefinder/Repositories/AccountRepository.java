@@ -61,10 +61,24 @@ public class AccountRepository {
                 if(task.isSuccessful() && task.getResult().getValue() != null)
                 {
                     User user = task.getResult().getValue(User.class);
-                    accountViewModel.liveUser.setValue(user);
 
-                    // check if passwords match
-                    callback.onCallback(user != null && user.password.equals(hashedPassword));
+                    boolean success = user != null && user.password.equals(hashedPassword);
+
+                    if(success)
+                    {
+                        List<String> createdEventIds
+                                = user.createListFromSnapshotKeys(task.getResult().child("createdEvents").getChildren());
+
+                        List<String> joinedEventIds
+                                = user.createListFromSnapshotKeys(task.getResult().child("joinedEvents").getChildren());
+
+                        user.createdEventIds = createdEventIds;
+                        user.joinedEventIds = joinedEventIds;
+
+                        accountViewModel.liveUser.setValue(user);
+                    }
+
+                    callback.onCallback(success);
                 }
                 else
                 {

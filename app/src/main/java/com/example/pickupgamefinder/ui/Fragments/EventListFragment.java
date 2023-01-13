@@ -141,7 +141,7 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
 
     private void setAdapter()
     {
-        EventRecyclerAdapter adapter = new EventRecyclerAdapter(eventList, activity, eventsViewModel);
+        EventRecyclerAdapter adapter = new EventRecyclerAdapter(eventList);
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(activity.getApplicationContext());
 

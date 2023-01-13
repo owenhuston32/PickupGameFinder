@@ -1,5 +1,7 @@
 package com.example.pickupgamefinder.Models;
 
+import com.google.firebase.database.DataSnapshot;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +28,16 @@ public class User {
             list = new ArrayList<String>();
 
         list.add(id);
+    }
+
+    public List<String> createListFromSnapshotKeys(Iterable<DataSnapshot> snapshots)
+    {
+        List<String> list = new ArrayList<String>();
+        for(DataSnapshot snapshot : snapshots)
+        {
+            list.add(snapshot.getKey());
+        }
+        return list;
     }
 
 }
