@@ -18,6 +18,7 @@ import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.R;
 
 import java.util.List;
+import java.util.Map;
 
 import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 import com.example.pickupgamefinder.ViewModels.EventsViewModel;
@@ -83,9 +84,6 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
         List<String> createdEventNames = accountViewModel.liveUser.getValue().createdEventIds;
         List<String> joinedEventNames = accountViewModel.liveUser.getValue().joinedEventIds;
 
-        Log.e("Event Page", createdEventNames.get(0));
-
-
         // if the user created this event
         if(createdEventNames != null && createdEventNames.contains(event.id)) {
             leaveEvent.setVisibility(View.GONE);
@@ -114,15 +112,54 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
 
         if(id == joinEvent.getId())
         {
-
+            joinEvent();
         }
-        else if(id == leaveEvent.getId()) {
-
+        else if(id == leaveEvent.getId())
+        {
+            leaveEvent();
         }
         else if(id == deleteEvent.getId())
         {
             deleteEvent();
         }
+    }
+    private void joinEvent()
+    {
+        eventsViewModel.joinEvent(event,
+                new ICallback() {
+                    @Override
+                    public void onCallback(boolean result) {
+                        if(result)
+                        {
+                            joinEvent.setVisibility(View.GONE);
+                            leaveEvent.setVisibility(View.VISIBLE);
+                            currentPlayerTV.setText("");
+                        }
+                        else
+                        {
+                            Log.e("Event page frag", "failed to delete event");
+                        }
+                    }
+                });
+    }
+    private void leaveEvent()
+    {
+        eventsViewModel.leaveEvent(event,
+                new ICallback() {
+                    @Override
+                    public void onCallback(boolean result) {
+                        if(result)
+                        {
+                            joinEvent.setVisibility(View.VISIBLE);
+                            leaveEvent.setVisibility(View.GONE);
+                            currentPlayerTV.setText("");
+                        }
+                        else
+                        {
+                            Log.e("Event page frag", "failed to delete event");
+                        }
+                    }
+                });
     }
 
     private void deleteEvent()

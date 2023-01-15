@@ -21,6 +21,7 @@ import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class CreateEventFragment extends Fragment implements View.OnClickListener {
@@ -147,7 +148,7 @@ public class CreateEventFragment extends Fragment implements View.OnClickListene
         int maxPlayers = Integer.parseInt(maxPlayersText.getText().toString());
 
         Event event = new Event("0", eventName, caption, skillLevel, maxPlayers, 0, 0
-                , mAccountViewModel.liveUser.getValue().username, new ArrayList<String>());
+                , mAccountViewModel.liveUser.getValue().username, new HashMap<String, String>());
 
         return event;
     }

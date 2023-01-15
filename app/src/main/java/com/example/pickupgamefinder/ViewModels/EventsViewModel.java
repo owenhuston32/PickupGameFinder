@@ -58,12 +58,25 @@ public class EventsViewModel extends ViewModel {
         }
     }
 
-    public void setCurrentPlayerCount(int oldPlayerCount, int newCurrentPlayerCount, Event event, ICallback callback)
+    public void leaveEvent(Event event, ICallback callback)
     {
         if(mainActivity.checkWifi())
         {
             mainActivity.showLoadingScreen();
-            eventRepository.setCurrentPlayerCount(oldPlayerCount, newCurrentPlayerCount, event, callback);
+            eventRepository.leaveEvent(event, callback);
+        }
+        else
+        {
+            callback.onCallback(false);
+        }
+    }
+
+    public void joinEvent(Event event, ICallback callback)
+    {
+        if(mainActivity.checkWifi())
+        {
+            mainActivity.showLoadingScreen();
+            eventRepository.joinEvent(event, callback);
         }
         else
         {
@@ -82,6 +95,7 @@ public class EventsViewModel extends ViewModel {
             callback.onCallback(false);
         }
     }
+
     public void addToLiveEventList(Event event)
     {
         List<Event> eventList = liveEventList.getValue();

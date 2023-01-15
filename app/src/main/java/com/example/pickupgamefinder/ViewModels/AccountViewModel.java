@@ -11,6 +11,7 @@ import com.example.pickupgamefinder.Models.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class AccountViewModel extends ViewModel {
 
@@ -51,27 +52,6 @@ public class AccountViewModel extends ViewModel {
         {
             mainActivity.showLoadingScreen();
             accountRepository.tryLogin(username, hashedPassword, callback);
-        }
-        else
-        {
-            callback.onCallback(false);
-        }
-    }
-
-    public void loadEventIds(boolean joinedEvents, boolean createdEvents, ICallback callback)
-    {
-        if(mainActivity.checkWifi())
-        {
-            if(createdEvents)
-            {
-                accountRepository.loadCreatedEventIds(liveUser.getValue(), callback);
-                getEventsFromEventIds(liveUser.getValue().createdEventIds);
-            }
-            if(joinedEvents)
-            {
-                User user = liveUser.getValue();
-                accountRepository.loadJoinedEvents(liveUser.getValue(), callback);
-            }
         }
         else
         {

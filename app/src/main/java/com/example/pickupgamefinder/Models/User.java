@@ -1,9 +1,9 @@
 package com.example.pickupgamefinder.Models;
 
-import com.google.firebase.database.DataSnapshot;
-
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class User {
     public String username;
@@ -22,22 +22,12 @@ public class User {
         this.joinedEventIds = joinedEventIds;
     }
 
-    public void addIdToList(String id, List<String> list)
+    public void addIDToList(String id, List<String> list)
     {
         if(list == null)
-            list = new ArrayList<String>();
+            list = new ArrayList<>();
 
         list.add(id);
-    }
-
-    public List<String> createListFromSnapshotKeys(Iterable<DataSnapshot> snapshots)
-    {
-        List<String> list = new ArrayList<String>();
-        for(DataSnapshot snapshot : snapshots)
-        {
-            list.add(snapshot.getKey());
-        }
-        return list;
     }
 
 }

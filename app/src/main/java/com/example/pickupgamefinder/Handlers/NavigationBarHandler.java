@@ -7,21 +7,11 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.FragmentManager;
 
-import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.MainActivity;
-import com.example.pickupgamefinder.Models.User;
 import com.example.pickupgamefinder.R;
 import com.example.pickupgamefinder.Singletons.NavigationController;
-import com.example.pickupgamefinder.ui.Fragments.AccountFragment;
-import com.example.pickupgamefinder.ui.Fragments.CreateEventFragment;
-import com.example.pickupgamefinder.ui.Fragments.EventListFragment;
-import com.example.pickupgamefinder.ui.Fragments.MapFragment;
-import com.example.pickupgamefinder.ui.Fragments.WelcomeScreenFragment;
 import com.google.android.material.navigation.NavigationView;
-
-import java.util.ArrayList;
 
 import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 import com.example.pickupgamefinder.ViewModels.EventsViewModel;
@@ -112,7 +102,7 @@ public class NavigationBarHandler implements NavigationView.OnNavigationItemSele
     }
     private void joinedEventsButtonClick()
     {
-        NavigationController.getInstance().goTojoinedEvents();
+        NavigationController.getInstance().goToJoinedEvents();
     }
     private void mapButtonClick()
     {

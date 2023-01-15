@@ -19,6 +19,7 @@ import com.example.pickupgamefinder.ui.Fragments.SignupFragment;
 import com.example.pickupgamefinder.ui.Fragments.WelcomeScreenFragment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class NavigationController {
     private static volatile NavigationController INSTANCE = null;
@@ -58,18 +59,13 @@ public class NavigationController {
     }
     public void goToAccountFrag()
     {
-        accountViewModel.loadEventIds(true, true, new ICallback() {
-            @Override
-            public void onCallback(boolean result) {
-                mainActivity.addFragment(new AccountFragment(accountViewModel.liveUser.getValue()), "AccountFragment");
-            }
-        });
+        mainActivity.addFragment(new AccountFragment(accountViewModel.liveUser.getValue()), "AccountFragment");
     }
     public void goToCreatedEvents()
     {
         mainActivity.addFragment(new EventListFragment(false, true, false, false), "EventListFragment");
     }
-    public void goTojoinedEvents()
+    public void goToJoinedEvents()
     {
         mainActivity.addFragment(new EventListFragment(false, false, true, false), "MapFragment");
     }
@@ -78,7 +74,14 @@ public class NavigationController {
         eventsViewModel.loadEvents(new ICallback() {
             @Override
             public void onCallback(boolean result) {
-                mainActivity.addFragment(new MapFragment(eventsViewModel.liveEventList.getValue(), false), "MapFragment");
+                if(result)
+                {
+                    mainActivity.addFragment(new MapFragment(eventsViewModel.liveEventList.getValue(), false), "MapFragment");
+                }
+                else
+                {
+                    ErrorUIHandler.getInstance().showError("Error Loading Events");
+                }
             }
         });
     }
@@ -103,7 +106,7 @@ public class NavigationController {
                 }
                 else
                 {
-                    Log.e("TAG", "error finding event by name");
+                    ErrorUIHandler.getInstance().showError("Error Finding Event");
                 }
             }
         });

@@ -1,5 +1,8 @@
 package com.example.pickupgamefinder.Repositories;
 
+import android.provider.ContactsContract;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -14,7 +17,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AccountRepository {
 
@@ -32,7 +37,7 @@ public class AccountRepository {
 
     public void addUser(String userName, String hashedPassword, ICallback callback) {
 
-        User user = new User(userName, hashedPassword, new ArrayList<>(), new ArrayList<>());
+        User user = new User(userName, hashedPassword, new ArrayList<String>(), new ArrayList<String>());
         dbRef.child("server/users/" + userName).setValue(user, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
@@ -66,18 +71,25 @@ public class AccountRepository {
 
                     if(success)
                     {
-                        List<String> createdEventIds
-                                = user.createListFromSnapshotKeys(task.getResult().child("createdEvents").getChildren());
+                        if(task.getResult().getValue() != null)
+                        {
+                            List<String> createdIds = new ArrayList<String>();
+                            for(DataSnapshot snapshot : task.getResult().child("/createdEvents").getChildren())
+                            {
+                                createdIds.add(snapshot.getKey());
+                            }
+                            user.createdEventIds = createdIds;
 
-                        List<String> joinedEventIds
-                                = user.createListFromSnapshotKeys(task.getResult().child("joinedEvents").getChildren());
+                            List<String> joinedIds = new ArrayList<String>();
+                            for(DataSnapshot snapshot : task.getResult().child("/joinedEvents").getChildren()) {
+                                joinedIds.add(snapshot.getKey());
+                            }
 
-                        user.createdEventIds = createdEventIds;
-                        user.joinedEventIds = joinedEventIds;
+                            user.joinedEventIds = joinedIds;
+                        }
 
                         accountViewModel.liveUser.setValue(user);
                     }
-
                     callback.onCallback(success);
                 }
                 else
@@ -96,54 +108,6 @@ public class AccountRepository {
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 mainActivity.hideLoadingScreen();
                 callback.onCallback(task.isSuccessful() && task.getResult().getValue() != null);
-            }
-        });
-    }
-
-    public void loadCreatedEventIds(User user, ICallback callback)
-    {
-        dbRef.child("server/users/" + user.username + "/createdEvents").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-
-            @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-
-                boolean successful = task.isSuccessful() && task.getResult().getValue() != null;
-                if(successful)
-                {
-                    List<String> eventIds = new ArrayList<String>();
-                    for(DataSnapshot snapshot : task.getResult().getChildren())
-                    {
-                        eventIds.add(snapshot.getKey());
-                    }
-                    user.createdEventIds = eventIds;
-                    accountViewModel.liveUser.setValue(user);
-                }
-                mainActivity.hideLoadingScreen();
-                callback.onCallback(successful);
-            }
-        });
-    }
-
-    public void loadJoinedEvents(User user, ICallback callback)
-    {
-        dbRef.child("server/users/" + user.username + "/joinedEvents").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-
-            @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-
-                boolean successful = task.isSuccessful() && task.getResult().getValue() != null;
-                if(successful)
-                {
-                    List<String> eventIds = new ArrayList<String>();
-                    for(DataSnapshot snapshot : task.getResult().getChildren())
-                    {
-                        eventIds.add(snapshot.getKey());
-                    }
-                    user.joinedEventIds = eventIds;
-                    accountViewModel.liveUser.setValue(user);
-                }
-                mainActivity.hideLoadingScreen();
-                callback.onCallback(successful);
             }
         });
     }

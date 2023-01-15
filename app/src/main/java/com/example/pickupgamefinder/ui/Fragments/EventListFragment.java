@@ -20,6 +20,7 @@ import com.example.pickupgamefinder.EventRecyclerAdapter;
 import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.R;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.example.pickupgamefinder.ViewModels.AccountViewModel;
@@ -79,23 +80,13 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
         }
         if(showCreatedEvents)
         {
-            accountViewModel.loadEventIds(false, true, new ICallback() {
-                @Override
-                public void onCallback(boolean result) {
-                    eventList = accountViewModel.getEventsFromEventIds(accountViewModel.liveUser.getValue().createdEventIds);
-                    setAdapter();
-                }
-            });
+            eventList = accountViewModel.getEventsFromEventIds(accountViewModel.liveUser.getValue().createdEventIds);
+            setAdapter();
         }
         if(showJoinedEvents)
         {
-            accountViewModel.loadEventIds(true, false, new ICallback() {
-                @Override
-                public void onCallback(boolean result) {
-                    eventList = accountViewModel.getEventsFromEventIds(accountViewModel.liveUser.getValue().joinedEventIds);
-                    setAdapter();
-                }
-            });
+            eventList = accountViewModel.getEventsFromEventIds(accountViewModel.liveUser.getValue().joinedEventIds);
+            setAdapter();
         }
 
         // Inflate the layout for this fragment
