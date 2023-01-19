@@ -43,15 +43,10 @@ public class AccountRepository {
             public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
                 mainActivity.hideLoadingScreen();
 
-                if(error == null)
-                {
+                if(error == null) {
                     accountViewModel.liveUser.setValue(user);
-                    callback.onCallback(true);
                 }
-                else
-                {
-                    callback.onCallback(false);
-                }
+                callback.onCallback(error == null);
             }
         });
     }

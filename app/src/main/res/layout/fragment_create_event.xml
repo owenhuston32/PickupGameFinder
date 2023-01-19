@@ -19,7 +19,8 @@
             android:hint="Event Name"
             android:textSize="25dp"
             android:gravity="center"
-            android:paddingBottom="16sp">
+            android:paddingBottom="16sp"
+            android:imeOptions="actionNext">
 
         </EditText>
         <EditText
@@ -29,7 +30,8 @@
             android:hint="Event Caption"
             android:textSize="25dp"
             android:gravity="center"
-            android:paddingBottom="16sp">
+            android:paddingBottom="16sp"
+            android:imeOptions="actionSend">
 
         </EditText>
 

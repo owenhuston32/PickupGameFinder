@@ -11,26 +11,30 @@ import androidx.lifecycle.ViewModelProvider;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import com.example.pickupgamefinder.Handlers.NavigationBarHandler;
 import com.example.pickupgamefinder.Repositories.AccountRepository;
 import com.example.pickupgamefinder.Repositories.EventRepository;
+import com.example.pickupgamefinder.Repositories.MessageRepository;
 import com.example.pickupgamefinder.Singletons.ErrorUIHandler;
 import com.example.pickupgamefinder.Singletons.NavigationController;
 import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 
+import com.example.pickupgamefinder.ViewModels.MessageViewModel;
 import com.example.pickupgamefinder.ui.Fragments.PopupNotificationFragment;
 import com.example.pickupgamefinder.ui.Fragments.WelcomeScreenFragment;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity implements  LifecycleObserver{
 
-    private NavigationBarHandler navigationBarHandler;
     private DrawerLayout drawerLayout;
     private InternetManager internetManager;
     private AccountViewModel accountViewModel;
     private EventsViewModel eventsViewModel;
+    private MessageViewModel messageViewModel;
     private PopupNotificationFragment popup;
 
     @Override
@@ -44,10 +48,10 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
             createPopupFragment();
         }
         InitializeViewModels();
-        NavigationController.getInstance().setupNavController(this, eventsViewModel, accountViewModel);
+        NavigationController.getInstance().setupNavController(this, eventsViewModel, accountViewModel, messageViewModel);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         internetManager = new InternetManager(this);
-        navigationBarHandler = new NavigationBarHandler(accountViewModel, eventsViewModel, this, drawerLayout);
+        new NavigationBarHandler(accountViewModel, eventsViewModel, this, drawerLayout);
     }
 
     private void createWelcomeScreen() {
@@ -72,13 +76,18 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
     {
         accountViewModel  = new ViewModelProvider(this).get(AccountViewModel.class);
         eventsViewModel = new ViewModelProvider(this).get(EventsViewModel.class);
+        messageViewModel = new ViewModelProvider(this).get(MessageViewModel.class);
+
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
 
         EventRepository eventRepository = new EventRepository(this, eventsViewModel, accountViewModel,
-                FirebaseDatabase.getInstance().getReference());
+                messageViewModel, dbRef);
 
         AccountRepository accountRepository = new AccountRepository(this, accountViewModel,
-                FirebaseDatabase.getInstance().getReference());
+                dbRef);
 
+        MessageRepository messageRepository = new MessageRepository(this, messageViewModel,
+                dbRef);
 
         accountViewModel.eventsViewModel = eventsViewModel;
         accountViewModel.accountRepository = accountRepository;
@@ -87,6 +96,9 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
         eventsViewModel.eventRepository = eventRepository;
         eventsViewModel.accountRepository = accountRepository;
         eventsViewModel.mainActivity = this;
+
+        messageViewModel.messageRepository = messageRepository;
+        messageViewModel.mainActivity = this;
     }
 
     public boolean checkWifi()

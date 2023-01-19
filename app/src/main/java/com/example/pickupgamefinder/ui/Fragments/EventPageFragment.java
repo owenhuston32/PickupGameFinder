@@ -13,15 +13,19 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.Models.Event;
 import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.R;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.example.pickupgamefinder.Singletons.NavigationController;
 import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 import com.example.pickupgamefinder.ViewModels.EventsViewModel;
+import com.example.pickupgamefinder.ViewModels.MessageViewModel;
 
 public class EventPageFragment extends Fragment implements View.OnClickListener {
 
@@ -31,6 +35,8 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
     Button joinEvent;
     Button leaveEvent;
     Button deleteEvent;
+    Button groupChatButton;
+    Button viewMapButton;
 
     EventsViewModel eventsViewModel;
     Event event;
@@ -67,6 +73,8 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
         joinEvent = v.findViewById(R.id.event_page_join);
         leaveEvent = v.findViewById(R.id.event_page_leave);
         deleteEvent = v.findViewById(R.id.event_page_delete);
+        groupChatButton = v.findViewById(R.id.event_page_group_chat);
+        viewMapButton = v.findViewById(R.id.event_page_event_map);
 
         activity = requireActivity();
 
@@ -75,6 +83,9 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
         joinEvent.setOnClickListener(this);
         leaveEvent.setOnClickListener(this);
         deleteEvent.setOnClickListener(this);
+        groupChatButton.setOnClickListener(this);
+        viewMapButton.setOnClickListener(this);
+
         // Inflate the layout for this fragment
         return v;
     }
@@ -121,6 +132,14 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
         else if(id == deleteEvent.getId())
         {
             deleteEvent();
+        }
+        else if(id == viewMapButton.getId())
+        {
+            NavigationController.getInstance().gotoSingleEventMap(event, false);
+        }
+        else if(id == groupChatButton.getId())
+        {
+            NavigationController.getInstance().gotoGroupChat(event.id);
         }
     }
     private void joinEvent()

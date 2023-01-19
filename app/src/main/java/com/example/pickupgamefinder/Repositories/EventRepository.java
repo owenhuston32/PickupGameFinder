@@ -9,14 +9,17 @@ import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 import com.example.pickupgamefinder.Models.Event;
 import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.Models.User;
+import com.example.pickupgamefinder.ViewModels.MessageViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.MutableData;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.annotations.Nullable;
+import com.google.firebase.firestore.FieldValue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,14 +33,16 @@ public class EventRepository {
     private MainActivity mainActivity;
     private EventsViewModel eventsViewModel;
     private AccountViewModel accountViewModel;
+    private MessageViewModel messageViewModel;
     private DatabaseReference dbRef;
 
     public EventRepository(MainActivity mainActivity, EventsViewModel eventsViewModel, AccountViewModel accountViewModel
-            , DatabaseReference dbRef)
+                           ,MessageViewModel messageViewModel, DatabaseReference dbRef)
     {
         this.mainActivity = mainActivity;
         this.eventsViewModel = eventsViewModel;
         this.accountViewModel = accountViewModel;
+        this.messageViewModel = messageViewModel;
         this.dbRef = dbRef;
     }
 
@@ -48,14 +53,22 @@ public class EventRepository {
             @Override
             public Transaction.Result doTransaction(@NonNull MutableData currentData) {
 
-                Long id = currentData.child("events").getChildrenCount();
+                Long eventID = currentData.child("events/count").getValue(Long.class);
+                if(eventID == null)
+                    eventID = 0L;
 
-                event.id = id.toString();
-                currentData.child("events/" + id).setValue(event);
-                currentData.child("users/" + accountViewModel.liveUser.getValue().username + "/createdEvents/" + id).setValue("0");
+                event.id = eventID.toString();
+                currentData.child("events/" + event.id).setValue(event);
+                currentData.child("users/" + accountViewModel.liveUser.getValue().username + "/createdEvents/" + event.id).setValue("0");
 
-                GroupChat groupChat =  new GroupChat(event.eventName + " Group", accountViewModel.liveUser.getValue().username, new ArrayList<User>(), new ArrayList<Message>());
-                currentData.child("groupChats/" + id).setValue(groupChat);
+                currentData.child("groupChats/GC/" + event.id + "/info/id").setValue(event.id);
+                currentData.child("groupChats/GC/" + event.id + "/info/name").setValue(event.eventName + " Group");
+                currentData.child("groupChats/GC/" + event.id + "/info/creator").setValue(accountViewModel.liveUser.getValue().username);
+                currentData.child("groupChats/GC/" + event.id + "/info/joinedUsers").setValue(new ArrayList<User>());
+                currentData.child("groupChats/GC/" + event.id + "/info/mCount").setValue(0L);
+
+                currentData.child("events/count").setValue(ServerValue.increment(1));
+
 
                 return Transaction.success(currentData);
             }
@@ -64,18 +77,13 @@ public class EventRepository {
             public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
                 mainActivity.hideLoadingScreen();
 
-                if(committed)
-                {
+                if(committed) {
                     User user = accountViewModel.liveUser.getValue();
                     user.addIDToList(event.id, user.createdEventIds);
 
                     eventsViewModel.addToLiveEventList(event);
-                    callback.onCallback(true);
                 }
-                else
-                {
-                    callback.onCallback(false);
-                }
+                callback.onCallback(committed);
             }
         });
     }
@@ -89,14 +97,10 @@ public class EventRepository {
 
                 if(task.isSuccessful() && task.getResult().getValue() != null)
                 {
-                    Event event = task.getResult().getValue(Event.class);
-                    eventsViewModel.liveEvent.setValue(event);
-                    callback.onCallback(true);
+                        Event event = task.getResult().getValue(Event.class);
+                        eventsViewModel.liveEvent.setValue(event);
                 }
-                else
-                {
-                    callback.onCallback(false);
-                }
+                callback.onCallback(task.isSuccessful());
             }
         });
     }
@@ -108,13 +112,16 @@ public class EventRepository {
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 mainActivity.hideLoadingScreen();
 
-                if(task.isSuccessful() && task.getResult().getValue() != null)
+                if(task.isSuccessful())
                 {
                     List<Event> eventList = new ArrayList<Event>();
                     for(DataSnapshot snapshot : task.getResult().getChildren())
                     {
-                        Event event = snapshot.getValue(Event.class);
-                        eventList.add(event);
+                        if(!snapshot.getKey().equals("count"))
+                        {
+                            Event event = snapshot.getValue(Event.class);
+                            eventList.add(event);
+                        }
                     }
                     eventsViewModel.liveEventList.setValue(eventList);
                 }
@@ -144,10 +151,8 @@ public class EventRepository {
                     if(event.joinedUsers != null)
                         event.joinedUsers.remove(username);
 
-                    callback.onCallback(true);
-                } else {
-                    callback.onCallback(false);
                 }
+                callback.onCallback(task.isSuccessful());
 
             }
         });
@@ -168,19 +173,17 @@ public class EventRepository {
 
                 if (task.isSuccessful()) {
 
-                    if(accountViewModel.liveUser.getValue().joinedEventIds == null)
+                    if (accountViewModel.liveUser.getValue().joinedEventIds == null)
                         accountViewModel.liveUser.getValue().joinedEventIds = new ArrayList<String>();
 
                     accountViewModel.liveUser.getValue().joinedEventIds.add(event.id);
 
-                    if(event.joinedUsers == null)
-                        event.joinedUsers  = new HashMap<String, String>();
+                    if (event.joinedUsers == null)
+                        event.joinedUsers = new HashMap<String, String>();
                     event.joinedUsers.put(username, "0");
 
-                    callback.onCallback(true);
-                } else {
-                    callback.onCallback(false);
                 }
+                callback.onCallback(task.isSuccessful());
 
             }
         });
@@ -191,7 +194,6 @@ public class EventRepository {
         Map<String, Object> childUpdates = new HashMap<String, Object>();
         childUpdates.put("/server/events/" + event.id,  null);
         childUpdates.put("/server/users/" + accountViewModel.liveUser.getValue().username + "/createdEvents/" + event.id, null);
-
         dbRef.updateChildren(childUpdates).addOnCompleteListener(new OnCompleteListener() {
             @Override
             public void onComplete(@NonNull Task task) {
@@ -202,10 +204,8 @@ public class EventRepository {
                     accountViewModel.liveUser.getValue().createdEventIds.remove(event.id);
                     eventsViewModel.liveEventList.getValue().remove(event);
 
-                    callback.onCallback(true);
-                } else {
-                    callback.onCallback(false);
                 }
+                callback.onCallback(task.isSuccessful());
 
             }
         });

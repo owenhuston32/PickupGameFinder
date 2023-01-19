@@ -223,7 +223,6 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
             @Override
             public void onComplete(@NonNull Task<Location> task) {
                 onGetLocationCallback(task, shouldMoveCamera);
-                AddMarkers(eventList);
             }
         });
     }
@@ -246,6 +245,7 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
         if(!isTrackingUserLocation) {
             isTrackingUserLocation = true;
             startLocationTrackingThread();
+            AddMarkers(eventList);
         }
     }
 

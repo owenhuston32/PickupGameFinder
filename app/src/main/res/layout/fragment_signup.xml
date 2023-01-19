@@ -31,7 +31,8 @@
             android:hint="username"
             android:layout_marginVertical="8sp"
             android:inputType="text"
-            android:textSize="30sp"/>
+            android:textSize="30sp"
+            android:imeOptions="actionNext"/>
 
         <EditText
             android:id="@+id/signup_password"
@@ -40,7 +41,8 @@
             android:hint="password"
             android:layout_marginVertical="8sp"
             android:inputType="textPassword"
-            android:textSize="30sp"/>
+            android:textSize="30sp"
+            android:imeOptions="actionNext"/>
 
         <EditText
             android:id="@+id/signup_password_confirm"
@@ -49,7 +51,8 @@
             android:hint="confirm password"
             android:layout_marginVertical="8sp"
             android:inputType="textPassword"
-            android:textSize="30sp"/>
+            android:textSize="30sp"
+            android:imeOptions="actionSend"/>
 
         <Button
             android:id="@+id/signup_create_account"

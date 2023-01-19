@@ -13,12 +13,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.Models.Event;
 import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
 
+import com.example.pickupgamefinder.Singletons.NavigationController;
 import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 import com.example.pickupgamefinder.ViewModels.EventsViewModel;
+import com.example.pickupgamefinder.ViewModels.MessageViewModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +31,7 @@ public class CreateEventFragment extends Fragment implements View.OnClickListene
 
     EventsViewModel mEventViewModel;
     AccountViewModel mAccountViewModel;
+    MessageViewModel messageViewModel;
     EditText eventNameET;
     EditText captionET;
 
@@ -60,6 +64,7 @@ public class CreateEventFragment extends Fragment implements View.OnClickListene
         View v = inflater.inflate(R.layout.fragment_create_event, container, false);
         mEventViewModel = new ViewModelProvider(requireActivity()).get(EventsViewModel.class);
         mAccountViewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
+        messageViewModel = new ViewModelProvider(requireActivity()).get(MessageViewModel.class);
 
         eventNameET = v.findViewById(R.id.event_name_et);
         captionET = v.findViewById(R.id.caption_et);
@@ -94,11 +99,14 @@ public class CreateEventFragment extends Fragment implements View.OnClickListene
         if(id == nextPageButton.getId())
         {
             Event event = CreateEvent();
-            List<Event> eventList = new ArrayList<Event>();
-
-            eventList.add(event);
-
-            ((MainActivity)activity).addFragment(new MapFragment(eventList, true), "MapFragment");
+            messageViewModel.addGroupChat(event.id, event.eventName + " Group", mAccountViewModel.liveUser.getValue().username,
+                    new ICallback() {
+                        @Override
+                        public void onCallback(boolean result) {
+                            if(result)
+                                NavigationController.getInstance().gotoSingleEventMap(event, true);
+                        }
+                    });
         }
         else if(id == skillLevelLeftArrow.getId())
         {
