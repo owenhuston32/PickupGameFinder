@@ -5,26 +5,27 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.Repositories.AccountRepository;
-import com.example.pickupgamefinder.Event;
+import com.example.pickupgamefinder.Models.Event;
 import com.example.pickupgamefinder.ICallback;
-import com.example.pickupgamefinder.User;
+import com.example.pickupgamefinder.Models.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class AccountViewModel extends ViewModel {
-
+    
     public MutableLiveData<User> liveUser = new MutableLiveData<User>();
     public AccountRepository accountRepository = null;
     public EventsViewModel eventsViewModel = null;
     public MainActivity mainActivity;
 
-    public void addUser(User user, ICallback callback) {
+    public void addUser(String userName, String hashedPassword, ICallback callback) {
 
         if(mainActivity.checkWifi())
         {
             mainActivity.showLoadingScreen();
-            accountRepository.addUser(user, callback);
+            accountRepository.addUser(userName, hashedPassword, callback);
         }
         else
         {
@@ -32,12 +33,12 @@ public class AccountViewModel extends ViewModel {
         }
     }
 
-    public void getUser(String username, ICallback callback) {
+    public void getUserName(String username, ICallback callback) {
 
         if(mainActivity.checkWifi())
         {
             mainActivity.showLoadingScreen();
-            accountRepository.getUser(username, callback);
+            accountRepository.getUserName(username, callback);
         }
         else
         {
@@ -45,12 +46,12 @@ public class AccountViewModel extends ViewModel {
         }
     }
 
-    public void loadUserEvents(ICallback callback)
+    public void tryLogin(String username, String hashedPassword, ICallback callback)
     {
         if(mainActivity.checkWifi())
         {
             mainActivity.showLoadingScreen();
-            accountRepository.loadUserEvents(callback);
+            accountRepository.tryLogin(username, hashedPassword, callback);
         }
         else
         {
@@ -58,37 +59,20 @@ public class AccountViewModel extends ViewModel {
         }
     }
 
-    public List<Event> getJoinedEventList()
+    public List<Event> getEventsFromEventIds(List<String> eventIds)
     {
-        List<Event> joinedEvents = new ArrayList<Event>();
+        List<Event> events = new ArrayList<Event>();
 
         List<Event> liveEventList = eventsViewModel.liveEventList.getValue();
 
-        if(liveEventList != null && liveUser.getValue().joinedEventNames != null)
+        if(liveEventList != null && eventIds != null)
         {
             for(Event e : liveEventList)
             {
-                if(liveUser.getValue().joinedEventNames.contains(e.eventName))
-                    joinedEvents.add(e);
+                if(eventIds.contains(e.id))
+                    events.add(e);
             }
         }
-        return joinedEvents;
+        return events;
     }
-
-    public List<Event> getCreatedEventList()
-    {
-        List<Event> createdEvents = new ArrayList<Event>();
-
-        List<Event> liveEventList = eventsViewModel.liveEventList.getValue();
-        if(liveEventList != null && liveUser.getValue().createdEventNames != null)
-        {
-            for(Event e : liveEventList)
-            {
-                if(liveUser.getValue().createdEventNames.contains(e.eventName))
-                    createdEvents.add(e);
-            }
-        }
-        return createdEvents;
-    }
-
 }

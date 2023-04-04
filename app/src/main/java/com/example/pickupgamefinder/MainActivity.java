@@ -1,5 +1,10 @@
 package com.example.pickupgamefinder;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -8,18 +13,29 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.example.pickupgamefinder.Handlers.NavigationBarHandler;
 import com.example.pickupgamefinder.Repositories.AccountRepository;
 import com.example.pickupgamefinder.Repositories.EventRepository;
+import com.example.pickupgamefinder.Repositories.MessageRepository;
+import com.example.pickupgamefinder.Singletons.ErrorUIHandler;
+import com.example.pickupgamefinder.Singletons.NavigationController;
 import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 
+import com.example.pickupgamefinder.ViewModels.MessageViewModel;
+import com.example.pickupgamefinder.ui.Fragments.MapFragment;
 import com.example.pickupgamefinder.ui.Fragments.PopupNotificationFragment;
-import com.example.pickupgamefinder.ui.Fragments.WelcomeScreenFragment;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements  LifecycleObserver{
 
@@ -28,7 +44,38 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
     private InternetManager internetManager;
     private AccountViewModel accountViewModel;
     private EventsViewModel eventsViewModel;
+    private MessageViewModel messageViewModel;
     private PopupNotificationFragment popup;
+
+    ActivityResultLauncher<Intent> startForResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+        @Override
+        public void onActivityResult(ActivityResult result) {
+            if(result != null && result.getResultCode() == RESULT_OK)
+            {
+                Log.d("result code: ", "" + result.getResultCode());
+
+                navigationBarHandler.activateSignedInDrawer();
+
+                if(result.getData() != null)
+                {
+                    if(result.getData().getStringExtra(("UserName")) != null)
+                    {
+                        // get data and sign in here
+                    }
+                }
+            }
+            else
+            {
+                navigationBarHandler.activateSignedOutDrawer();
+            }
+        }
+    });
+
+    public void launchSignIn()
+    {
+        Intent intent = new Intent(this, SignInActivity.class);
+        startForResult.launch(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,23 +84,26 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
         setContentView(R.layout.activity_main);
 
         if (savedInstanceState == null) {
-            createWelcomeScreen();
+
+            InitializeViewModels();
+            NavigationController.getInstance().setupNavController(this, eventsViewModel, accountViewModel, messageViewModel);
+            drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+            internetManager = new InternetManager(this);
+            navigationBarHandler = new NavigationBarHandler(accountViewModel, eventsViewModel, this, drawerLayout);
+
+            showLoadingScreen();
+            eventsViewModel.loadEvents(new ICallback() {
+                @Override
+                public void onCallback(boolean result) {
+                    addFragment(new MapFragment(eventsViewModel.liveEventList.getValue(), false), "MapFragment");
+                    hideLoadingScreen();
+                }
+            });
+
             createPopupFragment();
-
+            launchSignIn();
         }
-        InitializeViewModels();
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        internetManager = new InternetManager(this);
-        navigationBarHandler = new NavigationBarHandler(accountViewModel, eventsViewModel, this, drawerLayout);
-    }
-
-    private void createWelcomeScreen() {
-
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, new WelcomeScreenFragment())
-                .commitNow();
-
-
+        Objects.requireNonNull(getSupportActionBar()).show();
     }
 
     private void createPopupFragment()
@@ -62,19 +112,26 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
 
         getSupportFragmentManager().beginTransaction().replace(R.id.main_popup_container, popup)
                 .commitNow();
+
+        ErrorUIHandler.getInstance().setPopupFragment(popup);
     }
 
     private void InitializeViewModels()
     {
         accountViewModel  = new ViewModelProvider(this).get(AccountViewModel.class);
         eventsViewModel = new ViewModelProvider(this).get(EventsViewModel.class);
+        messageViewModel = new ViewModelProvider(this).get(MessageViewModel.class);
 
-        EventRepository eventRepository = new EventRepository(this, eventsViewModel, accountViewModel, FirebaseDatabase.getInstance(),
-                FirebaseDatabase.getInstance().getReference());
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
 
-        AccountRepository accountRepository = new AccountRepository(this, eventsViewModel, accountViewModel, FirebaseDatabase.getInstance(),
-                FirebaseDatabase.getInstance().getReference());
+        EventRepository eventRepository = new EventRepository(this, eventsViewModel, accountViewModel,
+                dbRef);
 
+        AccountRepository accountRepository = new AccountRepository(this, accountViewModel,
+                dbRef);
+
+        MessageRepository messageRepository = new MessageRepository(this, messageViewModel,
+                dbRef);
 
         accountViewModel.eventsViewModel = eventsViewModel;
         accountViewModel.accountRepository = accountRepository;
@@ -83,28 +140,14 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
         eventsViewModel.eventRepository = eventRepository;
         eventsViewModel.accountRepository = accountRepository;
         eventsViewModel.mainActivity = this;
+
+        messageViewModel.messageRepository = messageRepository;
+        messageViewModel.mainActivity = this;
     }
 
-    public void setActionBarTitle(String title)
-    {
-        navigationBarHandler.setActionBarTitle(title);
-    }
     public boolean checkWifi()
     {
-        // show loading screen
-        if(internetManager.checkWifi())
-        {
-            Log.d("MainActivity", "showLoadingScreen");
-            showLoadingScreen();
-            return true;
-        }
-        // show dialog saying "not connected to internet"
-        else
-        {
-            Log.e("MainActivity", "show no internet dialog");
-            popup.showPopup();
-            return false;
-        }
+        return internetManager.checkWifi();
     }
 
     public void showLoadingScreen()
@@ -153,17 +196,6 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
 
     public void addFragment(Fragment fragment, String fragmentTag) // new fragment added here
     {
-
-        if(!fragmentTag.equals("WelcomeScreenFragment")
-            && !fragmentTag.equals("LoginFragment") && !fragmentTag.equals("SignupFragment"))
-        {
-            getSupportActionBar().show(); // Shows toolbar
-        }
-        else
-        {
-            getSupportActionBar().hide();
-        }
-
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.fragment_container, fragment);
         fragmentTransaction.addToBackStack(fragmentTag);

@@ -13,15 +13,19 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.pickupgamefinder.Event;
-import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.MainActivity;
+import com.example.pickupgamefinder.Models.Event;
+import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.R;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import com.example.pickupgamefinder.Singletons.NavigationController;
 import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 import com.example.pickupgamefinder.ViewModels.EventsViewModel;
+import com.example.pickupgamefinder.ViewModels.MessageViewModel;
 
 public class EventPageFragment extends Fragment implements View.OnClickListener {
 
@@ -31,7 +35,8 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
     Button joinEvent;
     Button leaveEvent;
     Button deleteEvent;
-    Button returnToMapEvent;
+    Button groupChatButton;
+    Button viewMapButton;
 
     EventsViewModel eventsViewModel;
     Event event;
@@ -60,43 +65,44 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
          + "\nSkill Level: " + event.skillLevel + "/10\n");
 
         currentPlayerTV = v.findViewById(R.id.event_page_player_count);
-        currentPlayerTV.setText("Players: " + event.currentPlayerCount + "\\" + event.maxPlayers);
+
+        Integer playerCount = event.joinedUsers != null ? event.joinedUsers.size() : 0;
+
+        currentPlayerTV.setText("Players: " + playerCount + "\\" + event.maxPlayers);
 
         joinEvent = v.findViewById(R.id.event_page_join);
         leaveEvent = v.findViewById(R.id.event_page_leave);
         deleteEvent = v.findViewById(R.id.event_page_delete);
-        returnToMapEvent = v.findViewById(R.id.event_page_return);
+        groupChatButton = v.findViewById(R.id.event_page_group_chat);
+        viewMapButton = v.findViewById(R.id.event_page_event_map);
 
         activity = requireActivity();
-        accountViewModel.loadUserEvents(new ICallback() {
-            @Override
-            public void onCallback(boolean result) {
-                InitializeUI();
-            }
-        });
 
         InitializeUI();
 
         joinEvent.setOnClickListener(this);
         leaveEvent.setOnClickListener(this);
         deleteEvent.setOnClickListener(this);
-        returnToMapEvent.setOnClickListener(this);
+        groupChatButton.setOnClickListener(this);
+        viewMapButton.setOnClickListener(this);
+
         // Inflate the layout for this fragment
         return v;
     }
 
     public void InitializeUI()
     {
-        List<String> createdEventNames = accountViewModel.liveUser.getValue().createdEventNames;
-        List<String> joinedEventNames = accountViewModel.liveUser.getValue().joinedEventNames;
+        List<String> createdEventNames = accountViewModel.liveUser.getValue().createdEventIds;
+        List<String> joinedEventNames = accountViewModel.liveUser.getValue().joinedEventIds;
 
         // if the user created this event
-        if(createdEventNames != null && createdEventNames.contains(event.eventName)) {
+        if(createdEventNames != null && createdEventNames.contains(event.id)) {
             leaveEvent.setVisibility(View.GONE);
             joinEvent.setVisibility(View.GONE);
             deleteEvent.setVisibility(View.VISIBLE);
         }
-        else if(joinedEventNames != null && joinedEventNames.contains(event.eventName))
+        // if the user already joined this event
+        else if(joinedEventNames != null && joinedEventNames.contains(event.id))
         {
             leaveEvent.setVisibility(View.VISIBLE);
             joinEvent.setVisibility(View.GONE);
@@ -117,47 +123,64 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
 
         if(id == joinEvent.getId())
         {
-            setCurrentPlayerCount(event.currentPlayerCount, event.currentPlayerCount + 1);
+            joinEvent();
         }
-        else if(id == leaveEvent.getId()) {
-            setCurrentPlayerCount(event.currentPlayerCount, event.currentPlayerCount - 1);
+        else if(id == leaveEvent.getId())
+        {
+            leaveEvent();
         }
         else if(id == deleteEvent.getId())
         {
             deleteEvent();
         }
-        else if (id == returnToMapEvent.getId()) {
-            ((MainActivity)activity).addFragment(new MapFragment(), "MapFragment");
+        else if(id == viewMapButton.getId())
+        {
+            NavigationController.getInstance().gotoSingleEventMap(event, false);
+        }
+        else if(id == groupChatButton.getId())
+        {
+            NavigationController.getInstance().gotoGroupChat(event.id);
         }
     }
-    private void setCurrentPlayerCount(int oldPlayercount, int newPlayercount)
+    private void joinEvent()
     {
-        eventsViewModel.setCurrentPlayerCount(oldPlayercount, newPlayercount, event,
+        eventsViewModel.joinEvent(event,
                 new ICallback() {
                     @Override
                     public void onCallback(boolean result) {
                         if(result)
                         {
-                            if(oldPlayercount > newPlayercount)
-                            {
-                                leaveEvent.setVisibility(View.GONE);
-                                joinEvent.setVisibility(View.VISIBLE);
-                            }
-                            else
-                            {
-                                leaveEvent.setVisibility(View.VISIBLE);
-                                joinEvent.setVisibility(View.GONE);
-                            }
-                            currentPlayerTV.setText("Players: "+ newPlayercount + "\\" + event.maxPlayers);
-                            event.currentPlayerCount = newPlayercount;
+                            joinEvent.setVisibility(View.GONE);
+                            leaveEvent.setVisibility(View.VISIBLE);
+                            currentPlayerTV.setText("");
                         }
                         else
                         {
-                            Log.e("Event page frag", "failed to set current player count");
+                            Log.e("Event page frag", "failed to delete event");
                         }
                     }
                 });
     }
+    private void leaveEvent()
+    {
+        eventsViewModel.leaveEvent(event,
+                new ICallback() {
+                    @Override
+                    public void onCallback(boolean result) {
+                        if(result)
+                        {
+                            joinEvent.setVisibility(View.VISIBLE);
+                            leaveEvent.setVisibility(View.GONE);
+                            currentPlayerTV.setText("");
+                        }
+                        else
+                        {
+                            Log.e("Event page frag", "failed to delete event");
+                        }
+                    }
+                });
+    }
+
     private void deleteEvent()
     {
         eventsViewModel.deleteEvent(event,

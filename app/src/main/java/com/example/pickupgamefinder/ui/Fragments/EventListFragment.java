@@ -15,12 +15,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.example.pickupgamefinder.Event;
+import com.example.pickupgamefinder.Models.Event;
 import com.example.pickupgamefinder.EventRecyclerAdapter;
 import com.example.pickupgamefinder.ICallback;
-import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.example.pickupgamefinder.ViewModels.AccountViewModel;
@@ -34,14 +34,19 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
     AccountViewModel accountViewModel;
     RecyclerView recyclerView;
     List<Event> eventList;
+    boolean showAllEvents;
+    boolean showCreatedEvents;
+    boolean showJoinedEvents;
     boolean showRefreshButton;
 
 
-    public EventListFragment(List<Event> eventsList, boolean showRefreshButton) {
+    public EventListFragment(boolean showAllEvents, boolean showCreatedEvents, boolean showJoinedEvents
+            , boolean showRefreshButton) {
 
-        this.eventList = eventsList;
+        this.showAllEvents = showAllEvents;
+        this.showCreatedEvents = showCreatedEvents;
+        this.showJoinedEvents = showJoinedEvents;
         this.showRefreshButton = showRefreshButton;
-
     }
 
     @Override
@@ -62,14 +67,27 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
         recyclerView = v.findViewById(R.id.events_list_recyclerView);
         refreshButton = v.findViewById(R.id.event_list_refresh_button);
 
-        setAdapter();
-
         if(showRefreshButton)
             refreshButton.setVisibility(View.VISIBLE);
         else
             refreshButton.setVisibility(View.GONE);
 
         refreshButton.setOnClickListener(this);
+
+        if(showAllEvents)
+        {
+            loadEvents();
+        }
+        if(showCreatedEvents)
+        {
+            eventList = accountViewModel.getEventsFromEventIds(accountViewModel.liveUser.getValue().createdEventIds);
+            setAdapter();
+        }
+        if(showJoinedEvents)
+        {
+            eventList = accountViewModel.getEventsFromEventIds(accountViewModel.liveUser.getValue().joinedEventIds);
+            setAdapter();
+        }
 
         // Inflate the layout for this fragment
         return v;
@@ -114,7 +132,7 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
 
     private void setAdapter()
     {
-        EventRecyclerAdapter adapter = new EventRecyclerAdapter(eventList, activity, eventsViewModel);
+        EventRecyclerAdapter adapter = new EventRecyclerAdapter(eventList);
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(activity.getApplicationContext());
 

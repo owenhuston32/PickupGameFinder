@@ -1,19 +1,25 @@
 package com.example.pickupgamefinder.Repositories;
 
-import android.util.Log;
-
+import com.example.pickupgamefinder.Models.GroupChat;
 import com.example.pickupgamefinder.MainActivity;
+import com.example.pickupgamefinder.Models.Message;
 import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 
-import com.example.pickupgamefinder.Event;
+import com.example.pickupgamefinder.Models.Event;
 import com.example.pickupgamefinder.ICallback;
-import com.example.pickupgamefinder.User;
+import com.example.pickupgamefinder.Models.User;
+import com.example.pickupgamefinder.ViewModels.MessageViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.ServerValue;
+import com.google.firebase.database.Transaction;
+import com.google.firebase.database.annotations.Nullable;
+import com.google.firebase.firestore.FieldValue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,187 +33,165 @@ public class EventRepository {
     private MainActivity mainActivity;
     private EventsViewModel eventsViewModel;
     private AccountViewModel accountViewModel;
-    private FirebaseDatabase database;
     private DatabaseReference dbRef;
 
     public EventRepository(MainActivity mainActivity, EventsViewModel eventsViewModel, AccountViewModel accountViewModel
-            , FirebaseDatabase database, DatabaseReference dbRef)
+                           ,DatabaseReference dbRef)
     {
         this.mainActivity = mainActivity;
         this.eventsViewModel = eventsViewModel;
         this.accountViewModel = accountViewModel;
-        this.database = database;
         this.dbRef = dbRef;
     }
 
     public void addEvent(Event event, ICallback callback) {
+
+        dbRef.child("server").runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+
+                Long eventID = currentData.child("events/count").getValue(Long.class);
+                if(eventID == null)
+                    eventID = 0L;
+
+                event.id = eventID.toString();
+                currentData.child("events/" + event.id).setValue(event);
+                currentData.child("users/" + accountViewModel.liveUser.getValue().username + "/createdEvents/" + event.id).setValue("0");
+
+                currentData.child("groupChats/" + event.id + "/info/id").setValue(event.id);
+                currentData.child("groupChats/" + event.id + "/info/name").setValue(event.eventName + " Group");
+                currentData.child("groupChats/" + event.id + "/info/creator").setValue(accountViewModel.liveUser.getValue().username);
+                currentData.child("groupChats/" + event.id + "/info/joinedUsers").setValue(new ArrayList<User>());
+                currentData.child("groupChats/" + event.id + "/info/mCount").setValue(0L);
+
+                currentData.child("events/count").setValue(ServerValue.increment(1));
+
+
+                return Transaction.success(currentData);
+            }
+
+            @Override
+            public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
+                mainActivity.hideLoadingScreen();
+
+                if(committed) {
+                    User user = accountViewModel.liveUser.getValue();
+                    user.addIDToList(event.id, user.createdEventIds);
+
+                    eventsViewModel.addToLiveEventList(event);
+                }
+                callback.onCallback(committed);
+            }
+        });
+    }
+
+    public void getEvent(String eventId, ICallback callback) {
+
+        dbRef.child("/server/events/" + eventId).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                mainActivity.hideLoadingScreen();
+
+                if(task.isSuccessful() && task.getResult().getValue() != null)
+                {
+                        Event event = task.getResult().getValue(Event.class);
+                        eventsViewModel.liveEvent.setValue(event);
+                }
+                callback.onCallback(task.isSuccessful());
+            }
+        });
+    }
+
+    public void loadEvents(ICallback callback)
+    {
+        dbRef.child("/server/events").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                mainActivity.hideLoadingScreen();
+
+                if(task.isSuccessful())
+                {
+                    List<Event> eventList = new ArrayList<Event>();
+                    for(DataSnapshot snapshot : task.getResult().getChildren())
+                    {
+                        if(!snapshot.getKey().equals("count"))
+                        {
+                            Event event = snapshot.getValue(Event.class);
+                            eventList.add(event);
+                        }
+                    }
+                    eventsViewModel.liveEventList.setValue(eventList);
+                }
+                callback.onCallback(task.isSuccessful());
+            }
+        });
+    }
+
+    public void leaveEvent(Event event, ICallback callback)
+    {
+        String username = accountViewModel.liveUser.getValue().username;
+
         Map<String, Object> childUpdates = new HashMap<String, Object>();
-        childUpdates.put("/events/" + event.eventName, event);
-        childUpdates.put("/users/" + accountViewModel.liveUser.getValue().username + "/createdEvents/" + event.eventName, 0);
+        childUpdates.put("/server/events/" + event.id + "/joinedUsers/" + username,  null);
+        childUpdates.put("/server/users/" + username + "/joinedEvents/" + event.id, null);
 
         dbRef.updateChildren(childUpdates).addOnCompleteListener(new OnCompleteListener() {
             @Override
             public void onComplete(@NonNull Task task) {
                 mainActivity.hideLoadingScreen();
+
                 if (task.isSuccessful()) {
 
-                    addEventToEvents(event);
+                    // remove event from created events list
+                    accountViewModel.liveUser.getValue().joinedEventIds.remove(event.id);
 
-                    addEventToCreatedEvents(event);
+                    if(event.joinedUsers != null)
+                        event.joinedUsers.remove(username);
 
-                    callback.onCallback(true);
-                } else {
-                    callback.onCallback(false);
                 }
+                callback.onCallback(task.isSuccessful());
+
             }
         });
     }
 
-    private void addEventToEvents(Event event)
+    public void joinEvent(Event event, ICallback callback)
     {
-        List<Event> list = eventsViewModel.liveEventList.getValue();
-        if(list == null)
-            list = new ArrayList<Event>();
-
-        list.add(event);
-        eventsViewModel.liveEventList.setValue(list);
-    }
-
-    private void addEventToCreatedEvents(Event event)
-    {
-        List<String> nameList = accountViewModel.liveUser.getValue().createdEventNames;
-        if(nameList == null)
-            nameList = new ArrayList<String>();
-        nameList.add(event.eventName);
-        User user = accountViewModel.liveUser.getValue();
-        user.createdEventNames = nameList;
-        accountViewModel.liveUser.setValue(user);
-    }
-
-    public void getEvent(String eventName, ICallback callback) {
-
-        dbRef.child("events").child(eventName).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-
-            @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                mainActivity.hideLoadingScreen();
-                if (task.isSuccessful() && task.getResult().getValue() != null) {
-
-                    DataSnapshot snapshot = task.getResult();
-                    Event e = createEventFromSnapshot(snapshot);
-                    eventsViewModel.liveEvent.setValue(e);
-
-                    callback.onCallback(true);
-                } else {
-                    callback.onCallback(false);
-                    Log.e("firebase", "Error getting data", task.getException());
-
-                }
-            }
-        });
-    }
-    private Event createEventFromSnapshot(DataSnapshot snapshot)
-    {
-        return new Event(String.valueOf(snapshot.child("eventName").getValue()),
-                String.valueOf(snapshot.child("caption").getValue()),
-                Integer.parseInt(String.valueOf(snapshot.child("skillLevel").getValue())),
-                Integer.parseInt(String.valueOf(snapshot.child("currentPlayerCount").getValue())),
-                Integer.parseInt(String.valueOf(snapshot.child("maxPlayers").getValue())),
-                Double.parseDouble(String.valueOf(snapshot.child("latitude").getValue())),
-                Double.parseDouble(String.valueOf(snapshot.child("longitude").getValue())));
-    }
-
-    public void loadEvents(ICallback callback)
-    {
-        dbRef.child("events").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-
-            @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                mainActivity.hideLoadingScreen();
-                if (task.isSuccessful() && task.getResult().hasChildren()) {
-
-                    List<Event> list = new ArrayList<Event>();
-                    for(DataSnapshot childrenSnapshot : task.getResult().getChildren())
-                    {
-                        list.add(createEventFromSnapshot(childrenSnapshot));
-                    }
-                    eventsViewModel.liveEventList.setValue(list);
-                    callback.onCallback(true);
-
-                }
-                else
-                {
-                    callback.onCallback(false);
-                }
-            }
-        });
-    }
-    public void setCurrentPlayerCount(int oldPlayerCount, int newCurrentPlayerCount, Event event, ICallback callback) {
+        String username = accountViewModel.liveUser.getValue().username;
 
         Map<String, Object> childUpdates = new HashMap<String, Object>();
-        childUpdates.put("/events/" + event.eventName + "/currentPlayerCount",  newCurrentPlayerCount);
-
-        //if old player count > new player count this means we left the event
-        // set the val to null to delete the entry from the database under joined events
-        Integer val = null;
-        if(newCurrentPlayerCount > oldPlayerCount)
-        {
-            val = 0;
-        }
-        childUpdates.put("/users/" + accountViewModel.liveUser.getValue().username + "/joinedEvents/" + event.eventName, val);
-
+        childUpdates.put("/server/events/" + event.id + "/joinedUsers/" + username,  "0");
+        childUpdates.put("/server/users/" + username + "/joinedEvents/" + event.id, "0");
 
         dbRef.updateChildren(childUpdates).addOnCompleteListener(new OnCompleteListener() {
-                    @Override
-                    public void onComplete(@NonNull Task task) {
-                        mainActivity.hideLoadingScreen();
-                        if (task.isSuccessful()) {
+            @Override
+            public void onComplete(@NonNull Task task) {
+                mainActivity.hideLoadingScreen();
 
-                            // change current player count on live event
-                            Event e = eventsViewModel.liveEvent.getValue();
-                            e.currentPlayerCount = newCurrentPlayerCount;
-                            eventsViewModel.liveEvent.setValue(e);
+                if (task.isSuccessful()) {
 
-                            if(oldPlayerCount > newCurrentPlayerCount)
-                            {
-                                leaveEvent(event);
-                            }
-                            else
-                            {
-                                joinEvent(event);
-                            }
+                    if (accountViewModel.liveUser.getValue().joinedEventIds == null)
+                        accountViewModel.liveUser.getValue().joinedEventIds = new ArrayList<String>();
 
-                            callback.onCallback(true);
-                        } else {
-                            callback.onCallback(false);
-                        }
+                    accountViewModel.liveUser.getValue().joinedEventIds.add(event.id);
 
-                    }
-                });
-    }
-    private void leaveEvent(Event event)
-    {
-        // remove event name to user's joined events
-        User user = accountViewModel.liveUser.getValue();
-        user.joinedEventNames.remove(event.eventName);
-        accountViewModel.liveUser.setValue(user);
-    }
-    private void joinEvent(Event event)
-    {
-        // add event name to user's joined events
-        User user = accountViewModel.liveUser.getValue();
-        if(user.joinedEventNames == null)
-            user.joinedEventNames = new ArrayList<String>();
-        user.joinedEventNames.add(event.eventName);
-        accountViewModel.liveUser.setValue(user);
+                    if (event.joinedUsers == null)
+                        event.joinedUsers = new HashMap<String, String>();
+                    event.joinedUsers.put(username, "0");
+
+                }
+                callback.onCallback(task.isSuccessful());
+
+            }
+        });
     }
 
     public void deleteEvent(Event event, ICallback callback) {
 
         Map<String, Object> childUpdates = new HashMap<String, Object>();
-        childUpdates.put("/events/" + event.eventName,  null);
-        childUpdates.put("/users/" + accountViewModel.liveUser.getValue().username + "/createdEvents/" + event.eventName, null);
-
+        childUpdates.put("/server/events/" + event.id,  null);
+        childUpdates.put("/server/users/" + accountViewModel.liveUser.getValue().username + "/createdEvents/" + event.id, null);
         dbRef.updateChildren(childUpdates).addOnCompleteListener(new OnCompleteListener() {
             @Override
             public void onComplete(@NonNull Task task) {
@@ -215,17 +199,11 @@ public class EventRepository {
 
                 if (task.isSuccessful()) {
 
-                    eventsViewModel.liveEvent.setValue(null);
+                    accountViewModel.liveUser.getValue().createdEventIds.remove(event.id);
+                    eventsViewModel.liveEventList.getValue().remove(event);
 
-                    // remove event from created events list
-                    User user = accountViewModel.liveUser.getValue();
-                    user.createdEventNames.remove(event.eventName);
-                    accountViewModel.liveUser.setValue(user);
-
-                    callback.onCallback(true);
-                } else {
-                    callback.onCallback(false);
                 }
+                callback.onCallback(task.isSuccessful());
 
             }
         });

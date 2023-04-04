@@ -13,15 +13,25 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.example.pickupgamefinder.Event;
+import com.example.pickupgamefinder.ICallback;
+import com.example.pickupgamefinder.Models.Event;
 import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
 
+import com.example.pickupgamefinder.Singletons.NavigationController;
+import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 import com.example.pickupgamefinder.ViewModels.EventsViewModel;
+import com.example.pickupgamefinder.ViewModels.MessageViewModel;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class CreateEventFragment extends Fragment implements View.OnClickListener {
 
     EventsViewModel mEventViewModel;
+    AccountViewModel mAccountViewModel;
+    MessageViewModel messageViewModel;
     EditText eventNameET;
     EditText captionET;
 
@@ -53,6 +63,8 @@ public class CreateEventFragment extends Fragment implements View.OnClickListene
 
         View v = inflater.inflate(R.layout.fragment_create_event, container, false);
         mEventViewModel = new ViewModelProvider(requireActivity()).get(EventsViewModel.class);
+        mAccountViewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
+        messageViewModel = new ViewModelProvider(requireActivity()).get(MessageViewModel.class);
 
         eventNameET = v.findViewById(R.id.event_name_et);
         captionET = v.findViewById(R.id.caption_et);
@@ -86,7 +98,15 @@ public class CreateEventFragment extends Fragment implements View.OnClickListene
         int id = view.getId();
         if(id == nextPageButton.getId())
         {
-            ((MainActivity)activity).addFragment(new CreateEventMapFragment(CreateEvent()), "MapFragment");
+            Event event = CreateEvent();
+            messageViewModel.addGroupChat(event.id, event.eventName + " Group", mAccountViewModel.liveUser.getValue().username,
+                    new ICallback() {
+                        @Override
+                        public void onCallback(boolean result) {
+                            if(result)
+                                NavigationController.getInstance().gotoSingleEventMap(event, true);
+                        }
+                    });
         }
         else if(id == skillLevelLeftArrow.getId())
         {
@@ -135,7 +155,8 @@ public class CreateEventFragment extends Fragment implements View.OnClickListene
         int skillLevel = Integer.parseInt(skillLevelText.getText().toString());
         int maxPlayers = Integer.parseInt(maxPlayersText.getText().toString());
 
-        Event event = new Event(eventName, caption, skillLevel, 0, maxPlayers, 0, 0);
+        Event event = new Event("0", eventName, caption, skillLevel, maxPlayers, 0, 0
+                , mAccountViewModel.liveUser.getValue().username, new HashMap<String, String>());
 
         return event;
     }
