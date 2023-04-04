@@ -45,19 +45,19 @@ public class MessageRepository {
             @Override
             public Transaction.Result doTransaction(@NonNull MutableData currentData) {
 
-                Long chatID = currentData.child("groupChats/GC/count").getValue(Long.class);
+                Long chatID = currentData.child("groupChats/count").getValue(Long.class);
 
                 if(chatID == null)
                     chatID = 0L;
 
 
-                currentData.child("groupChats/GC/" + chatID + "/info/id").setValue(chatID.toString());
-                currentData.child("groupChats/GC/" + chatID + "/info/name").setValue(groupChatName);
-                currentData.child("groupChats/GC/" + chatID + "/info/creator").setValue(creator);
-                currentData.child("groupChats/GC/" + chatID + "/info/joinedUsers").setValue(new ArrayList<User>());
-                currentData.child("groupChats/GC/" + chatID + "/info/mCount").setValue(0L);
+                currentData.child("groupChats/" + chatID + "/info/id").setValue(chatID.toString());
+                currentData.child("groupChats/" + chatID + "/info/name").setValue(groupChatName);
+                currentData.child("groupChats/" + chatID + "/info/creator").setValue(creator);
+                currentData.child("groupChats/" + chatID + "/info/joinedUsers").setValue(new ArrayList<User>());
+                currentData.child("groupChats/" + chatID + "/info/messageCount").setValue(0L);
 
-                currentData.child("groupChats/GC/count").setValue(ServerValue.increment(1));
+                currentData.child("groupChats/count").setValue(ServerValue.increment(1));
 
                 return Transaction.success(currentData);
             }
@@ -67,7 +67,7 @@ public class MessageRepository {
                 mainActivity.hideLoadingScreen();
 
                 if(committed) {
-                    Long id = currentData.child("groupChats/GC/count").getValue(Long.class) - 1;
+                    Long id = currentData.child("groupChats/count").getValue(Long.class) - 1;
                     GroupChat groupChat =  new GroupChat(id.toString(), groupChatName, creator, new ArrayList<User>(), new ArrayList<Message>());
                     messageViewModel.liveGroupChat.setValue(groupChat);
                 }
@@ -78,7 +78,7 @@ public class MessageRepository {
 
     public void getGroupChat(String chatID, ICallback callback)
     {
-        dbRef.child("server/groupChats/GC/" + chatID).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+        dbRef.child("server/groupChats/" + chatID).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 mainActivity.hideLoadingScreen();
@@ -102,12 +102,12 @@ public class MessageRepository {
 
     public void addMessage(String chatId, Message message, ICallback callback) {
 
-        dbRef.child("server/groupChats/GC/" + chatId).runTransaction(new Transaction.Handler() {
+        dbRef.child("server/groupChats/" + chatId).runTransaction(new Transaction.Handler() {
             @NonNull
             @Override
             public Transaction.Result doTransaction(@NonNull MutableData currentData) {
 
-                Long id = currentData.child("mCount").getValue(Long.class);
+                Long id = currentData.child("messageCount").getValue(Long.class);
 
                 if(id == null)
                     id = 0L;
@@ -115,7 +115,7 @@ public class MessageRepository {
                 String idString = id.toString();
                 currentData.child("/messages/m" + idString).setValue(message);
 
-                currentData.child("mCount").setValue(ServerValue.increment(1));
+                currentData.child("messageCount").setValue(ServerValue.increment(1));
 
                 return Transaction.success(currentData);
             }
@@ -139,7 +139,7 @@ public class MessageRepository {
 
     public void loadMessages(String chatID, ICallback callback)
     {
-        dbRef.child("server/groupChats/GC/" + chatID + "/messages").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+        dbRef.child("server/groupChats/" + chatID + "/messages").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 mainActivity.hideLoadingScreen();

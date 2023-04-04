@@ -1,5 +1,6 @@
 package com.example.pickupgamefinder.Handlers;
 
+import android.content.Intent;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
@@ -10,6 +11,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
+import com.example.pickupgamefinder.SignInActivity;
 import com.example.pickupgamefinder.Singletons.NavigationController;
 import com.google.android.material.navigation.NavigationView;
 
@@ -23,6 +25,7 @@ public class NavigationBarHandler implements NavigationView.OnNavigationItemSele
     MainActivity mainActivity;
     DrawerLayout drawerLayout;
     androidx.appcompat.app.ActionBar actionBar;
+    NavigationView navigationView;
 
     public NavigationBarHandler(AccountViewModel accountViewModel, EventsViewModel eventsViewModel,
                                 MainActivity mainActivity, DrawerLayout drawerLayout)
@@ -36,7 +39,10 @@ public class NavigationBarHandler implements NavigationView.OnNavigationItemSele
 
     private void initializeActionbar()
     {
-        NavigationView navigationView = mainActivity.findViewById(R.id.navigation_view);
+
+        navigationView = mainActivity.findViewById(R.id.default_navigation_view);
+        activateSignedOutDrawer();
+
         Toolbar toolbar = (Toolbar) mainActivity.findViewById(R.id.toolbar);
         mainActivity.setSupportActionBar(toolbar);
 
@@ -55,6 +61,19 @@ public class NavigationBarHandler implements NavigationView.OnNavigationItemSele
         actionBar.hide();
 
     }
+
+    public void activateSignedInDrawer()
+    {
+        navigationView.getMenu().setGroupVisible(R.id.signed_in_menu_group, true);
+        navigationView.getMenu().setGroupVisible(R.id.signed_out_menu_group, false);
+    }
+
+    public void activateSignedOutDrawer()
+    {
+        navigationView.getMenu().setGroupVisible(R.id.signed_in_menu_group, false);
+        navigationView.getMenu().setGroupVisible(R.id.signed_out_menu_group, true);
+    }
+
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) { // this is for menu icon
@@ -84,10 +103,13 @@ public class NavigationBarHandler implements NavigationView.OnNavigationItemSele
             menuItemClick("Created Events");
             createEventButtonClick();
             return true;
-        } else if (id == R.id.menu_signout) {
+        } else if (id == R.id.menu_sign_out) {
             menuItemClick("");
             signOutButtonClick();
             return true;
+        } else if (id == R.id.menu_sign_in)
+        {
+            mainActivity.launchSignIn();
         }
         return false;
     }

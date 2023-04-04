@@ -33,16 +33,14 @@ public class EventRepository {
     private MainActivity mainActivity;
     private EventsViewModel eventsViewModel;
     private AccountViewModel accountViewModel;
-    private MessageViewModel messageViewModel;
     private DatabaseReference dbRef;
 
     public EventRepository(MainActivity mainActivity, EventsViewModel eventsViewModel, AccountViewModel accountViewModel
-                           ,MessageViewModel messageViewModel, DatabaseReference dbRef)
+                           ,DatabaseReference dbRef)
     {
         this.mainActivity = mainActivity;
         this.eventsViewModel = eventsViewModel;
         this.accountViewModel = accountViewModel;
-        this.messageViewModel = messageViewModel;
         this.dbRef = dbRef;
     }
 
@@ -61,11 +59,11 @@ public class EventRepository {
                 currentData.child("events/" + event.id).setValue(event);
                 currentData.child("users/" + accountViewModel.liveUser.getValue().username + "/createdEvents/" + event.id).setValue("0");
 
-                currentData.child("groupChats/GC/" + event.id + "/info/id").setValue(event.id);
-                currentData.child("groupChats/GC/" + event.id + "/info/name").setValue(event.eventName + " Group");
-                currentData.child("groupChats/GC/" + event.id + "/info/creator").setValue(accountViewModel.liveUser.getValue().username);
-                currentData.child("groupChats/GC/" + event.id + "/info/joinedUsers").setValue(new ArrayList<User>());
-                currentData.child("groupChats/GC/" + event.id + "/info/mCount").setValue(0L);
+                currentData.child("groupChats/" + event.id + "/info/id").setValue(event.id);
+                currentData.child("groupChats/" + event.id + "/info/name").setValue(event.eventName + " Group");
+                currentData.child("groupChats/" + event.id + "/info/creator").setValue(accountViewModel.liveUser.getValue().username);
+                currentData.child("groupChats/" + event.id + "/info/joinedUsers").setValue(new ArrayList<User>());
+                currentData.child("groupChats/" + event.id + "/info/mCount").setValue(0L);
 
                 currentData.child("events/count").setValue(ServerValue.increment(1));
 

@@ -1,7 +1,5 @@
 package com.example.pickupgamefinder.Singletons;
 
-import android.util.Log;
-
 import androidx.fragment.app.FragmentManager;
 
 import com.example.pickupgamefinder.ICallback;
@@ -16,13 +14,9 @@ import com.example.pickupgamefinder.ui.Fragments.ChatListFragment;
 import com.example.pickupgamefinder.ui.Fragments.CreateEventFragment;
 import com.example.pickupgamefinder.ui.Fragments.EventListFragment;
 import com.example.pickupgamefinder.ui.Fragments.EventPageFragment;
-import com.example.pickupgamefinder.ui.Fragments.LoginFragment;
 import com.example.pickupgamefinder.ui.Fragments.MapFragment;
-import com.example.pickupgamefinder.ui.Fragments.SignupFragment;
-import com.example.pickupgamefinder.ui.Fragments.WelcomeScreenFragment;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class NavigationController {
@@ -55,14 +49,6 @@ public class NavigationController {
     }
 
 
-    public void goToLoginFrag()
-    {
-        mainActivity.addFragment(new LoginFragment(), "LoginFragment");
-    }
-    public void goToSignUpFrag()
-    {
-        mainActivity.addFragment(new SignupFragment(), "SignupFragment");
-    }
     public void goToAccountFrag()
     {
         mainActivity.addFragment(new AccountFragment(accountViewModel.liveUser.getValue()), "AccountFragment");
@@ -151,7 +137,6 @@ public class NavigationController {
             fm.popBackStack();
         }
 
-        mainActivity.addFragment(new WelcomeScreenFragment(), "WelcomeScreenFragment");
         accountViewModel.liveUser.setValue(new User("", "", new ArrayList<String>(), new ArrayList<String>()));
     }
 

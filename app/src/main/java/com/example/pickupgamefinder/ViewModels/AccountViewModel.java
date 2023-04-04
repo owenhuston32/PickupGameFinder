@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 public class AccountViewModel extends ViewModel {
-
+    
     public MutableLiveData<User> liveUser = new MutableLiveData<User>();
     public AccountRepository accountRepository = null;
     public EventsViewModel eventsViewModel = null;
