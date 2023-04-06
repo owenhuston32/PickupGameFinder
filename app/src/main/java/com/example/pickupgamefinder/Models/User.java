@@ -7,7 +7,6 @@ import java.util.Map;
 
 public class User {
     public String username;
-    public String password;
     public List<String> createdEventIds;
     public List<String> joinedEventIds;
 
@@ -15,9 +14,8 @@ public class User {
         // Default constructor required for calls to DataSnapshot.getValue(com.example.pickupgamefinder.Models.User.class)
     }
 
-    public User(String username, String password, List<String> createdEventIds, List<String> joinedEventIds) {
+    public User(String username, List<String> createdEventIds, List<String> joinedEventIds) {
         this.username = username;
-        this.password = password;
         this.createdEventIds = createdEventIds;
         this.joinedEventIds = joinedEventIds;
     }

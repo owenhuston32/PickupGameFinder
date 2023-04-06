@@ -35,10 +35,10 @@ public class AccountRepository {
         this.dbRef = dbRef;
     }
 
-    public void addUser(String userName, String hashedPassword, ICallback callback) {
+    public void addUser(String hashedID, ICallback callback) {
 
-        User user = new User(userName, hashedPassword, new ArrayList<String>(), new ArrayList<String>());
-        dbRef.child("server/users/" + userName).setValue(user, new DatabaseReference.CompletionListener() {
+        User user = new User(hashedID, new ArrayList<String>(), new ArrayList<String>());
+        dbRef.child("server/users/" + hashedID).setValue(user, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
                 mainActivity.hideLoadingScreen();
@@ -51,9 +51,9 @@ public class AccountRepository {
         });
     }
 
-    public void tryLogin(String username, String hashedPassword, ICallback callback)
+    public void tryLogin(String ID, ICallback callback)
     {
-        dbRef.child("server/users/" + username).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+        dbRef.child("server/users/" + ID).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
 
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
@@ -62,7 +62,7 @@ public class AccountRepository {
                 {
                     User user = task.getResult().getValue(User.class);
 
-                    boolean success = user != null && user.password.equals(hashedPassword);
+                    boolean success = user != null;
 
                     if(success)
                     {
@@ -95,9 +95,9 @@ public class AccountRepository {
         });
     }
 
-    public void getUserName(String username, ICallback callback) {
+    public void getID(String hashedID, ICallback callback) {
 
-        dbRef.child("server/users/" + username).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+        dbRef.child("server/users/" + hashedID).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
 
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {

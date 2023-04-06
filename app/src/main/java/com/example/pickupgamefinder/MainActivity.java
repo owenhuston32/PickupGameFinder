@@ -25,6 +25,7 @@ import com.example.pickupgamefinder.Repositories.AccountRepository;
 import com.example.pickupgamefinder.Repositories.EventRepository;
 import com.example.pickupgamefinder.Repositories.MessageRepository;
 import com.example.pickupgamefinder.Singletons.ErrorUIHandler;
+import com.example.pickupgamefinder.Singletons.HashHandler;
 import com.example.pickupgamefinder.Singletons.NavigationController;
 import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 import com.example.pickupgamefinder.ViewModels.EventsViewModel;
@@ -50,23 +51,48 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
     ActivityResultLauncher<Intent> startForResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
         @Override
         public void onActivityResult(ActivityResult result) {
+
+            navigationBarHandler.activateSignedOutDrawer();
             if(result != null && result.getResultCode() == RESULT_OK)
             {
                 Log.d("result code: ", "" + result.getResultCode());
 
-                navigationBarHandler.activateSignedInDrawer();
-
                 if(result.getData() != null)
                 {
-                    if(result.getData().getStringExtra(("UserName")) != null)
+                    String ID = result.getData().getStringExtra(("ID"));
+                    if(ID != null)
                     {
-                        // get data and sign in here
+                        String hashedID = HashHandler.getInstance().createHash(ID);
+
+                        accountViewModel.getID(hashedID, new ICallback() {
+                            @Override
+                            public void onCallback(boolean result) {
+
+                                if(result)
+                                {
+                                    accountViewModel.tryLogin(hashedID, new ICallback() {
+                                        @Override
+                                        public void onCallback(boolean result) {
+                                            if(result)
+                                                navigationBarHandler.activateSignedInDrawer();
+                                        }
+                                    });
+                                }
+                                else
+                                {
+                                    accountViewModel.addUser(hashedID, new ICallback() {
+                                        @Override
+                                        public void onCallback(boolean result) {
+                                            if(result)
+                                                navigationBarHandler.activateSignedInDrawer();
+                                        }
+                                    });
+                                }
+
+                            }
+                        });
                     }
                 }
-            }
-            else
-            {
-                navigationBarHandler.activateSignedOutDrawer();
             }
         }
     });
@@ -74,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
     public void launchSignIn()
     {
         Intent intent = new Intent(this, SignInActivity.class);
+        intent.putExtra("REQUEST_CODE", "SIGN_IN");
         startForResult.launch(intent);
     }
 
@@ -87,21 +114,13 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
 
             InitializeViewModels();
             NavigationController.getInstance().setupNavController(this, eventsViewModel, accountViewModel, messageViewModel);
+
             drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
             internetManager = new InternetManager(this);
             navigationBarHandler = new NavigationBarHandler(accountViewModel, eventsViewModel, this, drawerLayout);
-
-            showLoadingScreen();
-            eventsViewModel.loadEvents(new ICallback() {
-                @Override
-                public void onCallback(boolean result) {
-                    addFragment(new MapFragment(eventsViewModel.liveEventList.getValue(), false), "MapFragment");
-                    hideLoadingScreen();
-                }
-            });
+            NavigationController.getInstance().goToMap();
 
             createPopupFragment();
-            launchSignIn();
         }
         Objects.requireNonNull(getSupportActionBar()).show();
     }
