@@ -131,13 +131,13 @@ public class NavigationController {
 
     public void signOut()
     {
-        //clear backstack
+        //clear all but the starting fragment
         FragmentManager fm = mainActivity.getSupportFragmentManager();
-        for (int i = 0; i < fm.getBackStackEntryCount(); i++) {
+        for (int i = 0; i < fm.getBackStackEntryCount() - 1; i++) {
             fm.popBackStack();
         }
 
-        accountViewModel.liveUser.setValue(new User("", "", new ArrayList<String>(), new ArrayList<String>()));
+        accountViewModel.liveUser.setValue(new User("", new ArrayList<String>(), new ArrayList<String>()));
     }
 
 }

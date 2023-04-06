@@ -104,11 +104,13 @@ public class NavigationBarHandler implements NavigationView.OnNavigationItemSele
             createEventButtonClick();
             return true;
         } else if (id == R.id.menu_sign_out) {
-            menuItemClick("");
+            menuItemClick("Map");
+            activateSignedOutDrawer();
             signOutButtonClick();
             return true;
         } else if (id == R.id.menu_sign_in)
         {
+            menuItemClick("");
             mainActivity.launchSignIn();
         }
         return false;

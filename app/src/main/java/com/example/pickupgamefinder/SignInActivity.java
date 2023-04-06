@@ -23,7 +23,7 @@ import java.util.Objects;
 
 public class SignInActivity extends AppCompatActivity{
 
-    private static final String TAG = "SIGNIN";
+    private static final String TAG = "SIGN_IN_ACTIVITY";
     private static final int SIGN_IN_REQ = 0;
 
     private SignInClient oneTapClient;
@@ -99,10 +99,18 @@ public class SignInActivity extends AppCompatActivity{
             String username = credential.getId();
             String password = credential.getPassword();
             if (idToken !=  null) {
-                Log.d(TAG, "Got ID token.");
-
-            } else if (password != null) {
-                Log.d(TAG, "Got password.");
+                Log.e(TAG, "Got ID token.");
+                Log.e(TAG, idToken);
+                intent.putExtra("ID", idToken);
+            }
+            if(username != null) {
+                Log.e(TAG, "Got username");
+                Log.e(TAG, username);
+                intent.putExtra("USERNAME", username);
+            }
+            if (password != null) {
+                Log.e(TAG, "Got password.");
+                Log.e(TAG, password);
             }
             setResult(RESULT_OK, intent);
         } catch (ApiException e) {
@@ -121,7 +129,5 @@ public class SignInActivity extends AppCompatActivity{
 
         finish();
     }
-
-
 
 }

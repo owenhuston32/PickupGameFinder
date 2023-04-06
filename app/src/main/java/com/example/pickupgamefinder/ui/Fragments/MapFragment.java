@@ -45,7 +45,7 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
 
     private Handler locationTrackerHandler;
     private Runnable locationTrackerRunnable;
-    private final int getLocationWaitTime = 10000;
+    private final int getLocationWaitTime = 100000;
     private EventsViewModel mEventsViewModel;
     private MapView mapView;
     private GoogleMap googleMap;
@@ -155,7 +155,6 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
             public void run() {
                 if(googleMap != null)
                 {
-                    // update user location but don't move
                     getUserLocation(false);
                 }
                 locationTrackerHandler.postDelayed(this, getLocationWaitTime);
@@ -282,7 +281,6 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
 
     private void updateCamera(boolean shouldMoveCamera)
     {
-        // move camera
         if(shouldMoveCamera)
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLocationCircle.getCenter(), 13));
     }
