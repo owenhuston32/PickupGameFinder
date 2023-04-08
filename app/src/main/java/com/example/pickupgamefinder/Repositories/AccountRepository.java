@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.Models.User;
+import com.example.pickupgamefinder.Singletons.LoadingScreen;
 import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -23,14 +24,11 @@ import java.util.Map;
 
 public class AccountRepository {
 
-    private final MainActivity mainActivity;
     private final AccountViewModel accountViewModel;
     private final DatabaseReference dbRef;
 
-    public AccountRepository(MainActivity mainActivity, AccountViewModel accountViewModel
-            , DatabaseReference dbRef)
+    public AccountRepository(AccountViewModel accountViewModel, DatabaseReference dbRef)
     {
-        this.mainActivity = mainActivity;
         this.accountViewModel = accountViewModel;
         this.dbRef = dbRef;
     }
@@ -41,7 +39,7 @@ public class AccountRepository {
         dbRef.child("server/users/" + hashedID).setValue(user, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
-                mainActivity.hideLoadingScreen();
+                LoadingScreen.getInstance().hideLoadingScreen();
 
                 if(error == null) {
                     accountViewModel.liveUser.setValue(user);
@@ -57,7 +55,7 @@ public class AccountRepository {
 
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
-                mainActivity.hideLoadingScreen();
+                LoadingScreen.getInstance().hideLoadingScreen();
                 if(task.isSuccessful() && task.getResult().getValue() != null)
                 {
                     User user = task.getResult().getValue(User.class);
@@ -101,7 +99,7 @@ public class AccountRepository {
 
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
-                mainActivity.hideLoadingScreen();
+                LoadingScreen.getInstance().hideLoadingScreen();
                 callback.onCallback(task.isSuccessful() && task.getResult().getValue() != null);
             }
         });

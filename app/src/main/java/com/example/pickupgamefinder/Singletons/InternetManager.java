@@ -1,4 +1,4 @@
-package com.example.pickupgamefinder;
+package com.example.pickupgamefinder.Singletons;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -11,15 +11,29 @@ import com.example.pickupgamefinder.Singletons.ErrorUIHandler;
 
 public class InternetManager {
 
-    private Context mContext;
+    private Context context;
+    private static volatile InternetManager INSTANCE = null;
+    private InternetManager(){};
 
-    public InternetManager(Context context)
-    {
-        mContext = context;
+    public static InternetManager getInstance() {
+        if(INSTANCE == null) {
+            synchronized (InternetManager.class) {
+                if (INSTANCE == null) {
+                    INSTANCE = new InternetManager();
+                }
+            }
+        }
+        return INSTANCE;
     }
 
+    public void setContext(Context context)
+    {
+        this.context = context.getApplicationContext();
+    }
+
+
     public boolean checkWifi() {
-        ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm.getActiveNetworkInfo();
 
         boolean success = ni != null && (ni.getType() == ConnectivityManager.TYPE_WIFI

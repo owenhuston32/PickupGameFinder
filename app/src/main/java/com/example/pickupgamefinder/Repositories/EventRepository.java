@@ -3,6 +3,7 @@ package com.example.pickupgamefinder.Repositories;
 import com.example.pickupgamefinder.Models.GroupChat;
 import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.Models.Message;
+import com.example.pickupgamefinder.Singletons.LoadingScreen;
 import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 
@@ -30,15 +31,12 @@ import androidx.annotation.NonNull;
 
 public class EventRepository {
 
-    private MainActivity mainActivity;
     private EventsViewModel eventsViewModel;
     private AccountViewModel accountViewModel;
     private DatabaseReference dbRef;
 
-    public EventRepository(MainActivity mainActivity, EventsViewModel eventsViewModel, AccountViewModel accountViewModel
-                           ,DatabaseReference dbRef)
+    public EventRepository(EventsViewModel eventsViewModel, AccountViewModel accountViewModel,DatabaseReference dbRef)
     {
-        this.mainActivity = mainActivity;
         this.eventsViewModel = eventsViewModel;
         this.accountViewModel = accountViewModel;
         this.dbRef = dbRef;
@@ -73,7 +71,7 @@ public class EventRepository {
 
             @Override
             public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
-                mainActivity.hideLoadingScreen();
+                LoadingScreen.getInstance().hideLoadingScreen();
 
                 if(committed) {
                     User user = accountViewModel.liveUser.getValue();
@@ -91,7 +89,7 @@ public class EventRepository {
         dbRef.child("/server/events/" + eventId).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
-                mainActivity.hideLoadingScreen();
+                LoadingScreen.getInstance().hideLoadingScreen();
 
                 if(task.isSuccessful() && task.getResult().getValue() != null)
                 {
@@ -108,7 +106,7 @@ public class EventRepository {
         dbRef.child("/server/events").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
-                mainActivity.hideLoadingScreen();
+                LoadingScreen.getInstance().hideLoadingScreen();
 
                 if(task.isSuccessful())
                 {
@@ -139,7 +137,7 @@ public class EventRepository {
         dbRef.updateChildren(childUpdates).addOnCompleteListener(new OnCompleteListener() {
             @Override
             public void onComplete(@NonNull Task task) {
-                mainActivity.hideLoadingScreen();
+                LoadingScreen.getInstance().hideLoadingScreen();
 
                 if (task.isSuccessful()) {
 
@@ -167,7 +165,7 @@ public class EventRepository {
         dbRef.updateChildren(childUpdates).addOnCompleteListener(new OnCompleteListener() {
             @Override
             public void onComplete(@NonNull Task task) {
-                mainActivity.hideLoadingScreen();
+                LoadingScreen.getInstance().hideLoadingScreen();
 
                 if (task.isSuccessful()) {
 
@@ -195,7 +193,7 @@ public class EventRepository {
         dbRef.updateChildren(childUpdates).addOnCompleteListener(new OnCompleteListener() {
             @Override
             public void onComplete(@NonNull Task task) {
-                mainActivity.hideLoadingScreen();
+                LoadingScreen.getInstance().hideLoadingScreen();
 
                 if (task.isSuccessful()) {
 
