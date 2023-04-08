@@ -8,6 +8,8 @@ import com.example.pickupgamefinder.Repositories.AccountRepository;
 import com.example.pickupgamefinder.Models.Event;
 import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.Repositories.EventRepository;
+import com.example.pickupgamefinder.Singletons.InternetManager;
+import com.example.pickupgamefinder.Singletons.LoadingScreen;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,13 +20,12 @@ public class EventsViewModel extends ViewModel {
     public MutableLiveData<List<Event>> liveEventList = new MutableLiveData<List<Event>>();
     public EventRepository eventRepository = null;
     public AccountRepository accountRepository = null;
-    public MainActivity mainActivity;
 
     public void addEvent(Event event, ICallback callback)
     {
-        if(mainActivity.checkWifi())
+        if(InternetManager.getInstance().checkWifi())
         {
-            mainActivity.showLoadingScreen();
+            LoadingScreen.getInstance().showLoadingScreen();
             eventRepository.addEvent(event, callback);
         }
         else
@@ -34,9 +35,9 @@ public class EventsViewModel extends ViewModel {
     }
     public void getEvent(String eventId, ICallback callback)
     {
-        if(mainActivity.checkWifi())
+        if(InternetManager.getInstance().checkWifi())
         {
-            mainActivity.showLoadingScreen();
+            LoadingScreen.getInstance().showLoadingScreen();
             eventRepository.getEvent(eventId, callback);
         }
         else
@@ -47,9 +48,9 @@ public class EventsViewModel extends ViewModel {
 
     public void loadEvents(ICallback callback)
     {
-        if(mainActivity.checkWifi())
+        if(InternetManager.getInstance().checkWifi())
         {
-            mainActivity.showLoadingScreen();
+            LoadingScreen.getInstance().showLoadingScreen();
             eventRepository.loadEvents(callback);
         }
         else
@@ -60,9 +61,9 @@ public class EventsViewModel extends ViewModel {
 
     public void leaveEvent(Event event, ICallback callback)
     {
-        if(mainActivity.checkWifi())
+        if(InternetManager.getInstance().checkWifi())
         {
-            mainActivity.showLoadingScreen();
+            LoadingScreen.getInstance().showLoadingScreen();
             eventRepository.leaveEvent(event, callback);
         }
         else
@@ -73,9 +74,9 @@ public class EventsViewModel extends ViewModel {
 
     public void joinEvent(Event event, ICallback callback)
     {
-        if(mainActivity.checkWifi())
+        if(InternetManager.getInstance().checkWifi())
         {
-            mainActivity.showLoadingScreen();
+            LoadingScreen.getInstance().showLoadingScreen();
             eventRepository.joinEvent(event, callback);
         }
         else
@@ -85,9 +86,9 @@ public class EventsViewModel extends ViewModel {
     }
 
     public void deleteEvent(Event event, ICallback callback) {
-        if(mainActivity.checkWifi())
+        if(InternetManager.getInstance().checkWifi())
         {
-            mainActivity.showLoadingScreen();
+            LoadingScreen.getInstance().showLoadingScreen();
             eventRepository.deleteEvent(event, callback);
         }
         else

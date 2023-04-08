@@ -3,7 +3,6 @@ package com.example.pickupgamefinder;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
@@ -13,10 +12,8 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -26,12 +23,13 @@ import com.example.pickupgamefinder.Repositories.EventRepository;
 import com.example.pickupgamefinder.Repositories.MessageRepository;
 import com.example.pickupgamefinder.Singletons.ErrorUIHandler;
 import com.example.pickupgamefinder.Singletons.HashHandler;
+import com.example.pickupgamefinder.Singletons.InternetManager;
+import com.example.pickupgamefinder.Singletons.LoadingScreen;
 import com.example.pickupgamefinder.Singletons.NavigationController;
 import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 
 import com.example.pickupgamefinder.ViewModels.MessageViewModel;
-import com.example.pickupgamefinder.ui.Fragments.MapFragment;
 import com.example.pickupgamefinder.ui.Fragments.PopupNotificationFragment;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -40,34 +38,36 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements  LifecycleObserver{
 
+    private static final String TAG = "MainActivity";
     private NavigationBarHandler navigationBarHandler;
     private DrawerLayout drawerLayout;
-    private InternetManager internetManager;
     private AccountViewModel accountViewModel;
     private EventsViewModel eventsViewModel;
     private MessageViewModel messageViewModel;
     private PopupNotificationFragment popup;
 
-    ActivityResultLauncher<Intent> startForResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+    ActivityResultLauncher<Intent> signInLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
         @Override
         public void onActivityResult(ActivityResult result) {
 
             navigationBarHandler.activateSignedOutDrawer();
+            Log.d(TAG, "activity result: " + result.toString());
             if(result != null && result.getResultCode() == RESULT_OK)
             {
-                Log.d("result code: ", "" + result.getResultCode());
-
                 if(result.getData() != null)
                 {
+                    Log.d(TAG, "get data: " + result.getData());
                     String ID = result.getData().getStringExtra(("ID"));
                     if(ID != null)
                     {
+                        Log.d(TAG, "recieved id: " + ID);
                         String hashedID = HashHandler.getInstance().createHash(ID);
 
                         accountViewModel.getID(hashedID, new ICallback() {
                             @Override
                             public void onCallback(boolean result) {
 
+                                Log.d(TAG, "get ID from db: " + result);
                                 if(result)
                                 {
                                     accountViewModel.tryLogin(hashedID, new ICallback() {
@@ -83,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
                                     accountViewModel.addUser(hashedID, new ICallback() {
                                         @Override
                                         public void onCallback(boolean result) {
+                                            Log.d(TAG, "add user to db: " + result);
                                             if(result)
                                                 navigationBarHandler.activateSignedInDrawer();
                                         }
@@ -99,9 +100,9 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
 
     public void launchSignIn()
     {
-        Intent intent = new Intent(this, SignInActivity.class);
+        Intent intent = new Intent(this, SignIn.class);
         intent.putExtra("REQUEST_CODE", "SIGN_IN");
-        startForResult.launch(intent);
+        signInLauncher.launch(intent);
     }
 
     @Override
@@ -111,12 +112,13 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
         setContentView(R.layout.activity_main);
 
         if (savedInstanceState == null) {
+            InternetManager.getInstance().setContext(this);
+            LoadingScreen.getInstance().setContext(this);
 
             InitializeViewModels();
             NavigationController.getInstance().setupNavController(this, eventsViewModel, accountViewModel, messageViewModel);
 
             drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-            internetManager = new InternetManager(this);
             navigationBarHandler = new NavigationBarHandler(accountViewModel, eventsViewModel, this, drawerLayout);
             NavigationController.getInstance().goToMap();
 
@@ -143,41 +145,18 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
 
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
 
-        EventRepository eventRepository = new EventRepository(this, eventsViewModel, accountViewModel,
-                dbRef);
-
-        AccountRepository accountRepository = new AccountRepository(this, accountViewModel,
-                dbRef);
-
-        MessageRepository messageRepository = new MessageRepository(this, messageViewModel,
-                dbRef);
+        EventRepository eventRepository = new EventRepository(eventsViewModel, accountViewModel, dbRef);
+        AccountRepository accountRepository = new AccountRepository(accountViewModel, dbRef);
+        MessageRepository messageRepository = new MessageRepository(messageViewModel, dbRef);
 
         accountViewModel.eventsViewModel = eventsViewModel;
         accountViewModel.accountRepository = accountRepository;
-        accountViewModel.mainActivity = this;
 
         eventsViewModel.eventRepository = eventRepository;
         eventsViewModel.accountRepository = accountRepository;
-        eventsViewModel.mainActivity = this;
 
         messageViewModel.messageRepository = messageRepository;
-        messageViewModel.mainActivity = this;
     }
-
-    public boolean checkWifi()
-    {
-        return internetManager.checkWifi();
-    }
-
-    public void showLoadingScreen()
-    {
-        com.saksham.customloadingdialog.LoaderKt.showDialog(this, false, R.raw.loading_animation);
-    }
-    public void hideLoadingScreen()
-    {
-        com.saksham.customloadingdialog.LoaderKt.hideDialog();
-    }
-
 
     @Override
     public void onBackPressed()

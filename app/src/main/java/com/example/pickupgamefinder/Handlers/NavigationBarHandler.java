@@ -1,6 +1,5 @@
 package com.example.pickupgamefinder.Handlers;
 
-import android.content.Intent;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
@@ -11,7 +10,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
-import com.example.pickupgamefinder.SignInActivity;
 import com.example.pickupgamefinder.Singletons.NavigationController;
 import com.google.android.material.navigation.NavigationView;
 

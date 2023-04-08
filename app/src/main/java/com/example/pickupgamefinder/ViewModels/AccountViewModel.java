@@ -8,6 +8,8 @@ import com.example.pickupgamefinder.Repositories.AccountRepository;
 import com.example.pickupgamefinder.Models.Event;
 import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.Models.User;
+import com.example.pickupgamefinder.Singletons.InternetManager;
+import com.example.pickupgamefinder.Singletons.LoadingScreen;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,13 +20,12 @@ public class AccountViewModel extends ViewModel {
     public MutableLiveData<User> liveUser = new MutableLiveData<User>();
     public AccountRepository accountRepository = null;
     public EventsViewModel eventsViewModel = null;
-    public MainActivity mainActivity;
 
     public void addUser(String hashedID, ICallback callback) {
 
-        if(mainActivity.checkWifi())
+        if(InternetManager.getInstance().checkWifi())
         {
-            mainActivity.showLoadingScreen();
+            LoadingScreen.getInstance().showLoadingScreen();
             accountRepository.addUser(hashedID, callback);
         }
         else
@@ -35,9 +36,9 @@ public class AccountViewModel extends ViewModel {
 
     public void getID(String hashedID, ICallback callback) {
 
-        if(mainActivity.checkWifi())
+        if(InternetManager.getInstance().checkWifi())
         {
-            mainActivity.showLoadingScreen();
+            LoadingScreen.getInstance().showLoadingScreen();
             accountRepository.getID(hashedID, callback);
         }
         else
@@ -48,9 +49,9 @@ public class AccountViewModel extends ViewModel {
 
     public void tryLogin(String hashedID, ICallback callback)
     {
-        if(mainActivity.checkWifi())
+        if(InternetManager.getInstance().checkWifi())
         {
-            mainActivity.showLoadingScreen();
+            LoadingScreen.getInstance().showLoadingScreen();
             accountRepository.tryLogin(hashedID, callback);
         }
         else

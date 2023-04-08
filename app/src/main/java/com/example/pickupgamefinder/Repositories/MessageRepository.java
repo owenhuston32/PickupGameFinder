@@ -9,6 +9,7 @@ import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.Models.GroupChat;
 import com.example.pickupgamefinder.Models.Message;
 import com.example.pickupgamefinder.Models.User;
+import com.example.pickupgamefinder.Singletons.LoadingScreen;
 import com.example.pickupgamefinder.ViewModels.MessageViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -26,14 +27,11 @@ import java.util.List;
 
 public class MessageRepository {
 
-    private final MainActivity mainActivity;
     private final MessageViewModel messageViewModel;
     private final DatabaseReference dbRef;
 
-    public MessageRepository(MainActivity mainActivity, MessageViewModel messageViewModel
-            , DatabaseReference dbRef)
+    public MessageRepository(MessageViewModel messageViewModel, DatabaseReference dbRef)
     {
-        this.mainActivity = mainActivity;
         this.messageViewModel = messageViewModel;
         this.dbRef = dbRef;
     }
@@ -64,7 +62,7 @@ public class MessageRepository {
 
             @Override
             public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
-                mainActivity.hideLoadingScreen();
+                LoadingScreen.getInstance().hideLoadingScreen();
 
                 if(committed) {
                     Long id = currentData.child("groupChats/count").getValue(Long.class) - 1;
@@ -81,7 +79,7 @@ public class MessageRepository {
         dbRef.child("server/groupChats/" + chatID).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
-                mainActivity.hideLoadingScreen();
+                LoadingScreen.getInstance().hideLoadingScreen();
 
                 if(task.isSuccessful() && task.getResult().getValue() != null) {
 
@@ -122,7 +120,7 @@ public class MessageRepository {
 
             @Override
             public void onComplete(@com.google.firebase.database.annotations.Nullable DatabaseError error, boolean committed, @com.google.firebase.database.annotations.Nullable DataSnapshot currentData) {
-                mainActivity.hideLoadingScreen();
+                LoadingScreen.getInstance().hideLoadingScreen();
 
                 if(committed)
                 {
@@ -142,7 +140,7 @@ public class MessageRepository {
         dbRef.child("server/groupChats/" + chatID + "/messages").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
-                mainActivity.hideLoadingScreen();
+                LoadingScreen.getInstance().hideLoadingScreen();
 
                 if(task.isSuccessful()) {
                     List messages = new ArrayList<>();

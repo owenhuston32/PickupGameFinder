@@ -1,5 +1,7 @@
 package com.example.pickupgamefinder.Singletons;
 
+import android.app.Application;
+
 import androidx.fragment.app.FragmentManager;
 
 import com.example.pickupgamefinder.ICallback;
@@ -15,6 +17,9 @@ import com.example.pickupgamefinder.ui.Fragments.CreateEventFragment;
 import com.example.pickupgamefinder.ui.Fragments.EventListFragment;
 import com.example.pickupgamefinder.ui.Fragments.EventPageFragment;
 import com.example.pickupgamefinder.ui.Fragments.MapFragment;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -136,6 +141,11 @@ public class NavigationController {
         for (int i = 0; i < fm.getBackStackEntryCount() - 1; i++) {
             fm.popBackStack();
         }
+
+        GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+        GoogleSignInClient signInClient = GoogleSignIn.getClient(mainActivity, signInOptions);
+
+        signInClient.signOut();
 
         accountViewModel.liveUser.setValue(new User("", new ArrayList<String>(), new ArrayList<String>()));
     }
