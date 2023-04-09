@@ -16,17 +16,18 @@ import java.util.List;
 import java.util.Map;
 
 public class AccountViewModel extends ViewModel {
-    
+
+    public MutableLiveData<Boolean> liveHasLocationAccess = new MutableLiveData<Boolean>();
     public MutableLiveData<User> liveUser = new MutableLiveData<User>();
     public AccountRepository accountRepository = null;
     public EventsViewModel eventsViewModel = null;
 
-    public void addUser(String hashedID, ICallback callback) {
+    public void addUser(String hashedID, String username, ICallback callback) {
 
         if(InternetManager.getInstance().checkWifi())
         {
             LoadingScreen.getInstance().showLoadingScreen();
-            accountRepository.addUser(hashedID, callback);
+            accountRepository.addUser(hashedID, username, callback);
         }
         else
         {

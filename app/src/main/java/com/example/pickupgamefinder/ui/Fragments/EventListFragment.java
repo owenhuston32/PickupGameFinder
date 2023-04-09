@@ -40,13 +40,21 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
     boolean showRefreshButton;
 
 
-    public EventListFragment(boolean showAllEvents, boolean showCreatedEvents, boolean showJoinedEvents
-            , boolean showRefreshButton) {
+    public EventListFragment() { }
 
-        this.showAllEvents = showAllEvents;
-        this.showCreatedEvents = showCreatedEvents;
-        this.showJoinedEvents = showJoinedEvents;
-        this.showRefreshButton = showRefreshButton;
+    public EventListFragment newInstance(boolean showAllEvents, boolean showCreatedEvents, boolean showJoinedEvents
+            , boolean showRefreshButton)
+    {
+        EventListFragment eventListFragment = new EventListFragment();
+
+        Bundle args = new Bundle();
+        args.putBoolean("SHOW_ALL_EVENTS", showAllEvents);
+        args.putBoolean("SHOW_CREATED_EVENTS", showCreatedEvents);
+        args.putBoolean("SHOW_JOINED_EVENTS", showJoinedEvents);
+        args.putBoolean("SHOW_REFRESH_BUTTON", showRefreshButton);
+        eventListFragment.setArguments(args);
+
+        return eventListFragment;
     }
 
     @Override
@@ -59,6 +67,17 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
                              Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_event_list, container, false);
+
+        Bundle args = getArguments();
+
+        if(args != null)
+        {
+            showAllEvents = args.getBoolean("SHOW_ALL_EVENTS");
+            showCreatedEvents = args.getBoolean("SHOW_CREATED_EVENTS");
+            showJoinedEvents = args.getBoolean("SHOW_JOINED_EVENTS");
+            showRefreshButton = args.getBoolean("SHOW_REFRESH_BUTTON");
+        }
+
 
         activity = requireActivity();
 

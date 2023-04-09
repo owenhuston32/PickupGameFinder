@@ -42,10 +42,19 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
     Event event;
     AccountViewModel accountViewModel;
 
-    public EventPageFragment(Event event) {
-        this.event = event;
+    public EventPageFragment() {
+
     }
 
+    public EventPageFragment newInstance(Event event){
+        EventPageFragment eventPageFragment = new EventPageFragment();
+
+        Bundle args = new Bundle();
+        args.putSerializable("EVENT", event);
+        eventPageFragment.setArguments(args);
+
+        return eventPageFragment;
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +65,13 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
                              Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_event_page, container, false);
+
+        Bundle args = getArguments();
+
+        if(args != null)
+        {
+            event = (Event)args.getSerializable("EVENT");
+        }
 
         eventsViewModel = new ViewModelProvider(requireActivity()).get(EventsViewModel.class);
         accountViewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);

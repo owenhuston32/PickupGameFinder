@@ -18,18 +18,15 @@ import androidx.fragment.app.Fragment;
 import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.R;
 
+import java.io.Serializable;
+
 public class PermissionHandlerFragment extends Fragment implements  View.OnClickListener{
 
     ICallback callback;
     Button requestLocationButton;
     Activity activity;
-    Fragment parentFragment;
 
-    public PermissionHandlerFragment(Fragment parentFragment)
-    {
-        this.parentFragment = parentFragment;
-    }
-
+    public PermissionHandlerFragment() { }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -83,7 +80,7 @@ public class PermissionHandlerFragment extends Fragment implements  View.OnClick
             requestPermission(Manifest.permission.ACCESS_FINE_LOCATION, new ICallback() {
                 @Override
                 public void onCallback(boolean result) {
-                    ((MapFragment)parentFragment).permissionResultCallback(result);
+                    //TODO: MAYBE SET VALUE IN ACCOUNT VIEW MODEL TO ALLOW ACCESS TO LOCATION
                 }
             });
         }

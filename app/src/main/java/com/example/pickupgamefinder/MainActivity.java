@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.pickupgamefinder.Handlers.NavigationBarHandler;
 import com.example.pickupgamefinder.Repositories.AccountRepository;
@@ -30,6 +31,7 @@ import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 
 import com.example.pickupgamefinder.ViewModels.MessageViewModel;
+import com.example.pickupgamefinder.ui.Fragments.PermissionHandlerFragment;
 import com.example.pickupgamefinder.ui.Fragments.PopupNotificationFragment;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -45,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
     private EventsViewModel eventsViewModel;
     private MessageViewModel messageViewModel;
     private PopupNotificationFragment popup;
+    private PermissionHandlerFragment permissionHandlerFragment;
 
     ActivityResultLauncher<Intent> signInLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
         @Override
@@ -62,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
                     {
                         Log.d(TAG, "recieved id: " + ID);
                         String hashedID = HashHandler.getInstance().createHash(ID);
-
+                        String username = result.getData().getStringExtra("USERNAME");
                         accountViewModel.getID(hashedID, new ICallback() {
                             @Override
                             public void onCallback(boolean result) {
@@ -74,18 +77,24 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
                                         @Override
                                         public void onCallback(boolean result) {
                                             if(result)
+                                            {
+                                                Toast.makeText(getApplicationContext(), "Welcome: " + username, Toast.LENGTH_SHORT).show();
                                                 navigationBarHandler.activateSignedInDrawer();
+                                            }
                                         }
                                     });
                                 }
                                 else
                                 {
-                                    accountViewModel.addUser(hashedID, new ICallback() {
+                                    accountViewModel.addUser(hashedID, username, new ICallback() {
                                         @Override
                                         public void onCallback(boolean result) {
                                             Log.d(TAG, "add user to db: " + result);
                                             if(result)
+                                            {
+                                                Toast.makeText(getApplicationContext(), "Welcome: " + username, Toast.LENGTH_SHORT).show();
                                                 navigationBarHandler.activateSignedInDrawer();
+                                            }
                                         }
                                     });
                                 }
@@ -95,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
                     }
                 }
             }
+            NavigationController.getInstance().goToMap();
         }
     });
 
@@ -110,6 +120,12 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        permissionHandlerFragment = new PermissionHandlerFragment();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.permission_fragment_container, permissionHandlerFragment);
+        fragmentTransaction.commit();
 
         if (savedInstanceState == null) {
             InternetManager.getInstance().setContext(this);
@@ -198,6 +214,11 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
         fragmentTransaction.replace(R.id.fragment_container, fragment);
         fragmentTransaction.addToBackStack(fragmentTag);
         fragmentTransaction.commit();
+    }
+
+    public void requestPermission(String permission, ICallback callback)
+    {
+        permissionHandlerFragment.requestPermission(permission, callback);
     }
 
     public void onStart() {

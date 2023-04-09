@@ -33,9 +33,9 @@ public class AccountRepository {
         this.dbRef = dbRef;
     }
 
-    public void addUser(String hashedID, ICallback callback) {
+    public void addUser(String hashedID, String username, ICallback callback) {
 
-        User user = new User(hashedID, new ArrayList<String>(), new ArrayList<String>());
+        User user = new User(hashedID, username, new ArrayList<String>(), new ArrayList<String>());
         dbRef.child("server/users/" + hashedID).setValue(user, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {

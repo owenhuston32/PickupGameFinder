@@ -41,23 +41,6 @@ public class SignIn extends AppCompatActivity{
     private SignInClient oneTapClient;
     private BeginSignInRequest signInRequest;
 
-    ActivityResultLauncher<Intent> regularSignInLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
-        @Override
-        public void onActivityResult(ActivityResult result) {
-
-            if(result != null && result.getResultCode() == RESULT_OK)
-            {
-                if(result.getData() != null)
-                {
-                    String ID = result.getData().getStringExtra(("ID"));
-                    if(ID != null) {
-
-                    }
-                }
-            }
-        }
-    });
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -73,6 +56,7 @@ public class SignIn extends AppCompatActivity{
         {
             Intent intent = new Intent();
             intent.putExtra("ID", account.getId());
+            intent.putExtra("USERNAME", account.getDisplayName());
             setResult(RESULT_OK, intent);
             finish();
         }
@@ -147,22 +131,15 @@ public class SignIn extends AppCompatActivity{
     {
         try {
             SignInCredential credential = oneTapClient.getSignInCredentialFromIntent(data);
-            String idToken = credential.getGoogleIdToken();
-            String username = credential.getId();
-            String password = credential.getPassword();
-            if (idToken !=  null) {
-                Log.d(TAG, "Got ID token.");
-                Log.d(TAG, idToken);
-                intent.putExtra("ID", idToken);
+            String ID = credential.getId();
+            String username = credential.getDisplayName();
+
+            if(ID != null)
+            {
+                intent.putExtra("ID", ID);
             }
             if(username != null) {
-                Log.d(TAG, "Got username");
-                Log.d(TAG, username);
                 intent.putExtra("USERNAME", username);
-            }
-            if (password != null) {
-                Log.d(TAG, "Got password.");
-                Log.d(TAG, password);
             }
 
             setResult(RESULT_OK, intent);
@@ -190,6 +167,7 @@ public class SignIn extends AppCompatActivity{
         try {
             GoogleSignInAccount account = task.getResult(ApiException.class);
             intent.putExtra("ID", account.getId());
+            intent.putExtra("USERNAME", account.getDisplayName());
             setResult(RESULT_OK, intent);
             Log.d(TAG, "REGULAR ACCOUNT SIGN IN SUCCESSFUL");
 

@@ -9,7 +9,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Handler;
@@ -37,6 +36,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.example.pickupgamefinder.ViewModels.EventsViewModel;
@@ -50,7 +50,7 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
     private MapView mapView;
     private GoogleMap googleMap;
     private FusedLocationProviderClient fusedLocationProviderClient;
-    private Activity activity;
+    private Activity mainActivity;
     private List<Event> eventList;
     private LatLng eventLocation;
     private boolean canDragMarker;
@@ -58,9 +58,18 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
     private CircleOptions userLocationCircle;
     private Boolean isTrackingUserLocation = false;
 
-    public MapFragment(List<Event> eventList, boolean canDragMarker) {
-        this.eventList = eventList;
-        this.canDragMarker = canDragMarker;
+    public MapFragment() { }
+
+    public MapFragment newInstance(List<Event> eventList, boolean canDragMarker)
+    {
+        MapFragment mapFragment = new MapFragment();
+
+        Bundle args = new Bundle();
+        args.putSerializable("EVENT_LIST", (Serializable) eventList);
+        args.putBoolean("CAN_DRAG_MARKER", canDragMarker);
+        mapFragment.setArguments(args);
+
+        return mapFragment;
     }
 
     @Override
@@ -76,11 +85,21 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
 
         View v = inflater.inflate(R.layout.fragment_map, container, false);
 
-        activity = requireActivity();
+        Bundle args = getArguments();
+
+        if(args != null)
+        {
+            eventList = (List<Event>) args.getSerializable("EVENT_LIST");
+            if(eventList != null)
+            Log.d("EVENT LIST", "" + eventList.size());
+            canDragMarker = args.getBoolean("CAN_DRAG_MARKER");
+        }
+
+        mainActivity = requireActivity();
 
         mEventsViewModel = new ViewModelProvider(requireActivity()).get(EventsViewModel.class);
 
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity);
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mainActivity);
 
         createEventButton = (Button)v.findViewById(R.id.create_event_button);
         createEventButton.setOnClickListener(this);
@@ -96,24 +115,20 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState)
     {
-        // setup permissionhandler fragment
-        Fragment permissionHandler = new PermissionHandlerFragment(this);
-        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        transaction.replace(R.id.map_permission_fragment_container, permissionHandler).commit();
-
         mapView = (MapView) view.findViewById(R.id.map);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(@NonNull GoogleMap googleMap) {
                 initializeMap(googleMap);
-                ((PermissionHandlerFragment)permissionHandler).requestPermission(Manifest.permission.ACCESS_FINE_LOCATION,
+
+                ((MainActivity)mainActivity).requestPermission(Manifest.permission.ACCESS_FINE_LOCATION,
                         new ICallback() {
-                        @Override
-                        public void onCallback(boolean result) {
-                            permissionResultCallback(result);
-                        }
-                    });
+                            @Override
+                            public void onCallback(boolean result) {
+                                permissionResultCallback(result);
+                            }
+                        });
             }
         });
     }
@@ -269,7 +284,7 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
             public void onCallback(boolean result) {
                 if(result)
                 {
-                    ((MainActivity)activity).addFragment(new EventPageFragment(event), "EventPageFragment");
+                    ((MainActivity) mainActivity).addFragment(new EventPageFragment().newInstance(event), "EventPageFragment");
                 }
                 else
                 {

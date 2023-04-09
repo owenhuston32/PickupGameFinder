@@ -54,8 +54,17 @@ public class CreateEventMapFragment extends Fragment implements View.OnClickList
     private Bundle savedInstanceState;
     private AccountViewModel mAccountViewModel;
 
-    public CreateEventMapFragment(Event event) {
-        this.event = event;
+    public CreateEventMapFragment() { }
+
+    public CreateEventMapFragment newInstance(Event event)
+    {
+        CreateEventMapFragment createEventMapFragment = new CreateEventMapFragment();
+
+        Bundle args = new Bundle();
+        args.putSerializable("EVENT", event);
+        createEventMapFragment.setArguments(args);
+
+        return createEventMapFragment;
     }
 
     @Override
@@ -70,6 +79,12 @@ public class CreateEventMapFragment extends Fragment implements View.OnClickList
                              Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_create_event_map, container, false);
+
+        Bundle args = getArguments();
+        if(args != null)
+        {
+            event = args.getParcelable("EVENT");
+        }
 
         activity = requireActivity();
         mEventViewModel = new ViewModelProvider(requireActivity()).get(EventsViewModel.class);
@@ -210,7 +225,7 @@ public class CreateEventMapFragment extends Fragment implements View.OnClickList
             public void onCallback(boolean result) {
                 if(result)
                 {
-                    ((MainActivity)activity).addFragment(new EventPageFragment(event), "EventPageFragment");
+                    ((MainActivity)activity).addFragment(new EventPageFragment().newInstance(event), "EventPageFragment");
                 }
                 else
                 {

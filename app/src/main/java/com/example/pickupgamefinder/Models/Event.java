@@ -1,9 +1,12 @@
 package com.example.pickupgamefinder.Models;
 
+import android.os.Parcelable;
+
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public class Event {
+public class Event implements Serializable {
 
     public String id;
     public String eventName = "";
