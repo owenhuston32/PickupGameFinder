@@ -56,15 +56,15 @@ public class NavigationController {
 
     public void goToAccountFrag()
     {
-        mainActivity.addFragment(new AccountFragment(accountViewModel.liveUser.getValue()), "AccountFragment");
+        mainActivity.addFragment(new AccountFragment().newInstance(accountViewModel.liveUser.getValue()), "AccountFragment");
     }
     public void goToCreatedEvents()
     {
-        mainActivity.addFragment(new EventListFragment(false, true, false, false), "EventListFragment");
+        mainActivity.addFragment(new EventListFragment().newInstance(false, true, false, false), "EventListFragment");
     }
     public void goToJoinedEvents()
     {
-        mainActivity.addFragment(new EventListFragment(false, false, true, false), "MapFragment");
+        mainActivity.addFragment(new EventListFragment().newInstance(false, false, true, false), "MapFragment");
     }
     public void goToMap()
     {
@@ -73,7 +73,7 @@ public class NavigationController {
             public void onCallback(boolean result) {
                 if(result)
                 {
-                    mainActivity.addFragment(new MapFragment(eventsViewModel.liveEventList.getValue(), false), "MapFragment");
+                    mainActivity.addFragment(new MapFragment().newInstance(eventsViewModel.liveEventList.getValue(), false), "MapFragment");
                 }
                 else
                 {
@@ -84,7 +84,7 @@ public class NavigationController {
     }
     public void goToAllEventsList()
     {
-        mainActivity.addFragment(new EventListFragment(true, false, false, true), "EventListFragment");
+        mainActivity.addFragment(new EventListFragment().newInstance(true, false, false, true), "EventListFragment");
     }
     public void goToCreateEvent()
     {
@@ -99,7 +99,7 @@ public class NavigationController {
 
                 if(result)
                 {
-                    mainActivity.addFragment( new EventPageFragment(eventsViewModel.liveEvent.getValue()), "EventPageFragment");
+                    mainActivity.addFragment( new EventPageFragment().newInstance(eventsViewModel.liveEvent.getValue()), "EventPageFragment");
                 }
                 else
                 {
@@ -113,7 +113,7 @@ public class NavigationController {
     {
         List<Event> eventList = new ArrayList<Event>();
         eventList.add(event);
-        mainActivity.addFragment(new MapFragment(eventList, canDragEventMarker), "MapFragment");
+        mainActivity.addFragment(new MapFragment().newInstance(eventList, canDragEventMarker), "MapFragment");
     }
 
     public void gotoGroupChat(String groupChatID)
@@ -123,7 +123,7 @@ public class NavigationController {
             public void onCallback(boolean result) {
                 if(result)
                 {
-                    mainActivity.addFragment(new ChatListFragment(messageViewModel.liveGroupChat.getValue()), "ChatListFragment");
+                    mainActivity.addFragment(new ChatListFragment().newInstance(messageViewModel.liveGroupChat.getValue()), "ChatListFragment");
                 }
                 else
                 {
@@ -147,7 +147,7 @@ public class NavigationController {
 
         signInClient.signOut();
 
-        accountViewModel.liveUser.setValue(new User("", new ArrayList<String>(), new ArrayList<String>()));
+        accountViewModel.liveUser.setValue(new User("", "", new ArrayList<String>(), new ArrayList<String>()));
     }
 
 }

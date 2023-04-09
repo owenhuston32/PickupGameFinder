@@ -55,7 +55,7 @@ public class EventRepository {
 
                 event.id = eventID.toString();
                 currentData.child("events/" + event.id).setValue(event);
-                currentData.child("users/" + accountViewModel.liveUser.getValue().username + "/createdEvents/" + event.id).setValue("0");
+                currentData.child("users/" + accountViewModel.liveUser.getValue().ID + "/createdEvents/" + event.id).setValue("0");
 
                 currentData.child("groupChats/" + event.id + "/info/id").setValue(event.id);
                 currentData.child("groupChats/" + event.id + "/info/name").setValue(event.eventName + " Group");
@@ -128,11 +128,11 @@ public class EventRepository {
 
     public void leaveEvent(Event event, ICallback callback)
     {
-        String username = accountViewModel.liveUser.getValue().username;
+        String ID = accountViewModel.liveUser.getValue().ID;
 
         Map<String, Object> childUpdates = new HashMap<String, Object>();
-        childUpdates.put("/server/events/" + event.id + "/joinedUsers/" + username,  null);
-        childUpdates.put("/server/users/" + username + "/joinedEvents/" + event.id, null);
+        childUpdates.put("/server/events/" + event.id + "/joinedUsers/" + ID,  null);
+        childUpdates.put("/server/users/" + ID + "/joinedEvents/" + event.id, null);
 
         dbRef.updateChildren(childUpdates).addOnCompleteListener(new OnCompleteListener() {
             @Override
@@ -145,7 +145,7 @@ public class EventRepository {
                     accountViewModel.liveUser.getValue().joinedEventIds.remove(event.id);
 
                     if(event.joinedUsers != null)
-                        event.joinedUsers.remove(username);
+                        event.joinedUsers.remove(ID);
 
                 }
                 callback.onCallback(task.isSuccessful());
@@ -156,11 +156,11 @@ public class EventRepository {
 
     public void joinEvent(Event event, ICallback callback)
     {
-        String username = accountViewModel.liveUser.getValue().username;
+        String ID = accountViewModel.liveUser.getValue().ID;
 
         Map<String, Object> childUpdates = new HashMap<String, Object>();
-        childUpdates.put("/server/events/" + event.id + "/joinedUsers/" + username,  "0");
-        childUpdates.put("/server/users/" + username + "/joinedEvents/" + event.id, "0");
+        childUpdates.put("/server/events/" + event.id + "/joinedUsers/" + ID,  "0");
+        childUpdates.put("/server/users/" + ID + "/joinedEvents/" + event.id, "0");
 
         dbRef.updateChildren(childUpdates).addOnCompleteListener(new OnCompleteListener() {
             @Override
@@ -176,7 +176,7 @@ public class EventRepository {
 
                     if (event.joinedUsers == null)
                         event.joinedUsers = new HashMap<String, String>();
-                    event.joinedUsers.put(username, "0");
+                    event.joinedUsers.put(ID, "0");
 
                 }
                 callback.onCallback(task.isSuccessful());

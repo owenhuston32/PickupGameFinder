@@ -45,9 +45,17 @@ public class ChatListFragment extends Fragment implements View.OnClickListener {
     EditText messageET;
     GroupChat groupChat;
 
-    public ChatListFragment(GroupChat groupChat) {
-        this.groupChat = groupChat;
+    public ChatListFragment() { }
+    public ChatListFragment newInstance(GroupChat groupChat) {
+        ChatListFragment chatListFragment = new ChatListFragment();
+
+        Bundle args = new Bundle();
+        args.putSerializable("GROUP_CHAT", groupChat);
+        chatListFragment.setArguments(args);
+
+        return chatListFragment;
     }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,6 +67,12 @@ public class ChatListFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_chat_list, container, false);
+
+        Bundle args = getArguments();
+        if(args != null)
+        {
+            groupChat = args.getParcelable("GROUP_CHAT");
+        }
 
         activity = requireActivity();
 

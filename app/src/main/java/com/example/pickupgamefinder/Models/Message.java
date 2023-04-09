@@ -2,7 +2,9 @@ package com.example.pickupgamefinder.Models;
 
 import com.google.firebase.Timestamp;
 
-public class Message {
+import java.io.Serializable;
+
+public class Message implements Serializable {
 
     public String creator;
     public String messageText;

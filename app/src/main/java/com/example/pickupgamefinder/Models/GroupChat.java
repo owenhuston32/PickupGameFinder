@@ -2,12 +2,13 @@ package com.example.pickupgamefinder.Models;
 
 import com.google.firebase.database.DataSnapshot;
 
+import java.io.Serializable;
 import java.sql.DataTruncation;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GroupChat {
+public class GroupChat implements Serializable {
 
     public String id;
     public String name;

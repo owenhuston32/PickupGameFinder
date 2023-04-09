@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
@@ -21,9 +22,20 @@ public class AccountFragment extends Fragment {
 
     private AccountViewModel accountViewModel;
     private EventsViewModel eventsViewModel;
+    private User user;
+    private TextView tv;
 
-    public AccountFragment(User user) {
+    public AccountFragment() { }
 
+    public AccountFragment newInstance(User user)
+    {
+        AccountFragment accountFragment = new AccountFragment();
+
+        Bundle args = new Bundle();
+        args.putSerializable("USER", user);
+        accountFragment.setArguments(args);
+
+        return accountFragment;
     }
 
     @Override
@@ -40,10 +52,19 @@ public class AccountFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        Bundle args = getArguments();
+        if(args != null)
+        {
+            user = (User) args.getSerializable("USER");
+        }
+
         View v = inflater.inflate(R.layout.fragment_account, container, false);
 
-        Fragment createdEvents = new EventListFragment(false, true, false, false);
-        Fragment joinedEvents = new EventListFragment(false, false, true, false);
+        tv = v.findViewById(R.id.account_tv);
+        tv.setText(user.username);
+
+        Fragment createdEvents = new EventListFragment().newInstance(false, true, false, false);
+        Fragment joinedEvents = new EventListFragment().newInstance(false, false, true, false);
 
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         transaction.replace(R.id.account_created_events_container, createdEvents).replace(R.id.account_joined_events_container, joinedEvents).commit();

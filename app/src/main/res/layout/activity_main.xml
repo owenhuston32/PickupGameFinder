@@ -28,6 +28,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
+    <FrameLayout
+        android:id="@+id/permission_fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
     <!--
          Navigation view to show the menu items
     -->
