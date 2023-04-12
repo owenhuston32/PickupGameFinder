@@ -21,14 +21,18 @@ import android.widget.Button;
 import com.example.pickupgamefinder.Models.Event;
 import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.MainActivity;
+import com.example.pickupgamefinder.Models.User;
 import com.example.pickupgamefinder.R;
 import com.example.pickupgamefinder.Singletons.NavigationController;
+import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -46,6 +50,8 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
     private Handler locationTrackerHandler;
     private Runnable locationTrackerRunnable;
     private final int getLocationWaitTime = 100000;
+
+    private AccountViewModel accountViewModel;
     private EventsViewModel mEventsViewModel;
     private MapView mapView;
     private GoogleMap googleMap;
@@ -90,13 +96,13 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
         if(args != null)
         {
             eventList = (List<Event>) args.getSerializable("EVENT_LIST");
-            if(eventList != null)
-            Log.d("EVENT LIST", "" + eventList.size());
             canDragMarker = args.getBoolean("CAN_DRAG_MARKER");
         }
 
+        isTrackingUserLocation = false;
         mainActivity = requireActivity();
 
+        accountViewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
         mEventsViewModel = new ViewModelProvider(requireActivity()).get(EventsViewModel.class);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mainActivity);
@@ -184,17 +190,43 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
         if(googleMap != null && eventList != null)
         {
             for (Event e : eventList) {
-
-                MarkerOptions markerOptions;
+                MarkerOptions markerOptions = new MarkerOptions();
 
                 if(canDragMarker)
                 {
                     markerOptions = new MarkerOptions().position(eventLocation)
                             .title("DRAG THIS MARKER TO EVENT LOCATION")
-                            .draggable(true);
+                            .draggable(true)
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                }
+                else if(accountViewModel.liveUser != null && accountViewModel.liveUser.getValue() != null)
+                {
+                    User user = accountViewModel.liveUser.getValue();
+                    if(user.joinedEventIds != null && user.joinedEventIds.contains(e.id))
+                    {
+                        markerOptions = new MarkerOptions().position(new LatLng(e.latitude, e.longitude))
+                                .title(e.eventName)
+                                .snippet(e.caption)
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                    }
+                    else if(user.createdEventIds != null && user.createdEventIds.contains(e.id))
+                    {
+                        markerOptions = new MarkerOptions().position(new LatLng(e.latitude, e.longitude))
+                                .title(e.eventName)
+                                .snippet(e.caption)
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                    }
+                    else
+                    {
+                        markerOptions = new MarkerOptions()
+                                .position(new LatLng(e.latitude, e.longitude))
+                                .title(e.eventName)
+                                .snippet(e.caption);
+                    }
                 }
                 else
                 {
+                    Log.d("TAG", "default map ");
                     markerOptions = new MarkerOptions()
                             .position(new LatLng(e.latitude, e.longitude))
                             .title(e.eventName)
@@ -309,7 +341,8 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
         userLocationCircle = new CircleOptions()
                 .center(latLng)
                 .radius(100)
-                .strokeColor(Color.BLUE)
+                .strokeColor(Color.RED)
+                .strokeWidth(5)
                 .fillColor(Color.BLUE);
 
         googleMap.addCircle(userLocationCircle);
