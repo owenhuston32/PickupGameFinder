@@ -36,21 +36,22 @@ import com.google.firebase.Timestamp;
 
 public class ChatListFragment extends Fragment implements View.OnClickListener {
 
-    Activity activity;
-    MessageViewModel messageViewModel;
-    AccountViewModel accountViewModel;
-    RecyclerView recyclerView;
-    List<Message> messageList;
-    Button sendMessageButton;
-    EditText messageET;
-    GroupChat groupChat;
+    private static final String GROUP_CHAT_KEY = "GROUP_CHAT";
+    private Activity activity;
+    private MessageViewModel messageViewModel;
+    private AccountViewModel accountViewModel;
+    private RecyclerView recyclerView;
+    private List<Message> messageList;
+    private Button sendMessageButton;
+    private EditText messageET;
+    private GroupChat groupChat;
 
     public ChatListFragment() { }
     public ChatListFragment newInstance(GroupChat groupChat) {
         ChatListFragment chatListFragment = new ChatListFragment();
 
         Bundle args = new Bundle();
-        args.putSerializable("GROUP_CHAT", groupChat);
+        args.putSerializable(GROUP_CHAT_KEY, groupChat);
         chatListFragment.setArguments(args);
 
         return chatListFragment;
@@ -71,7 +72,7 @@ public class ChatListFragment extends Fragment implements View.OnClickListener {
         Bundle args = getArguments();
         if(args != null)
         {
-            groupChat = args.getParcelable("GROUP_CHAT");
+            groupChat = args.getParcelable(GROUP_CHAT_KEY);
         }
 
         activity = requireActivity();
@@ -88,7 +89,6 @@ public class ChatListFragment extends Fragment implements View.OnClickListener {
 
         sendMessageButton.setOnClickListener(this);
 
-        // Inflate the layout for this fragment
         return v;
     }
 

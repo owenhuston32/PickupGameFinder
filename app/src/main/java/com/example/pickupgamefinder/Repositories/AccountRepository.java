@@ -36,7 +36,7 @@ public class AccountRepository {
     public void addUser(String hashedID, String username, ICallback callback) {
 
         User user = new User(hashedID, username, new ArrayList<String>(), new ArrayList<String>());
-        dbRef.child("server/users/" + hashedID).setValue(user, new DatabaseReference.CompletionListener() {
+        dbRef.child("server/users/").setValue(user, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
                 LoadingScreen.getInstance().hideLoadingScreen();
@@ -49,48 +49,68 @@ public class AccountRepository {
         });
     }
 
-    public void tryLogin(String ID, ICallback callback)
+    public void checkIsBanned(String hashedID, ICallback callback)
     {
-        dbRef.child("server/users/" + ID).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+        dbRef.child("server/bannedUsers/" + hashedID).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
 
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
-                LoadingScreen.getInstance().hideLoadingScreen();
-                if(task.isSuccessful() && task.getResult().getValue() != null)
+                callback.onCallback(task.isSuccessful() && task.getResult().getValue() != null);
+            }
+        });
+    }
+
+    public void tryLogin(String hashedID, ICallback callback)
+    {
+        checkIsBanned(hashedID, new ICallback() {
+            @Override
+            public void onCallback(boolean result) {
+                if(!result)
                 {
-                    User user = task.getResult().getValue(User.class);
+                    dbRef.child("server/users/" + hashedID).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
 
-                    boolean success = user != null;
-
-                    if(success)
-                    {
-                        if(task.getResult().getValue() != null)
-                        {
-                            List<String> createdIds = new ArrayList<String>();
-                            for(DataSnapshot snapshot : task.getResult().child("/createdEvents").getChildren())
+                        @Override
+                        public void onComplete(@NonNull Task<DataSnapshot> task) {
+                            LoadingScreen.getInstance().hideLoadingScreen();
+                            if(task.isSuccessful() && task.getResult().getValue() != null)
                             {
-                                createdIds.add(snapshot.getKey());
-                            }
-                            user.createdEventIds = createdIds;
+                                User user = task.getResult().getValue(User.class);
 
-                            List<String> joinedIds = new ArrayList<String>();
-                            for(DataSnapshot snapshot : task.getResult().child("/joinedEvents").getChildren()) {
-                                joinedIds.add(snapshot.getKey());
-                            }
+                                boolean success = user != null;
 
-                            user.joinedEventIds = joinedIds;
+                                if(success)
+                                {
+                                    if(task.getResult().getValue() != null)
+                                    {
+                                        List<String> createdIds = new ArrayList<String>();
+                                        for(DataSnapshot snapshot : task.getResult().child("/createdEvents").getChildren())
+                                        {
+                                            createdIds.add(snapshot.getKey());
+                                        }
+                                        user.createdEventIds = createdIds;
+
+                                        List<String> joinedIds = new ArrayList<String>();
+                                        for(DataSnapshot snapshot : task.getResult().child("/joinedEvents").getChildren()) {
+                                            joinedIds.add(snapshot.getKey());
+                                        }
+
+                                        user.joinedEventIds = joinedIds;
+                                    }
+
+                                    accountViewModel.liveUser.setValue(user);
+                                }
+                                callback.onCallback(success);
+                            }
+                            else
+                            {
+                                callback.onCallback(false);
+                            }
                         }
-
-                        accountViewModel.liveUser.setValue(user);
-                    }
-                    callback.onCallback(success);
-                }
-                else
-                {
-                    callback.onCallback(false);
+                    });
                 }
             }
         });
+
     }
 
     public void getID(String hashedID, ICallback callback) {

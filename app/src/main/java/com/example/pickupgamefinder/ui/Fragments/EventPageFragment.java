@@ -21,6 +21,7 @@ import com.example.pickupgamefinder.R;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import com.example.pickupgamefinder.Singletons.NavigationController;
 import com.example.pickupgamefinder.ViewModels.AccountViewModel;
@@ -29,28 +30,28 @@ import com.example.pickupgamefinder.ViewModels.MessageViewModel;
 
 public class EventPageFragment extends Fragment implements View.OnClickListener {
 
-    Activity activity;
-    TextView eventDetailsTV;
-    TextView currentPlayerTV;
-    Button joinEvent;
-    Button leaveEvent;
-    Button deleteEvent;
-    Button groupChatButton;
-    Button viewMapButton;
+    private static final String TAG = "EVENT_PAGE_FRAGMENT";
+    private static final String EVENT_KEY = "EVENT";
+    private Activity activity;
+    private TextView eventDetailsTV;
+    private TextView currentPlayerTV;
+    private Button joinEvent;
+    private Button leaveEvent;
+    private Button deleteEvent;
+    private Button groupChatButton;
+    private Button viewMapButton;
 
-    EventsViewModel eventsViewModel;
-    Event event;
-    AccountViewModel accountViewModel;
+    private EventsViewModel eventsViewModel;
+    private Event event;
+    private AccountViewModel accountViewModel;
 
-    public EventPageFragment() {
-
-    }
+    public EventPageFragment() { }
 
     public EventPageFragment newInstance(Event event){
         EventPageFragment eventPageFragment = new EventPageFragment();
 
         Bundle args = new Bundle();
-        args.putSerializable("EVENT", event);
+        args.putSerializable(EVENT_KEY, event);
         eventPageFragment.setArguments(args);
 
         return eventPageFragment;
@@ -70,7 +71,7 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
 
         if(args != null)
         {
-            event = (Event)args.getSerializable("EVENT");
+            event = (Event)args.getSerializable(EVENT_KEY);
         }
 
         eventsViewModel = new ViewModelProvider(requireActivity()).get(EventsViewModel.class);
@@ -82,7 +83,7 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
 
         currentPlayerTV = v.findViewById(R.id.event_page_player_count);
 
-        Integer playerCount = event.joinedUsers != null ? event.joinedUsers.size() : 0;
+        int playerCount = event.joinedUsers != null ? event.joinedUsers.size() : 0;
 
         currentPlayerTV.setText("Players: " + playerCount + "\\" + event.maxPlayers);
 
@@ -108,8 +109,8 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
 
     public void InitializeUI()
     {
-        List<String> createdEventNames = accountViewModel.liveUser.getValue().createdEventIds;
-        List<String> joinedEventNames = accountViewModel.liveUser.getValue().joinedEventIds;
+        List<String> createdEventNames = Objects.requireNonNull(accountViewModel.getLiveUser().getValue()).getCreatedEventIds();
+        List<String> joinedEventNames = accountViewModel.getLiveUser().getValue().getJoinedEventIds();
 
         // if the user created this event
         if(createdEventNames != null && createdEventNames.contains(event.id)) {

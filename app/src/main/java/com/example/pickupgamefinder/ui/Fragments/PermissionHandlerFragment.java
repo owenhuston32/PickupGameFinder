@@ -14,17 +14,21 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.R;
+import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 
 import java.io.Serializable;
 
 public class PermissionHandlerFragment extends Fragment implements  View.OnClickListener{
 
-    ICallback callback;
-    Button requestLocationButton;
-    Activity activity;
+    private static final String TAG = "PERMISSION_HANDLER";
+    private AccountViewModel accountViewModel;
+    private ICallback callback;
+    private Button requestLocationButton;
+    private Activity mainActivity;
 
     public PermissionHandlerFragment() { }
 
@@ -40,7 +44,9 @@ public class PermissionHandlerFragment extends Fragment implements  View.OnClick
 
         View v = inflater.inflate(R.layout.fragment_permission_request, container, false);
 
-        activity = requireActivity();
+        mainActivity = requireActivity();
+
+        accountViewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
 
         requestLocationButton = v.findViewById(R.id.map_location_permission);
         requestLocationButton.setOnClickListener(this);
@@ -51,11 +57,11 @@ public class PermissionHandlerFragment extends Fragment implements  View.OnClick
 
     private ActivityResultLauncher<String> requestPermissionLauncher;
     {
-        Log.d("TAG", "requestPermissionLauncher");
+        Log.d(TAG, "requestPermissionLauncher");
             requestPermissionLauncher = registerForActivityResult(
                     new ActivityResultContracts.RequestPermission(), isGranted ->
                     {
-                        Log.d("TAG", "is permission granted: " + isGranted.toString());
+                        Log.d(TAG, "is permission granted: " + isGranted.toString());
                         if(isGranted)
                         {
                             requestLocationButton.setVisibility(View.GONE);
@@ -80,7 +86,8 @@ public class PermissionHandlerFragment extends Fragment implements  View.OnClick
             requestPermission(Manifest.permission.ACCESS_FINE_LOCATION, new ICallback() {
                 @Override
                 public void onCallback(boolean result) {
-                    //TODO: MAYBE SET VALUE IN ACCOUNT VIEW MODEL TO ALLOW ACCESS TO LOCATION
+                    accountViewModel.liveHasLocationAccess.setValue(result);
+
                 }
             });
         }
@@ -90,7 +97,7 @@ public class PermissionHandlerFragment extends Fragment implements  View.OnClick
     public void requestPermission(String permission, ICallback callback)
     {
         // if we don't already have location permission
-        if(ActivityCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED) {
+        if(ActivityCompat.checkSelfPermission(mainActivity, permission) != PackageManager.PERMISSION_GRANTED) {
 
             this.callback = callback;
             requestPermissionLauncher.launch(permission);

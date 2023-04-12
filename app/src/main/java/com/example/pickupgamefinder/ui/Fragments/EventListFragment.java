@@ -28,16 +28,21 @@ import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 
 public class EventListFragment extends Fragment implements View.OnClickListener {
 
-    Activity activity;
-    Button refreshButton;
-    EventsViewModel eventsViewModel;
-    AccountViewModel accountViewModel;
-    RecyclerView recyclerView;
-    List<Event> eventList;
-    boolean showAllEvents;
-    boolean showCreatedEvents;
-    boolean showJoinedEvents;
-    boolean showRefreshButton;
+    private static final String TAG = "EVENT_LIST_FRAGMENT";
+    private static final String SHOW_ALL_EVENTS_KEY = "SHOW_ALL_EVENTS";
+    private static final String SHOW_CREATED_EVENTS_KEY = "SHOW_CREATED_EVENTS";
+    private static final String SHOW_JOINED_EVENTS_KEY = "SHOW_JOINED_EVENTS";
+    private static final String SHOW_REFRESH_BUTTON_KEY = "SHOW_REFRESH_BUTTON";
+    private Activity activity;
+    private Button refreshButton;
+    private EventsViewModel eventsViewModel;
+    private AccountViewModel accountViewModel;
+    private RecyclerView recyclerView;
+    private List<Event> eventList;
+    private boolean showAllEvents;
+    private boolean showCreatedEvents;
+    private boolean showJoinedEvents;
+    private boolean showRefreshButton;
 
 
     public EventListFragment() { }
@@ -48,10 +53,10 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
         EventListFragment eventListFragment = new EventListFragment();
 
         Bundle args = new Bundle();
-        args.putBoolean("SHOW_ALL_EVENTS", showAllEvents);
-        args.putBoolean("SHOW_CREATED_EVENTS", showCreatedEvents);
-        args.putBoolean("SHOW_JOINED_EVENTS", showJoinedEvents);
-        args.putBoolean("SHOW_REFRESH_BUTTON", showRefreshButton);
+        args.putBoolean(SHOW_ALL_EVENTS_KEY, showAllEvents);
+        args.putBoolean(SHOW_CREATED_EVENTS_KEY, showCreatedEvents);
+        args.putBoolean(SHOW_JOINED_EVENTS_KEY, showJoinedEvents);
+        args.putBoolean(SHOW_REFRESH_BUTTON_KEY, showRefreshButton);
         eventListFragment.setArguments(args);
 
         return eventListFragment;
@@ -72,10 +77,10 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
 
         if(args != null)
         {
-            showAllEvents = args.getBoolean("SHOW_ALL_EVENTS");
-            showCreatedEvents = args.getBoolean("SHOW_CREATED_EVENTS");
-            showJoinedEvents = args.getBoolean("SHOW_JOINED_EVENTS");
-            showRefreshButton = args.getBoolean("SHOW_REFRESH_BUTTON");
+            showAllEvents = args.getBoolean(SHOW_ALL_EVENTS_KEY);
+            showCreatedEvents = args.getBoolean(SHOW_CREATED_EVENTS_KEY);
+            showJoinedEvents = args.getBoolean(SHOW_JOINED_EVENTS_KEY);
+            showRefreshButton = args.getBoolean(SHOW_REFRESH_BUTTON_KEY);
         }
 
 
@@ -97,12 +102,12 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
         {
             loadEvents();
         }
-        if(showCreatedEvents)
+        if(showCreatedEvents && accountViewModel.liveUser.getValue() != null)
         {
             eventList = accountViewModel.getEventsFromEventIds(accountViewModel.liveUser.getValue().createdEventIds);
             setAdapter();
         }
-        if(showJoinedEvents)
+        if(showJoinedEvents && accountViewModel.liveUser.getValue() != null)
         {
             eventList = accountViewModel.getEventsFromEventIds(accountViewModel.liveUser.getValue().joinedEventIds);
             setAdapter();
@@ -143,7 +148,7 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
                 else
                 {
                     setAdapter();
-                    Log.e("EventListFragment", "no events found");
+                    Log.e(TAG, "no events found");
                 }
             }
         });

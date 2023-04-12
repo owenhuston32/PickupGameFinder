@@ -34,6 +34,8 @@ import java.util.Objects;
 public class SignIn extends AppCompatActivity{
 
     private static final String TAG = "ONE_TAP_SIGN_IN";
+    private static final String USERNAME_KEY = "USERNAME";
+    private static final String ID_KEY = "ID";
     private static final int ONE_TAP_SIGN_IN = 0;
     private static final int REGULAR_SIGN_IN = 1;
 
@@ -55,8 +57,8 @@ public class SignIn extends AppCompatActivity{
         if(account != null)
         {
             Intent intent = new Intent();
-            intent.putExtra("ID", account.getId());
-            intent.putExtra("USERNAME", account.getDisplayName());
+            intent.putExtra(ID_KEY, account.getId());
+            intent.putExtra(USERNAME_KEY, account.getDisplayName());
             setResult(RESULT_OK, intent);
             finish();
         }
@@ -136,10 +138,10 @@ public class SignIn extends AppCompatActivity{
 
             if(ID != null)
             {
-                intent.putExtra("ID", ID);
+                intent.putExtra(ID_KEY, ID);
             }
             if(username != null) {
-                intent.putExtra("USERNAME", username);
+                intent.putExtra(USERNAME_KEY, username);
             }
 
             setResult(RESULT_OK, intent);
@@ -166,8 +168,8 @@ public class SignIn extends AppCompatActivity{
 
         try {
             GoogleSignInAccount account = task.getResult(ApiException.class);
-            intent.putExtra("ID", account.getId());
-            intent.putExtra("USERNAME", account.getDisplayName());
+            intent.putExtra(ID_KEY, account.getId());
+            intent.putExtra(USERNAME_KEY, account.getDisplayName());
             setResult(RESULT_OK, intent);
             Log.d(TAG, "REGULAR ACCOUNT SIGN IN SUCCESSFUL");
 

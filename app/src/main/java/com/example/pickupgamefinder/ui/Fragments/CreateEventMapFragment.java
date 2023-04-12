@@ -42,6 +42,7 @@ import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 
 public class CreateEventMapFragment extends Fragment implements View.OnClickListener {
 
+    private static final String EVENT_KEY = "EVENT";
     private EventsViewModel mEventViewModel;
     private MapView mapView;
     private GoogleMap googleMap;
@@ -61,7 +62,7 @@ public class CreateEventMapFragment extends Fragment implements View.OnClickList
         CreateEventMapFragment createEventMapFragment = new CreateEventMapFragment();
 
         Bundle args = new Bundle();
-        args.putSerializable("EVENT", event);
+        args.putSerializable(EVENT_KEY, event);
         createEventMapFragment.setArguments(args);
 
         return createEventMapFragment;
@@ -83,7 +84,7 @@ public class CreateEventMapFragment extends Fragment implements View.OnClickList
         Bundle args = getArguments();
         if(args != null)
         {
-            event = args.getParcelable("EVENT");
+            event = args.getParcelable(EVENT_KEY);
         }
 
         activity = requireActivity();
