@@ -2,7 +2,6 @@
     <string name="app_name">PickupGameFinder</string>
     <string name="navigation_draw_open">open navigation drawer</string>
     <string name="navigation_draw_close">close navigation drawer</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="auth_client_id">697846889158-0ns79nacsibr2nemke40ng42u4gc6vcm.apps.googleusercontent.com </string>
 </resources>

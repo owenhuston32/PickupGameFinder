@@ -1,5 +1,8 @@
 package com.example.pickupgamefinder.Repositories;
 
+import android.provider.ContactsContract;
+import android.util.Log;
+
 import com.example.pickupgamefinder.Models.GroupChat;
 import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.Models.Message;
@@ -44,16 +47,14 @@ public class EventRepository {
 
     public void addEvent(Event event, ICallback callback) {
 
+        DatabaseReference eventEntry = dbRef.child("server/events/").push();
+        event.id = eventEntry.getKey();
+
         dbRef.child("server").runTransaction(new Transaction.Handler() {
             @NonNull
             @Override
             public Transaction.Result doTransaction(@NonNull MutableData currentData) {
 
-                Long eventID = currentData.child("events/count").getValue(Long.class);
-                if(eventID == null)
-                    eventID = 0L;
-
-                event.id = eventID.toString();
                 currentData.child("events/" + event.id).setValue(event);
                 currentData.child("users/" + accountViewModel.liveUser.getValue().ID + "/createdEvents/" + event.id).setValue("0");
 
@@ -61,10 +62,6 @@ public class EventRepository {
                 currentData.child("groupChats/" + event.id + "/info/name").setValue(event.eventName + " Group");
                 currentData.child("groupChats/" + event.id + "/info/creator").setValue(accountViewModel.liveUser.getValue().username);
                 currentData.child("groupChats/" + event.id + "/info/joinedUsers").setValue(new ArrayList<User>());
-                currentData.child("groupChats/" + event.id + "/info/mCount").setValue(0L);
-
-                currentData.child("events/count").setValue(ServerValue.increment(1));
-
 
                 return Transaction.success(currentData);
             }
@@ -113,11 +110,8 @@ public class EventRepository {
                     List<Event> eventList = new ArrayList<Event>();
                     for(DataSnapshot snapshot : task.getResult().getChildren())
                     {
-                        if(!snapshot.getKey().equals("count"))
-                        {
-                            Event event = snapshot.getValue(Event.class);
-                            eventList.add(event);
-                        }
+                        Event event = snapshot.getValue(Event.class);
+                        eventList.add(event);
                     }
                     eventsViewModel.liveEventList.setValue(eventList);
                 }

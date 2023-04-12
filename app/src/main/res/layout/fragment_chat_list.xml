@@ -27,7 +27,6 @@
             android:gravity="bottom|left"
             android:imeOptions="actionSend"
             android:inputType="text"
-            android:text="asdfasdasdasfasdf fasdfasdffasdfa asdfasdf asdfasdf"
             android:textSize="30sp" />
 
 

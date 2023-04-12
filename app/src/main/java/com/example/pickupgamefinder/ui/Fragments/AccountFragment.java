@@ -3,6 +3,7 @@ package com.example.pickupgamefinder.ui.Fragments;
 import android.app.Activity;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
@@ -20,8 +21,7 @@ import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 
 public class AccountFragment extends Fragment {
 
-    private AccountViewModel accountViewModel;
-    private EventsViewModel eventsViewModel;
+    private static final String USER_KEY = "USER";
     private User user;
     private TextView tv;
 
@@ -32,7 +32,7 @@ public class AccountFragment extends Fragment {
         AccountFragment accountFragment = new AccountFragment();
 
         Bundle args = new Bundle();
-        args.putSerializable("USER", user);
+        args.putSerializable(USER_KEY, user);
         accountFragment.setArguments(args);
 
         return accountFragment;
@@ -42,14 +42,10 @@ public class AccountFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-
-        accountViewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
-        eventsViewModel = new ViewModelProvider(requireActivity()).get(EventsViewModel.class);
-
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         Bundle args = getArguments();

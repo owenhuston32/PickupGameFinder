@@ -8,7 +8,9 @@ import android.location.Location;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Handler;
@@ -42,11 +44,15 @@ import com.google.android.gms.tasks.Task;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 
 public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClickListener, View.OnClickListener {
 
+    private static final String TAG = "MAP_FRAGMENT";
+    private static final String EVENT_LIST_KEY = "EVENT_LIST";
+    private static final String CAN_DRAG_MARKER_KEY = "CAN_DRAG_MARKER";
     private Handler locationTrackerHandler;
     private Runnable locationTrackerRunnable;
     private final int getLocationWaitTime = 100000;
@@ -71,8 +77,8 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
         MapFragment mapFragment = new MapFragment();
 
         Bundle args = new Bundle();
-        args.putSerializable("EVENT_LIST", (Serializable) eventList);
-        args.putBoolean("CAN_DRAG_MARKER", canDragMarker);
+        args.putSerializable(EVENT_LIST_KEY, (Serializable) eventList);
+        args.putBoolean(CAN_DRAG_MARKER_KEY, canDragMarker);
         mapFragment.setArguments(args);
 
         return mapFragment;
@@ -82,6 +88,21 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
     public void onCreate(Bundle savedInstanceState) {
         locationTrackerHandler = new Handler();
         super.onCreate(savedInstanceState);
+
+        accountViewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
+        mEventsViewModel = new ViewModelProvider(requireActivity()).get(EventsViewModel.class);
+
+        // Create the observer which updates the UI.
+        final Observer<Boolean> locationPermissionObserver = new Observer<Boolean>() {
+            @Override
+            public void onChanged(@Nullable final Boolean newBool) {
+                if(newBool != null && newBool)
+                    permissionResultCallback(true);
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        accountViewModel.getLiveHasLocationAccess().observe(this, locationPermissionObserver);
 
     }
 
@@ -95,15 +116,12 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
 
         if(args != null)
         {
-            eventList = (List<Event>) args.getSerializable("EVENT_LIST");
-            canDragMarker = args.getBoolean("CAN_DRAG_MARKER");
+            eventList = (List<Event>) args.getSerializable(EVENT_LIST_KEY);
+            canDragMarker = args.getBoolean(CAN_DRAG_MARKER_KEY);
         }
 
         isTrackingUserLocation = false;
         mainActivity = requireActivity();
-
-        accountViewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
-        mEventsViewModel = new ViewModelProvider(requireActivity()).get(EventsViewModel.class);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mainActivity);
 
@@ -186,7 +204,7 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
 
     private void AddMarkers(List<Event> eventList)
     {
-        Log.d("TAG", "add marker");
+        Log.d(TAG, "add marker");
         if(googleMap != null && eventList != null)
         {
             for (Event e : eventList) {
@@ -226,7 +244,6 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
                 }
                 else
                 {
-                    Log.d("TAG", "default map ");
                     markerOptions = new MarkerOptions()
                             .position(new LatLng(e.latitude, e.longitude))
                             .title(e.eventName)
@@ -234,6 +251,7 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
                 }
                 Marker marker = googleMap.addMarker(markerOptions);
                 marker.setTag(e.id);
+                Log.d(TAG, e.id);
             }
             if(canDragMarker)
                 InitializeMarkerDrag();
@@ -320,7 +338,7 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
                 }
                 else
                 {
-                    Log.e("TAG", "Failed to create event");
+                    Log.e(TAG, "Failed to create event");
                 }
             }
         });
@@ -334,7 +352,7 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
 
     private void setUserLocationCircle(Location location)
     {
-        Log.d("TAG", "set user location circle");
+        Log.d(TAG, "set user location circle");
         LatLng latLng = new LatLng(location.getLatitude(),
                 location.getLongitude());
 
@@ -353,7 +371,8 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
 
         if(!marker.isDraggable())
         {
-            String eventId = marker.getId().substring(1);
+            String eventId = Objects.requireNonNull(marker.getTag()).toString();
+            Log.d(TAG, eventId);
             NavigationController.getInstance().goToEventPage(eventId);
         }
     }

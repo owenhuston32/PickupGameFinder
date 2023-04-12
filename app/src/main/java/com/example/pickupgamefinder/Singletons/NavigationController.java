@@ -58,14 +58,6 @@ public class NavigationController {
     {
         mainActivity.addFragment(new AccountFragment().newInstance(accountViewModel.liveUser.getValue()), "AccountFragment");
     }
-    public void goToCreatedEvents()
-    {
-        mainActivity.addFragment(new EventListFragment().newInstance(false, true, false, false), "EventListFragment");
-    }
-    public void goToJoinedEvents()
-    {
-        mainActivity.addFragment(new EventListFragment().newInstance(false, false, true, false), "MapFragment");
-    }
     public void goToMap()
     {
         eventsViewModel.loadEvents(new ICallback() {

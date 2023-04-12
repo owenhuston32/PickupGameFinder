@@ -22,6 +22,22 @@ public class AccountViewModel extends ViewModel {
     public AccountRepository accountRepository = null;
     public EventsViewModel eventsViewModel = null;
 
+    public MutableLiveData<User> getLiveUser()
+    {
+        if(liveUser == null)
+            liveUser = new MutableLiveData<User>();
+
+        return liveUser;
+    }
+
+    public MutableLiveData<Boolean> getLiveHasLocationAccess()
+    {
+        if(liveHasLocationAccess == null)
+            liveHasLocationAccess = new MutableLiveData<Boolean>();
+
+        return liveHasLocationAccess;
+    }
+
     public void addUser(String hashedID, String username, ICallback callback) {
 
         if(InternetManager.getInstance().checkWifi())

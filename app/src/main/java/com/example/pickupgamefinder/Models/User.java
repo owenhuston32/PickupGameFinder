@@ -23,6 +23,22 @@ public class User implements Serializable {
         this.joinedEventIds = joinedEventIds;
     }
 
+    public List<String> getCreatedEventIds()
+    {
+        if(createdEventIds == null)
+            createdEventIds = new ArrayList<String>();
+
+        return createdEventIds;
+    }
+
+    public List<String> getJoinedEventIds()
+    {
+        if(joinedEventIds == null)
+            joinedEventIds = new ArrayList<String>();
+
+        return joinedEventIds;
+    }
+
     public void addIDToList(String id, List<String> list)
     {
         if(list == null)

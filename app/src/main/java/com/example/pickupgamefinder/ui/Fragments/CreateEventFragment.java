@@ -29,28 +29,25 @@ import java.util.List;
 
 public class CreateEventFragment extends Fragment implements View.OnClickListener {
 
-    EventsViewModel mEventViewModel;
-    AccountViewModel mAccountViewModel;
-    MessageViewModel messageViewModel;
-    EditText eventNameET;
-    EditText captionET;
+    private EventsViewModel mEventViewModel;
+    private AccountViewModel mAccountViewModel;
+    private MessageViewModel messageViewModel;
+    private EditText eventNameET;
+    private EditText captionET;
 
-    Button skillLevelLeftArrow;
-    Button skillLevelRightArrow;
-    TextView skillLevelText;
+    private Button skillLevelLeftArrow;
+    private Button skillLevelRightArrow;
+    private TextView skillLevelText;
 
-    Button maxPlayersLeftArrow;
-    Button maxPlayersRightArrow;
-    TextView maxPlayersText;
+    private Button maxPlayersLeftArrow;
+    private Button maxPlayersRightArrow;
+    private TextView maxPlayersText;
 
-    Activity activity;
+    private Activity activity;
 
-    Button nextPageButton;
+    private Button nextPageButton;
 
-    public CreateEventFragment()
-    {
-
-    }
+    public CreateEventFragment() { }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

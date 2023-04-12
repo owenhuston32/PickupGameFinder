@@ -41,6 +41,8 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity implements  LifecycleObserver{
 
     private static final String TAG = "MainActivity";
+    private static final String USERNAME_KEY = "USERNAME";
+    private static final String ID_KEY = "ID";
     private NavigationBarHandler navigationBarHandler;
     private DrawerLayout drawerLayout;
     private AccountViewModel accountViewModel;
@@ -54,55 +56,41 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
         public void onActivityResult(ActivityResult result) {
 
             navigationBarHandler.activateSignedOutDrawer();
-            Log.d(TAG, "activity result: " + result.toString());
-            if(result != null && result.getResultCode() == RESULT_OK)
+            String ID;
+            if(result.getResultCode() == RESULT_OK && result.getData() != null && (ID = result.getData().getStringExtra(ID_KEY)) != null)
             {
-                if(result.getData() != null)
-                {
-                    Log.d(TAG, "get data: " + result.getData());
-                    String ID = result.getData().getStringExtra(("ID"));
-                    if(ID != null)
-                    {
-                        Log.d(TAG, "recieved id: " + ID);
-                        String hashedID = HashHandler.getInstance().createHash(ID);
-                        String username = result.getData().getStringExtra("USERNAME");
-                        accountViewModel.getID(hashedID, new ICallback() {
-                            @Override
-                            public void onCallback(boolean result) {
-
-                                Log.d(TAG, "get ID from db: " + result);
-                                if(result)
-                                {
-                                    accountViewModel.tryLogin(hashedID, new ICallback() {
-                                        @Override
-                                        public void onCallback(boolean result) {
-                                            if(result)
-                                            {
-                                                Toast.makeText(getApplicationContext(), "Welcome: " + username, Toast.LENGTH_SHORT).show();
-                                                navigationBarHandler.activateSignedInDrawer();
-                                            }
-                                        }
-                                    });
+                String hashedID = HashHandler.getInstance().createHash(ID);
+                String username = result.getData().getStringExtra(USERNAME_KEY);
+                accountViewModel.getID(hashedID, new ICallback() {
+                    @Override
+                    public void onCallback(boolean getIdResult) {
+                        if (getIdResult) {
+                            accountViewModel.tryLogin(hashedID, new ICallback() {
+                                @Override
+                                public void onCallback(boolean loginResult) {
+                                    if (loginResult) {
+                                        Toast.makeText(getApplicationContext(), "Welcome: " + username, Toast.LENGTH_SHORT).show();
+                                        navigationBarHandler.activateSignedInDrawer();
+                                    }
+                                    else
+                                    {
+                                        Toast.makeText(getApplicationContext(), "UNABLE TO SIGN IN", Toast.LENGTH_LONG).show();
+                                    }
                                 }
-                                else
-                                {
-                                    accountViewModel.addUser(hashedID, username, new ICallback() {
-                                        @Override
-                                        public void onCallback(boolean result) {
-                                            Log.d(TAG, "add user to db: " + result);
-                                            if(result)
-                                            {
-                                                Toast.makeText(getApplicationContext(), "Welcome: " + username, Toast.LENGTH_SHORT).show();
-                                                navigationBarHandler.activateSignedInDrawer();
-                                            }
-                                        }
-                                    });
+                            });
+                        } else {
+                            accountViewModel.addUser(hashedID, username, new ICallback() {
+                                @Override
+                                public void onCallback(boolean addUserResult) {
+                                    if (addUserResult) {
+                                        Toast.makeText(getApplicationContext(), "Welcome: " + username, Toast.LENGTH_SHORT).show();
+                                        navigationBarHandler.activateSignedInDrawer();
+                                    }
                                 }
-
-                            }
-                        });
+                            });
+                        }
                     }
-                }
+                });
             }
             NavigationController.getInstance().goToMap();
         }
@@ -195,15 +183,15 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
 
         if(orientation == Configuration.ORIENTATION_PORTRAIT)
         {
-            Log.d("tag", "portrait");
+            Log.d(TAG, "portrait");
         }
         else if(orientation == Configuration.ORIENTATION_LANDSCAPE)
         {
-            Log.d("tag", "landscape");
+            Log.d(TAG, "landscape");
         }
         else
         {
-            Log.d("tag", "other orientation " + orientation);
+            Log.d(TAG, "other orientation " + orientation);
         }
 
     }
