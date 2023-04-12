@@ -81,14 +81,6 @@ public class NavigationBarHandler implements NavigationView.OnNavigationItemSele
             menuItemClick("Account");
             accountButtonClick();
             return true;
-        } else if (id == R.id.menu_created_events) {
-            menuItemClick("Created Events");
-            createdEventsButtonClick();
-            return true;
-        } else if (id == R.id.menu_joined_events) {
-            menuItemClick("Joined Events");
-            joinedEventsButtonClick();
-            return true;
         } else if (id == R.id.menu_map) {
             menuItemClick("Map");
             mapButtonClick();
@@ -117,14 +109,6 @@ public class NavigationBarHandler implements NavigationView.OnNavigationItemSele
     private void accountButtonClick()
     {
         NavigationController.getInstance().goToAccountFrag();
-    }
-    private void createdEventsButtonClick()
-    {
-        NavigationController.getInstance().goToCreatedEvents();
-    }
-    private void joinedEventsButtonClick()
-    {
-        NavigationController.getInstance().goToJoinedEvents();
     }
     private void mapButtonClick()
     {

@@ -139,8 +139,8 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
             NavigationController.getInstance().goToMap();
 
             createPopupFragment();
+            Objects.requireNonNull(getSupportActionBar()).show();
         }
-        Objects.requireNonNull(getSupportActionBar()).show();
     }
 
     private void createPopupFragment()
