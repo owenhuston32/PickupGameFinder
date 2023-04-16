@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
 
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
 
-        EventRepository eventRepository = new EventRepository(eventsViewModel, accountViewModel, dbRef);
+        EventRepository eventRepository = new EventRepository(eventsViewModel, accountViewModel, messageViewModel, dbRef);
         AccountRepository accountRepository = new AccountRepository(accountViewModel, dbRef);
         MessageRepository messageRepository = new MessageRepository(messageViewModel, dbRef);
 

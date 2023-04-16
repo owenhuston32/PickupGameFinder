@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.pickupgamefinder.MainActivity;
@@ -19,10 +20,11 @@ import com.example.pickupgamefinder.Models.User;
 import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 
-public class AccountFragment extends Fragment {
+public class AccountFragment extends Fragment implements View.OnClickListener {
 
     private static final String USER_KEY = "USER";
     private User user;
+    private Button messageButton;
 
     public AccountFragment() { }
 
@@ -56,6 +58,7 @@ public class AccountFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_account, container, false);
 
         TextView tv = v.findViewById(R.id.account_tv);
+        messageButton = v.findViewById(R.id.account_message_button);
         tv.setText(user.username);
 
         Fragment createdEvents = new EventListFragment().newInstance(false, true, false, false);
@@ -65,5 +68,14 @@ public class AccountFragment extends Fragment {
         transaction.replace(R.id.account_created_events_container, createdEvents).replace(R.id.account_joined_events_container, joinedEvents).commit();
 
         return v;
+    }
+
+    @Override
+    public void onClick(View view) {
+
+        if(view.getId() == messageButton.getId())
+        {
+
+        }
     }
 }

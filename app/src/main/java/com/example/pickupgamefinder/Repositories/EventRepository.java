@@ -1,5 +1,6 @@
 package com.example.pickupgamefinder.Repositories;
 
+import com.example.pickupgamefinder.Models.Chat;
 import com.example.pickupgamefinder.Singletons.LoadingScreen;
 import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 import com.example.pickupgamefinder.ViewModels.EventsViewModel;
@@ -7,6 +8,7 @@ import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 import com.example.pickupgamefinder.Models.Event;
 import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.Models.User;
+import com.example.pickupgamefinder.ViewModels.MessageViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -25,11 +27,13 @@ import androidx.annotation.NonNull;
 
 public class EventRepository {
 
+    private MessageViewModel messageViewModel;
     private EventsViewModel eventsViewModel;
     private AccountViewModel accountViewModel;
     private DatabaseReference dbRef;
 
-    public EventRepository(EventsViewModel eventsViewModel, AccountViewModel accountViewModel,DatabaseReference dbRef)
+    public EventRepository(EventsViewModel eventsViewModel, AccountViewModel accountViewModel, MessageViewModel messageViewModel
+            ,DatabaseReference dbRef)
     {
         this.eventsViewModel = eventsViewModel;
         this.accountViewModel = accountViewModel;
@@ -49,10 +53,10 @@ public class EventRepository {
                 currentData.child("events/" + event.id).setValue(event);
                 currentData.child("users/" + accountViewModel.liveUser.getValue().ID + "/createdEvents/" + event.id).setValue("0");
 
-                currentData.child("groupChats/" + event.id + "/info/id").setValue(event.id);
-                currentData.child("groupChats/" + event.id + "/info/name").setValue(event.eventName + " Group");
-                currentData.child("groupChats/" + event.id + "/info/creator").setValue(accountViewModel.liveUser.getValue().username);
-                currentData.child("groupChats/" + event.id + "/info/joinedUsers").setValue(new ArrayList<User>());
+                currentData.child("chats/" + event.id + "/info/eventID").setValue(event.id);
+                currentData.child("chats/" + event.id + "/info/chatName").setValue(event.eventName + " Group");
+                currentData.child("chats/" + event.id + "/info/creatorID").setValue(accountViewModel.liveUser.getValue().ID);
+                currentData.child("chats/" + event.id + "/info/joinedUserIDS").setValue(new ArrayList<User>());
 
                 return Transaction.success(currentData);
             }
@@ -66,6 +70,7 @@ public class EventRepository {
                     user.addIDToList(event.id, user.createdEventIds);
 
                     eventsViewModel.addToLiveEventList(event);
+
                 }
                 callback.onCallback(committed);
             }
@@ -118,6 +123,7 @@ public class EventRepository {
         Map<String, Object> childUpdates = new HashMap<String, Object>();
         childUpdates.put("/server/events/" + event.id + "/joinedUsers/" + ID,  null);
         childUpdates.put("/server/users/" + ID + "/joinedEvents/" + event.id, null);
+        childUpdates.put("/server/chats/" + event.id + "/info/joinedUsers/" + accountViewModel.getLiveUser().getValue().ID, null);
 
         dbRef.updateChildren(childUpdates).addOnCompleteListener(new OnCompleteListener() {
             @Override
@@ -146,6 +152,7 @@ public class EventRepository {
         Map<String, Object> childUpdates = new HashMap<String, Object>();
         childUpdates.put("/server/events/" + event.id + "/joinedUsers/" + ID,  "0");
         childUpdates.put("/server/users/" + ID + "/joinedEvents/" + event.id, "0");
+        childUpdates.put("/server/chats/" + event.id + "/info/joinedUsers/" + accountViewModel.getLiveUser().getValue().ID, "0");
 
         dbRef.updateChildren(childUpdates).addOnCompleteListener(new OnCompleteListener() {
             @Override
