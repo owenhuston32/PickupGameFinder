@@ -1,13 +1,10 @@
 package com.example.pickupgamefinder.Singletons;
 
-import android.app.Application;
-
 import androidx.fragment.app.FragmentManager;
 
 import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.Models.Event;
-import com.example.pickupgamefinder.Models.User;
 import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 import com.example.pickupgamefinder.ViewModels.MessageViewModel;
@@ -135,9 +132,8 @@ public class NavigationController {
 
         accountViewModel.liveUser.setValue(null);
 
-        //clear all but the starting fragment
         FragmentManager fm = mainActivity.getSupportFragmentManager();
-        for (int i = 0; i < fm.getBackStackEntryCount() - 1; i++) {
+        for (int i = 0; i < fm.getBackStackEntryCount(); i++) {
             fm.popBackStack();
         }
     }

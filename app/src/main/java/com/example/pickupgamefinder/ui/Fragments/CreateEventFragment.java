@@ -15,7 +15,6 @@ import android.widget.TextView;
 
 import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.Models.Event;
-import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.R;
 
 import com.example.pickupgamefinder.Singletons.NavigationController;
@@ -23,9 +22,7 @@ import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 import com.example.pickupgamefinder.ViewModels.MessageViewModel;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class CreateEventFragment extends Fragment implements View.OnClickListener {
 

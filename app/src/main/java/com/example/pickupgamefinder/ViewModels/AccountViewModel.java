@@ -3,7 +3,6 @@ package com.example.pickupgamefinder.ViewModels;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.Repositories.AccountRepository;
 import com.example.pickupgamefinder.Models.Event;
 import com.example.pickupgamefinder.ICallback;
@@ -13,7 +12,6 @@ import com.example.pickupgamefinder.Singletons.LoadingScreen;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class AccountViewModel extends ViewModel {
 

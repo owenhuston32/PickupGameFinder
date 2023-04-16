@@ -1,6 +1,5 @@
 package com.example.pickupgamefinder.Singletons;
 
-import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.ui.Fragments.PopupNotificationFragment;
 
 public class ErrorUIHandler {

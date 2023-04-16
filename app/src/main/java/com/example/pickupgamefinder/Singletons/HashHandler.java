@@ -1,7 +1,5 @@
 package com.example.pickupgamefinder.Singletons;
 
-import android.graphics.Color;
-import android.widget.TextView;
 import java.security.MessageDigest;
 
 import java.nio.charset.StandardCharsets;

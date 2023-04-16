@@ -1,11 +1,8 @@
 package com.example.pickupgamefinder.Repositories;
 
-import android.provider.ContactsContract;
-
 import androidx.annotation.NonNull;
 
 import com.example.pickupgamefinder.ICallback;
-import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.Models.GroupChat;
 import com.example.pickupgamefinder.Models.Message;
 import com.example.pickupgamefinder.Models.User;
@@ -21,7 +18,6 @@ import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.annotations.Nullable;
 
-import java.security.acl.Group;
 import java.util.ArrayList;
 import java.util.List;
 

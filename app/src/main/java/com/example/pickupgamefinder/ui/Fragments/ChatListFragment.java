@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -18,21 +17,16 @@ import android.widget.EditText;
 
 import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.MessageRecyclerAdapter;
-import com.example.pickupgamefinder.Models.Event;
-import com.example.pickupgamefinder.EventRecyclerAdapter;
 import com.example.pickupgamefinder.Models.GroupChat;
 import com.example.pickupgamefinder.Models.Message;
 import com.example.pickupgamefinder.R;
 
-import java.security.acl.Group;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.example.pickupgamefinder.Singletons.ErrorUIHandler;
 import com.example.pickupgamefinder.ViewModels.AccountViewModel;
-import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 import com.example.pickupgamefinder.ViewModels.MessageViewModel;
-import com.google.firebase.Timestamp;
 
 public class ChatListFragment extends Fragment implements View.OnClickListener {
 

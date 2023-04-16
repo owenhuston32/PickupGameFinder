@@ -1,11 +1,5 @@
 package com.example.pickupgamefinder.Repositories;
 
-import android.provider.ContactsContract;
-import android.util.Log;
-
-import com.example.pickupgamefinder.Models.GroupChat;
-import com.example.pickupgamefinder.MainActivity;
-import com.example.pickupgamefinder.Models.Message;
 import com.example.pickupgamefinder.Singletons.LoadingScreen;
 import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 import com.example.pickupgamefinder.ViewModels.EventsViewModel;
@@ -13,17 +7,14 @@ import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 import com.example.pickupgamefinder.Models.Event;
 import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.Models.User;
-import com.example.pickupgamefinder.ViewModels.MessageViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.MutableData;
-import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.annotations.Nullable;
-import com.google.firebase.firestore.FieldValue;
 
 import java.util.ArrayList;
 import java.util.HashMap;

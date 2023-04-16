@@ -1,13 +1,9 @@
 package com.example.pickupgamefinder.Repositories;
 
-import android.provider.ContactsContract;
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.pickupgamefinder.ICallback;
-import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.Models.User;
 import com.example.pickupgamefinder.Singletons.LoadingScreen;
 import com.example.pickupgamefinder.ViewModels.AccountViewModel;
@@ -18,9 +14,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class AccountRepository {
 
@@ -36,7 +30,7 @@ public class AccountRepository {
     public void addUser(String hashedID, String username, ICallback callback) {
 
         User user = new User(hashedID, username, new ArrayList<String>(), new ArrayList<String>());
-        dbRef.child("server/users/").setValue(user, new DatabaseReference.CompletionListener() {
+        dbRef.child("server/users/" + hashedID).setValue(user, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
                 LoadingScreen.getInstance().hideLoadingScreen();

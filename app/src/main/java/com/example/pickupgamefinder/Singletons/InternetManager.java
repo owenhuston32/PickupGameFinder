@@ -3,11 +3,6 @@ package com.example.pickupgamefinder.Singletons;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
-import android.util.Log;
-
-import com.example.pickupgamefinder.Singletons.ErrorUIHandler;
 
 public class InternetManager {
 
