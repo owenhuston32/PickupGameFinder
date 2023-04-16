@@ -17,7 +17,7 @@ import android.widget.EditText;
 
 import com.example.pickupgamefinder.ICallback;
 import com.example.pickupgamefinder.MessageRecyclerAdapter;
-import com.example.pickupgamefinder.Models.GroupChat;
+import com.example.pickupgamefinder.Models.Chat;
 import com.example.pickupgamefinder.Models.Message;
 import com.example.pickupgamefinder.R;
 
@@ -30,7 +30,7 @@ import com.example.pickupgamefinder.ViewModels.MessageViewModel;
 
 public class ChatListFragment extends Fragment implements View.OnClickListener {
 
-    private static final String GROUP_CHAT_KEY = "GROUP_CHAT";
+    private static final String CHAT_KEY = "CHAT";
     private Activity activity;
     private MessageViewModel messageViewModel;
     private AccountViewModel accountViewModel;
@@ -38,14 +38,14 @@ public class ChatListFragment extends Fragment implements View.OnClickListener {
     private List<Message> messageList;
     private Button sendMessageButton;
     private EditText messageET;
-    private GroupChat groupChat;
+    private Chat chat;
 
     public ChatListFragment() { }
-    public ChatListFragment newInstance(GroupChat groupChat) {
+    public ChatListFragment newInstance(Chat groupChat) {
         ChatListFragment chatListFragment = new ChatListFragment();
 
         Bundle args = new Bundle();
-        args.putSerializable(GROUP_CHAT_KEY, groupChat);
+        args.putSerializable(CHAT_KEY, groupChat);
         chatListFragment.setArguments(args);
 
         return chatListFragment;
@@ -66,7 +66,7 @@ public class ChatListFragment extends Fragment implements View.OnClickListener {
         Bundle args = getArguments();
         if(args != null)
         {
-            groupChat = (GroupChat) args.getSerializable(GROUP_CHAT_KEY);
+            chat = (Chat) args.getSerializable(CHAT_KEY);
         }
 
         activity = requireActivity();
@@ -78,6 +78,8 @@ public class ChatListFragment extends Fragment implements View.OnClickListener {
         recyclerView = v.findViewById(R.id.chat_list_recyclerView);
         sendMessageButton = v.findViewById(R.id.chat_list_send_button);
         messageET = v.findViewById(R.id.chat_list_message_edit);
+
+        setAdapter();
 
         loadMessages();
 
@@ -95,7 +97,7 @@ public class ChatListFragment extends Fragment implements View.OnClickListener {
         if(id == sendMessageButton.getId())
         {
             Message message = new Message(accountViewModel.liveUser.getValue().username, messageET.getText().toString());
-            messageViewModel.addMessage(groupChat.id, message, new ICallback() {
+            messageViewModel.addMessage(chat.id, message, new ICallback() {
                 @Override
                 public void onCallback(boolean result) {
                     if(result)
@@ -115,7 +117,7 @@ public class ChatListFragment extends Fragment implements View.OnClickListener {
 
     private void loadMessages()
     {
-        messageViewModel.loadMessages(groupChat.id, new ICallback() {
+        messageViewModel.loadMessages(chat.id, new ICallback() {
             @Override
             public void onCallback(boolean result) {
                 if (result) {
@@ -134,6 +136,9 @@ public class ChatListFragment extends Fragment implements View.OnClickListener {
 
     private void setAdapter()
     {
+        if(messageList == null)
+            messageList = new ArrayList<>();
+
         MessageRecyclerAdapter adapter = new MessageRecyclerAdapter(messageList);
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(activity.getApplicationContext());

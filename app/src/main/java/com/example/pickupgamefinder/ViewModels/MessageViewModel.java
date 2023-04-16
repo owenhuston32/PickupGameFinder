@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.pickupgamefinder.ICallback;
-import com.example.pickupgamefinder.Models.GroupChat;
+import com.example.pickupgamefinder.Models.Chat;
 import com.example.pickupgamefinder.Models.Message;
 import com.example.pickupgamefinder.Repositories.MessageRepository;
 import com.example.pickupgamefinder.Singletons.InternetManager;
@@ -14,7 +14,7 @@ import java.util.List;
 
 public class MessageViewModel extends ViewModel {
 
-    public MutableLiveData<GroupChat> liveGroupChat = new MutableLiveData<GroupChat>();
+    public MutableLiveData<Chat> liveChat = new MutableLiveData<Chat>();
     public MutableLiveData<List<Message>> liveMessageList = new MutableLiveData<List<Message>>();
     public MessageRepository messageRepository = null;
 
@@ -36,7 +36,7 @@ public class MessageViewModel extends ViewModel {
         if(InternetManager.getInstance().checkWifi())
         {
             LoadingScreen.getInstance().showLoadingScreen();
-            messageRepository.getGroupChat(chatID, callback);
+            messageRepository.getChat(chatID, callback);
         }
         else
         {

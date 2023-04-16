@@ -112,7 +112,7 @@ public class NavigationController {
             public void onCallback(boolean result) {
                 if(result)
                 {
-                    mainActivity.addFragment(new ChatListFragment().newInstance(messageViewModel.liveGroupChat.getValue()), "ChatListFragment");
+                    mainActivity.addFragment(new ChatListFragment().newInstance(messageViewModel.liveChat.getValue()), "ChatListFragment");
                 }
                 else
                 {
