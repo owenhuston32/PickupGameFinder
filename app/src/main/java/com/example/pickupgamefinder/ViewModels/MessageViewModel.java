@@ -4,18 +4,12 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.pickupgamefinder.ICallback;
-import com.example.pickupgamefinder.MainActivity;
-import com.example.pickupgamefinder.Models.Event;
 import com.example.pickupgamefinder.Models.GroupChat;
 import com.example.pickupgamefinder.Models.Message;
-import com.example.pickupgamefinder.Models.User;
-import com.example.pickupgamefinder.Repositories.AccountRepository;
 import com.example.pickupgamefinder.Repositories.MessageRepository;
 import com.example.pickupgamefinder.Singletons.InternetManager;
 import com.example.pickupgamefinder.Singletons.LoadingScreen;
 
-import java.security.acl.Group;
-import java.util.ArrayList;
 import java.util.List;
 
 public class MessageViewModel extends ViewModel {

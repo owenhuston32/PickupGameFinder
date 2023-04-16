@@ -16,14 +16,14 @@
             android:id="@+id/event_page_event_details"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="asdf"
+            android:text="EVENT DETAILS"
             android:textSize="50dp"/>
 
         <TextView
             android:id="@+id/event_page_player_count"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text=""
+            android:text="0/10 PLAYERS"
             android:textSize="50dp"/>
 
         <Button
@@ -63,6 +63,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="DELETE EVENT"
+            android:textSize="40dp"
+            android:gravity="center"/>
+
+        <Button
+            android:id="@+id/event_page_login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="LOGIN"
             android:textSize="40dp"
             android:gravity="center"/>
 

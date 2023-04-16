@@ -19,11 +19,11 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.pickupgamefinder.Handlers.NavigationBarHandler;
+import com.example.pickupgamefinder.Models.Event;
 import com.example.pickupgamefinder.Repositories.AccountRepository;
 import com.example.pickupgamefinder.Repositories.EventRepository;
 import com.example.pickupgamefinder.Repositories.MessageRepository;
 import com.example.pickupgamefinder.Singletons.ErrorUIHandler;
-import com.example.pickupgamefinder.Singletons.HashHandler;
 import com.example.pickupgamefinder.Singletons.InternetManager;
 import com.example.pickupgamefinder.Singletons.LoadingScreen;
 import com.example.pickupgamefinder.Singletons.NavigationController;
@@ -31,11 +31,16 @@ import com.example.pickupgamefinder.ViewModels.AccountViewModel;
 import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 
 import com.example.pickupgamefinder.ViewModels.MessageViewModel;
+import com.example.pickupgamefinder.ui.Fragments.MapFragment;
 import com.example.pickupgamefinder.ui.Fragments.PermissionHandlerFragment;
 import com.example.pickupgamefinder.ui.Fragments.PopupNotificationFragment;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements  LifecycleObserver{
@@ -48,7 +53,6 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
     private AccountViewModel accountViewModel;
     private EventsViewModel eventsViewModel;
     private MessageViewModel messageViewModel;
-    private PopupNotificationFragment popup;
     private PermissionHandlerFragment permissionHandlerFragment;
 
     ActivityResultLauncher<Intent> signInLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
@@ -59,13 +63,12 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
             String ID;
             if(result.getResultCode() == RESULT_OK && result.getData() != null && (ID = result.getData().getStringExtra(ID_KEY)) != null)
             {
-                String hashedID = HashHandler.getInstance().createHash(ID);
                 String username = result.getData().getStringExtra(USERNAME_KEY);
-                accountViewModel.getID(hashedID, new ICallback() {
+                accountViewModel.getID(ID, new ICallback() {
                     @Override
                     public void onCallback(boolean getIdResult) {
                         if (getIdResult) {
-                            accountViewModel.tryLogin(hashedID, new ICallback() {
+                            accountViewModel.tryLogin(ID, new ICallback() {
                                 @Override
                                 public void onCallback(boolean loginResult) {
                                     if (loginResult) {
@@ -79,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
                                 }
                             });
                         } else {
-                            accountViewModel.addUser(hashedID, username, new ICallback() {
+                            accountViewModel.addUser(ID, username, new ICallback() {
                                 @Override
                                 public void onCallback(boolean addUserResult) {
                                     if (addUserResult) {
@@ -92,9 +95,9 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
                     }
                 });
             }
-            NavigationController.getInstance().goToMap();
         }
     });
+
 
     public void launchSignIn()
     {
@@ -124,16 +127,60 @@ public class MainActivity extends AppCompatActivity implements  LifecycleObserve
 
             drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
             navigationBarHandler = new NavigationBarHandler(accountViewModel, eventsViewModel, this, drawerLayout);
-            NavigationController.getInstance().goToMap();
-
+            createInitialMapScreen();
             createPopupFragment();
             Objects.requireNonNull(getSupportActionBar()).show();
+
+            tryInitialSignIn();
         }
+    }
+
+    private void tryInitialSignIn()
+    {
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        if(account != null)
+        {
+            accountViewModel.tryLogin(account.getId(), new ICallback() {
+                @Override
+                public void onCallback(boolean result) {
+                    if(result)
+                    {
+                        Toast.makeText(getApplicationContext(), "Welcome: " + account.getDisplayName(), Toast.LENGTH_SHORT).show();
+                        navigationBarHandler.activateSignedInDrawer();
+                    }
+                }
+            });
+        }
+    }
+
+    private void createInitialMapScreen()
+    {
+        eventsViewModel.loadEvents(new ICallback() {
+            @Override
+            public void onCallback(boolean result) {
+
+                List<Event> eventList;
+                if(result && eventsViewModel.liveEventList != null)
+                {
+                    eventList = eventsViewModel.liveEventList.getValue();
+                }
+                else
+                {
+                    eventList = new ArrayList<Event>();
+                    ErrorUIHandler.getInstance().showError("Error Loading Events");
+                }
+
+                Fragment mapFragment = new MapFragment().newInstance(eventList, false);
+                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.fragment_container, mapFragment);
+                fragmentTransaction.commit();
+            }
+        });
     }
 
     private void createPopupFragment()
     {
-        popup = new PopupNotificationFragment();
+        PopupNotificationFragment popup = new PopupNotificationFragment();
 
         getSupportFragmentManager().beginTransaction().replace(R.id.main_popup_container, popup)
                 .commitNow();

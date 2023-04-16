@@ -3,7 +3,6 @@ package com.example.pickupgamefinder.ViewModels;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.pickupgamefinder.MainActivity;
 import com.example.pickupgamefinder.Repositories.AccountRepository;
 import com.example.pickupgamefinder.Models.Event;
 import com.example.pickupgamefinder.ICallback;
@@ -32,6 +31,14 @@ public class EventsViewModel extends ViewModel {
         {
             callback.onCallback(false);
         }
+    }
+    public MutableLiveData<Event> getLiveEvent()
+    {
+        if(liveEvent == null)
+            liveEvent = new MutableLiveData<Event>();
+
+        return liveEvent;
+
     }
     public void getEvent(String eventId, ICallback callback)
     {

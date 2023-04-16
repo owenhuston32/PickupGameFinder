@@ -33,7 +33,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -92,7 +91,6 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
         accountViewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
         mEventsViewModel = new ViewModelProvider(requireActivity()).get(EventsViewModel.class);
 
-        // Create the observer which updates the UI.
         final Observer<Boolean> locationPermissionObserver = new Observer<Boolean>() {
             @Override
             public void onChanged(@Nullable final Boolean newBool) {
@@ -101,7 +99,6 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
             }
         };
 
-        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
         accountViewModel.getLiveHasLocationAccess().observe(this, locationPermissionObserver);
 
     }
@@ -372,7 +369,6 @@ public class MapFragment extends Fragment implements GoogleMap.OnInfoWindowClick
         if(!marker.isDraggable())
         {
             String eventId = Objects.requireNonNull(marker.getTag()).toString();
-            Log.d(TAG, eventId);
             NavigationController.getInstance().goToEventPage(eventId);
         }
     }

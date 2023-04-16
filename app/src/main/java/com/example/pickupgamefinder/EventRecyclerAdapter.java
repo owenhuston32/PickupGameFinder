@@ -1,7 +1,5 @@
 package com.example.pickupgamefinder;
 
-import android.app.Activity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,8 +8,6 @@ import android.widget.TextView;
 
 import com.example.pickupgamefinder.Models.Event;
 import com.example.pickupgamefinder.Singletons.NavigationController;
-import com.example.pickupgamefinder.ui.Fragments.EventPageFragment;
-import com.example.pickupgamefinder.ViewModels.EventsViewModel;
 
 import java.util.List;
 

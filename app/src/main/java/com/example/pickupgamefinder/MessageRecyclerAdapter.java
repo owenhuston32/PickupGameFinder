@@ -9,7 +9,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pickupgamefinder.Models.Message;
-import com.example.pickupgamefinder.Singletons.NavigationController;
 
 import java.util.List;
 
