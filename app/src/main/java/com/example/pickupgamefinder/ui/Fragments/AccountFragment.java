@@ -23,7 +23,6 @@ public class AccountFragment extends Fragment {
 
     private static final String USER_KEY = "USER";
     private User user;
-    private TextView tv;
 
     public AccountFragment() { }
 
@@ -56,7 +55,7 @@ public class AccountFragment extends Fragment {
 
         View v = inflater.inflate(R.layout.fragment_account, container, false);
 
-        tv = v.findViewById(R.id.account_tv);
+        TextView tv = v.findViewById(R.id.account_tv);
         tv.setText(user.username);
 
         Fragment createdEvents = new EventListFragment().newInstance(false, true, false, false);

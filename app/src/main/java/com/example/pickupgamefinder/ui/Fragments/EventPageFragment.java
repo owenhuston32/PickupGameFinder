@@ -182,6 +182,7 @@ public class EventPageFragment extends Fragment implements View.OnClickListener 
         List<String> createdEventNames = user.getCreatedEventIds();
         List<String> joinedEventNames = user.getJoinedEventIds();
 
+        groupChatButton.setVisibility(View.VISIBLE);
         loginButton.setVisibility(View.GONE);
         // if the user created this event
         if(createdEventNames != null && createdEventNames.contains(event.id)) {

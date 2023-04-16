@@ -18,19 +18,6 @@ public class MessageViewModel extends ViewModel {
     public MutableLiveData<List<Message>> liveMessageList = new MutableLiveData<List<Message>>();
     public MessageRepository messageRepository = null;
 
-    public void addGroupChat(String groupChatID, String groupChatName, String creator, ICallback callback)
-    {
-        if(InternetManager.getInstance().checkWifi())
-        {
-            LoadingScreen.getInstance().showLoadingScreen();
-            messageRepository.addGroupChat(groupChatID, groupChatName, creator, callback);
-        }
-        else
-        {
-            callback.onCallback(false);
-        }
-    }
-
     public void addMessage(String chatID, Message message, ICallback callback) {
 
         if(InternetManager.getInstance().checkWifi())
