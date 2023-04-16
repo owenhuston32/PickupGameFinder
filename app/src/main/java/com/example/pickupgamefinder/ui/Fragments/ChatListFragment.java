@@ -66,7 +66,7 @@ public class ChatListFragment extends Fragment implements View.OnClickListener {
         Bundle args = getArguments();
         if(args != null)
         {
-            groupChat = args.getParcelable(GROUP_CHAT_KEY);
+            groupChat = (GroupChat) args.getSerializable(GROUP_CHAT_KEY);
         }
 
         activity = requireActivity();

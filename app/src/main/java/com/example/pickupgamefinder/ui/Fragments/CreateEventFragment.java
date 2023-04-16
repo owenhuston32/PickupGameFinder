@@ -93,14 +93,7 @@ public class CreateEventFragment extends Fragment implements View.OnClickListene
         if(id == nextPageButton.getId())
         {
             Event event = CreateEvent();
-            messageViewModel.addGroupChat(event.id, event.eventName + " Group", mAccountViewModel.liveUser.getValue().username,
-                    new ICallback() {
-                        @Override
-                        public void onCallback(boolean result) {
-                            if(result)
-                                NavigationController.getInstance().gotoSingleEventMap(event, true);
-                        }
-                    });
+            NavigationController.getInstance().gotoSingleEventMap(event, true);
         }
         else if(id == skillLevelLeftArrow.getId())
         {
